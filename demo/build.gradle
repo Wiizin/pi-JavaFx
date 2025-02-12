@@ -28,6 +28,7 @@ dependencies {
     implementation "org.kordamp.ikonli:ikonli-fontawesome5-pack:$ikonli"
     implementation "io.github.palexdev:virtualizedfx:$vfx"
     implementation project(':materialfx')
+    implementation "mysql:mysql-connector-java:8.0.33"
 }
 
 compileJava {

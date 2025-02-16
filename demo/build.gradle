@@ -29,6 +29,7 @@ dependencies {
     implementation "io.github.palexdev:virtualizedfx:$vfx"
     implementation project(':materialfx')
     implementation "mysql:mysql-connector-java:8.0.33"
+
 }
 
 compileJava {

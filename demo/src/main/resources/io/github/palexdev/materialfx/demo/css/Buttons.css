@@ -20,53 +20,104 @@
 @import 'Common.css';
 @import 'MFXColors.css';
 
+/* Base style for all buttons */
 .mfx-button {
-	-fx-text-fill: -mfx-text-he;
+	-fx-background-color: linear-gradient(to bottom, #6a11cb, #2575fc); /* Gradient background */
+	-fx-text-fill: white; /* Text color */
+	-fx-font-family: "Segoe UI", sans-serif; /* Modern font */
+	-fx-font-size: 14px; /* Font size */
+	-fx-font-weight: bold; /* Bold text */
+	-fx-padding: 10px 20px; /* Padding */
+	-fx-border-radius: 25px; /* Rounded corners */
+	-fx-background-radius: 25px; /* Rounded corners for background */
+	-fx-border-width: 0; /* No border */
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 5); /* Shadow effect */
+	-fx-cursor: hand; /* Pointer cursor on hover */
+	-fx-transition: all 0.3s ease; /* Smooth transition for hover effects */
 }
 
-.mfx-button .mfx-ripple-generator {
-	-mfx-ripple-radius: 40;
-	-mfx-auto-clip: true;
+/* Hover effect */
+.mfx-button:hover {
+	-fx-background-color: linear-gradient(to bottom, #2575fc, #6a11cb); /* Reverse gradient on hover */
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 15, 0, 0, 7); /* Larger shadow on hover */
 }
 
-.mfx-button .text {
-	-fx-font-smoothing-type: gray;
+/* Pressed effect */
+.mfx-button:pressed {
+	-fx-background-color: linear-gradient(to bottom, #4a00e0, #1e3c72); /* Darker gradient on press */
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 3); /* Smaller shadow on press */
 }
 
-#custom {
-	-fx-background-color: -mfx-purple;
-	-fx-text-fill: white
+/* Disabled state */
+.mfx-button:disabled {
+	-fx-background-color: #cccccc; /* Gray background */
+	-fx-text-fill: #666666; /* Gray text */
+	-fx-effect: none; /* No shadow */
 }
 
-.outline-button {
-	-fx-background-color: transparent;
-	-fx-border-color: -mfx-purple;
-	-fx-border-radius: 3;
-
-	-fx-text-fill: -mfx-purple;
+/* Danger button style (e.g., Delete button) */
+.mfx-button.mfx-button-danger {
+	-fx-background-color: linear-gradient(to bottom, #ff416c, #ff4b2b); /* Red gradient */
+	-fx-padding: 4px 8px;
+	-fx-font-size: 10px;
+	-fx-min-width: 60px;
+	-fx-min-height: 25px;
 }
 
-.outline-button:hover,
-.outline-button:focused {
-	-fx-background-color: -mfx-purple;
-	-fx-text-fill: white;
+.mfx-button.mfx-button-danger:hover {
+	-fx-background-color: linear-gradient(to bottom, #ff4b2b, #ff416c); /* Reverse gradient on hover */
 }
 
-
-.link-button {
-	-fx-background-color: transparent;
-	-fx-border-radius: 3;
-	-fx-text-fill: #0096FF;
-	-fx-underline: true;
-	-fx-cursor: hand;
+.mfx-button.mfx-button-danger:pressed {
+	-fx-background-color: linear-gradient(to bottom, #e53935, #c62828); /* Darker red gradient on press */
+	-fx-padding: 4px 8px;
+	-fx-font-size: 10px;
+	-fx-min-width: 60px;
+	-fx-min-height: 25px;
 }
 
-.link-button:armed,
-.link-button:focused {
-	-fx-border-color: #006BFF;
-	-fx-text-fill: #006BFF;
+/* Primary button style (e.g., Save/Update button) */
+.mfx-button.mfx-button-primary {
+	-fx-background-color: linear-gradient(to bottom, #00c6ff, #0072ff); /* Blue gradient */
+	-fx-padding: 4px 8px;
+	-fx-font-size: 10px;
+	-fx-min-width: 60px;
+	-fx-min-height: 25px;
 }
 
-.link-button .mfx-ripple-generator {
-	-mfx-ripple-color: #D9E9FF;
+.mfx-button.mfx-button-primary:hover {
+	-fx-background-color: linear-gradient(to bottom, #0072ff, #00c6ff); /* Reverse gradient on hover */
+	-fx-padding: 4px 8px;
+	-fx-font-size: 10px;
+	-fx-min-width: 60px;
+	-fx-min-height: 25px;
+}
+
+.mfx-button.mfx-button-primary:pressed {
+	-fx-background-color: linear-gradient(to bottom, #005bb5, #003f8f); /* Darker blue gradient on press */
+	-fx-padding: 4px 8px;
+	-fx-font-size: 10px;
+	-fx-min-width: 60px;
+	-fx-min-height: 25px;
+}
+
+/* Secondary button style (e.g., Cancel button) */
+.mfx-button.mfx-button-secondary {
+	-fx-background-color: linear-gradient(to bottom, #f5f7fa, #c3cfe2); /* Light gray gradient */
+	-fx-text-fill: #333333; /* Dark text */
+
+}
+
+.mfx-button.mfx-button-secondary:hover {
+	-fx-background-color: linear-gradient(to bottom, #c3cfe2, #f5f7fa); /* Reverse gradient on hover */
+}
+
+.mfx-button.mfx-button-secondary:pressed {
+	-fx-background-color: linear-gradient(to bottom, #a8b6c6, #8a9aad); /* Darker gray gradient on press */
+}
+.mfx-button.action-button {
+	-fx-padding: 4px 8px;
+	-fx-font-size: 10px;
+	-fx-min-width: 60px;
+	-fx-min-height: 25px;
 }

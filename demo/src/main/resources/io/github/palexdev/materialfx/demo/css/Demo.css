@@ -67,7 +67,7 @@
  * Sidebar
 **************************************************/
 .rootPane .sidebar {
-	-fx-background-color: -mfx-blue;
+	-fx-background-color: #00008B;
 	-fx-background-insets: -1 -5 -1 -1;
 	-fx-background-radius: 0 20 20 0;
 }
@@ -119,14 +119,14 @@
 .rootPane .sidebar .navbar .mfx-rectangle-toggle-node:selected {
 	-fx-background-color: white;
 	-fx-background-radius: 5;
-	-fx-text-fill: #ff9800;
+	-fx-text-fill: #00008B;
 }
 
 .rootPane .sidebar .navbar .mfx-rectangle-toggle-node:selected .selection-rectangle {
 	-fx-stroke: transparent;
-	-fx-fill: #ff9800;
+	-fx-fill: #00008B;
 }
 
 .rootPane .sidebar .navbar .mfx-rectangle-toggle-node:selected .mfx-icon-wrapper .mfx-font-icon {
-	-mfx-color: #ff9800;
+	-mfx-color: #00008B;
 }

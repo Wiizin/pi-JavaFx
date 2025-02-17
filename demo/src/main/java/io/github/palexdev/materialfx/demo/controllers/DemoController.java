@@ -17,6 +17,7 @@
  */
 
 package io.github.palexdev.materialfx.demo.controllers;
+import io.github.palexdev.materialfx.demo.controllers.AdminHomeController;
 
 import io.github.palexdev.materialfx.controls.MFXIconWrapper;
 import io.github.palexdev.materialfx.controls.MFXRectangleToggleNode;
@@ -94,20 +95,13 @@ public class DemoController implements Initializable {
 	public void initialize(URL location, ResourceBundle resources) {
 		closeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> Platform.exit());
 		minimizeIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> ((Stage) rootPane.getScene().getWindow()).setIconified(true));
-		alwaysOnTopIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-			boolean newVal = !stage.isAlwaysOnTop();
-			alwaysOnTopIcon.pseudoClassStateChanged(PseudoClass.getPseudoClass("always-on-top"), newVal);
-			stage.setAlwaysOnTop(newVal);
-		});
+//		alwaysOnTopIcon.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+//			boolean newVal = !stage.isFullScreen();
+//			alwaysOnTopIcon.pseudoClassStateChanged(PseudoClass.getPseudoClass("fullscreen"), newVal);
+//			stage.setFullScreen(newVal);
+//		});
 
-		windowHeader.setOnMousePressed(event -> {
-			xOffset = stage.getX() - event.getScreenX();
-			yOffset = stage.getY() - event.getScreenY();
-		});
-		windowHeader.setOnMouseDragged(event -> {
-			stage.setX(event.getScreenX() + xOffset);
-			stage.setY(event.getScreenY() + yOffset);
-		});
+
 
 		initializeLoader();
 
@@ -125,9 +119,9 @@ public class DemoController implements Initializable {
 
 	private void initializeLoader() {
 		MFXLoader loader = new MFXLoader();
-		loader.addView(MFXLoaderBean.of("Users", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Users")).setDefaultRoot(true).get());
-		loader.addView(MFXLoaderBean.of("Tournaments", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Tournaments")).setDefaultRoot(true).get());
-		loader.addView(MFXLoaderBean.of("Products", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Products")).setDefaultRoot(true).get());
+		loader.addView(MFXLoaderBean.of("Users", loadURL("fxml/admin_home.fxml")).setBeanToNodeMapper(() -> createToggle("fas-users", "Users")).setDefaultRoot(true).get());
+		loader.addView(MFXLoaderBean.of("Tournaments", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-trophy", "Tournaments")).setDefaultRoot(true).get());
+		loader.addView(MFXLoaderBean.of("Products", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-box-open", "Products")).setDefaultRoot(true).get());
 		loader.addView(MFXLoaderBean.of("Events", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Events")).setDefaultRoot(true).get());
 		loader.addView(MFXLoaderBean.of("Teams", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Teams")).setDefaultRoot(true).get());
 		loader.addView(MFXLoaderBean.of("Reclamations", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Reclamations")).setDefaultRoot(true).get());
@@ -147,6 +141,7 @@ public class DemoController implements Initializable {
 		});
 		loader.start();
 	}
+
 
 	private ToggleButton createToggle(String icon, String text) {
 		return createToggle(icon, text, 0);

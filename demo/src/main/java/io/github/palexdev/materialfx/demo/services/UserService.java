@@ -125,5 +125,33 @@ public class UserService implements IService<User>{
         }
     }
 
+    public User login(String email, String password) throws SQLException {
+        String sql = "SELECT * FROM user WHERE email = ? AND password = ?";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, email);
+            pstmt.setString(2, password);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    User user = new User();
+                    user.setId(rs.getInt("id"));
+                    user.setFirstname(rs.getString("firstname"));
+                    user.setLastName(rs.getString("lastname"));
+                    user.setEmail(rs.getString("email"));
+                    user.setPassword(rs.getString("password")); // Avoid returning the password in production
+                    user.setRole(rs.getString("role"));
+                    user.setPhoneNumber(rs.getString("phonenumber"));
+                    user.setDateOfBirth(rs.getDate("dateofbirth").toLocalDate());
+                    user.setProfilePicture(rs.getString("profilepicture"));
+                    user.setCreatedAt(rs.getTimestamp("createdat").toLocalDateTime());
+                    user.setUpdatedAt(rs.getTimestamp("updatedat").toLocalDateTime());
+
+                    return user;
+                }
+            }
+        }
+        return null; // Return null if no user is found
+    }
+
 
 }

@@ -1,21 +1,3 @@
-/*
- * Copyright (C) 2022 Parisi Alessandro
- * This file is part of MaterialFX (https://github.com/palexdev/MaterialFX).
- *
- * MaterialFX is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Lesser General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * MaterialFX is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Lesser General Public License for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with MaterialFX.  If not, see <http://www.gnu.org/licenses/>.
- */
-
 package io.github.palexdev.materialfx.demo;
 
 import fr.brouillard.oss.cssfx.CSSFX;
@@ -35,28 +17,47 @@ public class Demo extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
+		// Initialize CSSFX
 		CSSFX.start();
 
+		// Set up MaterialFX theming
 		UserAgentBuilder.builder()
-			.themes(JavaFXThemes.MODENA)
-			.themes(MaterialFXStylesheets.forAssemble(true))
-			.setDeploy(true)
-			.setResolveAssets(true)
-			.build()
-			.setGlobal();
+				.themes(JavaFXThemes.MODENA)
+				.themes(MaterialFXStylesheets.forAssemble(true))
+				.setDeploy(true)
+				.setResolveAssets(true)
+				.build()
+				.setGlobal();
 
+		// Load the login FXML
+		FXMLLoader loader = new FXMLLoader(MFXDemoResourcesLoader.loadURL("fxml/login.fxml"));
+		Parent root = loader.load();
 
+		// Create and configure the scene
+		Scene scene = new Scene(root);
+		//scene.setFill(Color.TRANSPARENT);
+
+		// Configure and show the stage
+		//primaryStage.initStyle(StageStyle.TRANSPARENT);
+		primaryStage.setScene(scene);
+		primaryStage.setTitle("Sportify - Login");
+		primaryStage.show();
+	}
+
+	// Method to switch to main demo scene
+	public static void loadMainScene(Stage stage) throws Exception {
 		FXMLLoader loader = new FXMLLoader(MFXDemoResourcesLoader.loadURL("fxml/Demo.fxml"));
-		loader.setControllerFactory(c -> new DemoController(primaryStage));
+		loader.setControllerFactory(c -> new DemoController(stage));
 		Parent root = loader.load();
 
 		Scene scene = new Scene(root);
 		scene.setFill(Color.TRANSPARENT);
-		primaryStage.initStyle(StageStyle.TRANSPARENT);
-		primaryStage.setScene(scene);
-		primaryStage.setTitle("Sportify");
-		primaryStage.show();
+		//stage.initStyle(StageStyle.TRANSPARENT);
+		stage.setScene(scene);
+		stage.setTitle("Sportify");
+	}
 
-		//ScenicView.show(scene);
+	public static void main(String[] args) {
+		launch(args);
 	}
 }

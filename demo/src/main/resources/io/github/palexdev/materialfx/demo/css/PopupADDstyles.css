@@ -1,0 +1,23 @@
+/* styles.css */
+.custom-text-field {
+    -fx-pref-width: 150;
+    -fx-background-color: #f0f0f0;
+    -fx-border-color: #cccccc;
+    -fx-border-radius: 5;
+    -fx-padding: 5;
+}
+.custom-button {
+    -fx-background-color: #4CAF50; /* Example background color for buttons */
+    -fx-text-fill: white; /* Example text color for buttons */
+    -fx-border-radius: 5; /* Example border radius for buttons */
+    -fx-padding: 10 20; /* Example padding for buttons */
+}
+.error-label {
+    -fx-text-fill: red;
+    -fx-font-weight: bold;
+}
+
+.error-field {
+    -fx-border-color: red;
+    -fx-border-width: 2px;
+}

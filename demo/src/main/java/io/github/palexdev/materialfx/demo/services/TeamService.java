@@ -27,14 +27,25 @@ public class TeamService implements TeamCRUD<Team> {
 
     @Override
     public int update(Team equipe) throws SQLException {
-        // Implémentez la logique de mise à jour ici
-        return 0;
+        String req = "UPDATE `Team` SET `nom` = ?, `categorie` = ?, `modeJeu` = ?, `nombreJoueurs` = ? WHERE `id` = ?";
+
+        try (PreparedStatement ps = cnx.prepareStatement(req)) {
+            ps.setString(1, equipe.getNom());
+            ps.setString(2, equipe.getCategorie());
+            ps.setString(3, equipe.getModeJeu().toString());
+            ps.setInt(4, equipe.getNombreJoueurs());
+            ps.setInt(5, equipe.getId());
+            return ps.executeUpdate();
+        }
     }
 
     @Override
     public int delete(Team equipe) throws SQLException {
-        // Implémentez la logique de suppression ici
-        return 0;
+        String req = "DELETE FROM `Team` WHERE `id` = ?";
+        try (PreparedStatement ps = cnx.prepareStatement(req)) {
+            ps.setInt(1, equipe.getId());
+            return ps.executeUpdate();
+        }
     }
 
     @Override
@@ -58,4 +69,26 @@ public class TeamService implements TeamCRUD<Team> {
         }
         return equipes;
     }
+    public Team GetTeamById(int id) throws SQLException {
+        Team equipe = null;
+        String req = "SELECT * FROM Team WHERE id = ?";
+
+        try (PreparedStatement pst = cnx.prepareStatement(req)) {
+            pst.setInt(1, id);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    equipe = new Team(
+                            rs.getInt("id"),
+                            rs.getString("nom"),
+                            rs.getString("categorie"),
+                            ModeJeu.valueOf(rs.getString("modeJeu"))
+                    );
+                    equipe.setNombreJoueurs(rs.getInt("nombreJoueurs"));
+                }
+            }
+        }
+        return equipe; // Returns null if not found
+    }
+
 }

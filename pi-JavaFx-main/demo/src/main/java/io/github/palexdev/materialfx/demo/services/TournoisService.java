@@ -49,7 +49,8 @@ public class TournoisService implements CRUD<Tournois> {
 
     @Override
     public int update(Tournois tournament) throws SQLException {
-        String req = "UPDATE tournoi SET nom=?, format=?, status=?, start_date=?, end_date=?, nbEquipe=?, tournoiLocation=?, id_organizer=?, reglements=? WHERE id=?";
+       String req = "UPDATE tournoi SET nom=?, format=?, status=?, start_date=?, end_date=?, nbEquipe=?, tournoiLocation=?, reglements=? WHERE id_organizer = ? AND id=?";
+
 
         System.out.println("Updating tournament - ID: " + tournament.getId());
 
@@ -62,10 +63,9 @@ public class TournoisService implements CRUD<Tournois> {
             ps.setDate(5, Date.valueOf(tournament.getEndDate()));
             ps.setInt(6, tournament.getNbEquipe());
             ps.setString(7, tournament.getTournoisLocation());
-           // ps.setInt(8, tournament.getIdOrganizer());
-            ps.setString(9, tournament.getReglements());
+            ps.setString(8, tournament.getReglements());
+            ps.setInt(9, tournament.getIdorganiser());
             ps.setInt(10, tournament.getId());
-
             int result = ps.executeUpdate();
             System.out.println("Update result: " + result + " rows affected");
             return result;
@@ -87,13 +87,13 @@ public class TournoisService implements CRUD<Tournois> {
 
     public List<Tournois> showAll() throws SQLException {
         List<Tournois> tournaments = new ArrayList<>();
-        String query = "SELECT id, nom, format, status, start_date, end_date, nbEquipe, tournoiLocation, reglements FROM tournoi";
+        String query = "SELECT id, nom, format, status, start_date, end_date, nbEquipe, tournoiLocation, reglements , id_organizer FROM tournoi";
 
         try (PreparedStatement ps = cnx.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
                 Tournois tournament = new Tournois();
-                tournament.setId(rs.getInt("id")); // This line retrieves the ID from the ResultSet
+                tournament.setId(rs.getInt("id"));
                 tournament.setNom(rs.getString("nom"));
                 tournament.setFormat(rs.getString("format"));
                 tournament.setStatus(rs.getString("status"));
@@ -102,7 +102,7 @@ public class TournoisService implements CRUD<Tournois> {
                 tournament.setNbEquipe(rs.getInt("nbEquipe"));
                 tournament.setTournoisLocation(rs.getString("tournoiLocation"));
                 tournament.setReglements(rs.getString("reglements"));
-
+                tournament.setIdorganiser(rs.getInt("id_organizer"));
                 tournaments.add(tournament);
             }
         }

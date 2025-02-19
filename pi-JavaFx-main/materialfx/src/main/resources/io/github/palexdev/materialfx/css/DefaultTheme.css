@@ -616,14 +616,14 @@ Popup
 }
 
 .mfx-date-cell:current {
-  -fx-text-fill: #7a0ed9;
+  -fx-text-fill: #ff9800;
   -fx-background-color: #F7F6F9;
   -fx-font-family: "Open Sans SemiBold";
 }
 
 .mfx-date-cell:selected {
   -fx-text-fill: white;
-  -fx-background-color: #7a0ed9;
+  -fx-background-color: #ff9800;
   -fx-font-family: "Open Sans SemiBold";
 }
 

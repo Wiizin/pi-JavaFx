@@ -15,6 +15,15 @@ public class Tournois {
     private int nbEquipe;
     private String tournoisLocation;
     private int idorganiser;
+    public int getIdorganiser() {
+        return idorganiser;
+    }
+
+    public void setIdorganiser(int idorganiser) {
+        this.idorganiser = idorganiser;
+    }
+
+
 
     public Tournois() {
     }
@@ -56,7 +65,5 @@ public class Tournois {
         this.reglements = reglements;
     }
 
-    public int getIdOrganizer() {
-        return idorganiser;
-    }
+
 }

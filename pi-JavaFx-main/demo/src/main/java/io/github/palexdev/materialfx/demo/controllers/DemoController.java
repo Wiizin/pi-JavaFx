@@ -127,10 +127,14 @@ public class DemoController implements Initializable {
 		MFXLoader loader = new MFXLoader();
 		loader.addView(MFXLoaderBean.of("Users", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Users")).setDefaultRoot(true).get());
 		loader.addView(MFXLoaderBean.of("Tournaments", loadURL("fxml/Tournois.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Tournaments")).setDefaultRoot(true).get());
+		loader.addView(MFXLoaderBean.of("Matches", loadURL("fxml/Matches.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Matches")).setDefaultRoot(true).get());
+		loader.addView(MFXLoaderBean.of("Matches", loadURL("fxml/Front.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Matches")).setDefaultRoot(true).get());
+
 		loader.addView(MFXLoaderBean.of("Products", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Products")).setDefaultRoot(true).get());
 		loader.addView(MFXLoaderBean.of("Events", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Events")).setDefaultRoot(true).get());
 		loader.addView(MFXLoaderBean.of("Teams", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Teams")).setDefaultRoot(true).get());
 		loader.addView(MFXLoaderBean.of("Reclamations", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Reclamations")).setDefaultRoot(true).get());
+
 		loader.setOnLoadedAction(beans -> {
 			List<ToggleButton> nodes = beans.stream()
 					.map(bean -> {

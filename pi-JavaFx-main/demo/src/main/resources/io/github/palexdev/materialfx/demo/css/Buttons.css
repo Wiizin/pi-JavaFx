@@ -43,6 +43,8 @@
 	-fx-border-color: -mfx-purple;
 	-fx-border-radius: 3;
 	-fx-text-fill: -mfx-purple;
+	-fx-alignment: center;
+
 }
 
 .outline-button:hover,

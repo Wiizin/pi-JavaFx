@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXTableColumn?>
+<?import io.github.palexdev.materialfx.controls.MFXTableView?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.StackPane?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXPaginatedTableView?>
+<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../css/Buttons.css" fx:controller="io.github.palexdev.materialfx.demo.controllers.AdminHomeController">
+
+    <AnchorPane fx:id="contentArea">
+        <!-- Add Button -->
+        <MFXButton fx:id="addButton" onAction="#handleAddUser" text="Add User" layoutX="500.0" layoutY="10.0" />
+        <!-- Centered TableView -->
+        <MFXPaginatedTableView fx:id="usersTable" prefHeight="300.0" prefWidth="690.0"
+                                visible="true" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
+
+            <tableColumns>
+                <MFXTableColumn fx:id="firstNameColumn" prefWidth="200" text="First Name" />
+                <MFXTableColumn fx:id="lastNameColumn" prefWidth="200" text="Last Name" />
+                <MFXTableColumn fx:id="emailColumn" prefWidth="400" text="Email" />
+                <MFXTableColumn fx:id="roleColumn" prefWidth="200" text="Role" />
+                <MFXTableColumn fx:id="phoneNumberColumn" prefWidth="200" text="Phone Number" />
+                <MFXTableColumn fx:id="dateOfBirthColumn" prefWidth="200" text="Date of Birth" />
+                <MFXTableColumn fx:id="profilePictureColumn" prefWidth="200" text="Profile Picture" />
+                <MFXTableColumn fx:id="createdAtColumn" prefWidth="200" text="Created At" />
+                <MFXTableColumn fx:id="updatedAtColumn" prefWidth="200" text="Updated At" />
+                <!-- Actions Column -->
+                <MFXTableColumn fx:id="actionsColumn" prefWidth="400" text="Actions" />
+            </tableColumns>
+        </MFXPaginatedTableView>
+
+        <!-- Label at the top -->
+        <Label fx:id="contentLabel" layoutX="60.0" layoutY="14.0" style="-fx-font-size: 24px; -fx-text-fill: #34495E;" text="Welcome to the Dashboard" />
+    </AnchorPane>
+</StackPane>

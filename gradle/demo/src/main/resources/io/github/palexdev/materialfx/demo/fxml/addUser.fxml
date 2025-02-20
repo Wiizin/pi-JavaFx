@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXDatePicker?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import io.github.palexdev.materialfx.controls.MFXFilterComboBox?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.HBox?>
+
+<?import javafx.collections.FXCollections?>
+<?import java.lang.String?>
+<VBox fx:id="rootPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"  stylesheets="@../css/Buttons.css" fx:controller="io.github.palexdev.materialfx.demo.controllers.AddUserController" spacing="20" style="-fx-padding: 20;">
+    <GridPane hgap="15" vgap="15" style="-fx-padding: 10;">
+        <!-- First Name -->
+        <Label text="First Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" style="-fx-font-size: 14px; -fx-text-fill: #34495E;" />
+        <MFXTextField fx:id="firstNameField" GridPane.columnIndex="1" GridPane.rowIndex="0" prefWidth="250" />
+
+        <!-- Last Name -->
+        <Label text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" style="-fx-font-size: 14px; -fx-text-fill: #34495E;" />
+        <MFXTextField fx:id="lastNameField" GridPane.columnIndex="1" GridPane.rowIndex="1" prefWidth="250" />
+
+        <!-- Email -->
+        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2" style="-fx-font-size: 14px; -fx-text-fill: #34495E;" />
+        <MFXTextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="2" prefWidth="250" />
+
+        <!-- Password -->
+        <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="3" style="-fx-font-size: 14px; -fx-text-fill: #34495E;" />
+        <MFXTextField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="3" prefWidth="250" />
+
+        <!-- Role -->
+        <Label text="Role:" GridPane.columnIndex="0" GridPane.rowIndex="4" style="-fx-font-size: 14px; -fx-text-fill: #34495E;" />
+        <MFXFilterComboBox fx:id="roleComboBox" GridPane.columnIndex="1" GridPane.rowIndex="4" prefWidth="250">
+            <items>
+                <FXCollections fx:factory="observableArrayList">
+                    <String fx:value="Admin" />
+                    <String fx:value="User" />
+                    <String fx:value="Editor" />
+                </FXCollections>
+            </items>
+        </MFXFilterComboBox>
+
+        <!-- Phone Number -->
+        <Label text="Phone Number:" GridPane.columnIndex="0" GridPane.rowIndex="5" style="-fx-font-size: 14px; -fx-text-fill: #34495E;" />
+        <MFXTextField fx:id="phoneField" GridPane.columnIndex="1" GridPane.rowIndex="5" prefWidth="250" />
+
+        <!-- Date of Birth -->
+        <Label text="Date of Birth:" GridPane.columnIndex="0" GridPane.rowIndex="6" style="-fx-font-size: 14px; -fx-text-fill: #34495E;" />
+        <MFXDatePicker fx:id="dateOfBirthPicker" GridPane.columnIndex="1" GridPane.rowIndex="6" prefWidth="250" />
+
+        <!-- Profile Picture -->
+        <Label text="Profile Picture:" GridPane.columnIndex="0" GridPane.rowIndex="7" style="-fx-font-size: 14px; -fx-text-fill: #34495E;" />
+        <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="7" alignment="CENTER_LEFT">
+            <MFXTextField fx:id="profilePictureField" prefWidth="180" />
+            <MFXButton text="Browse" onAction="#handleBrowseImage" styleClass="mfx-button-secondary" />
+        </HBox>
+
+        <!-- Profile Picture Preview -->
+        <ImageView fx:id="profilePicturePreview" fitWidth="100" fitHeight="100" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+    </GridPane>
+
+    <!-- Save Button -->
+    <MFXButton text="Save" onAction="#handleSaveUser" styleClass="mfx-button-primary" prefWidth="100" />
+    <MFXButton text="cancel" onAction="#handleCancel" styleClass="mfx-button-secondary" prefWidth="100" />
+</VBox>

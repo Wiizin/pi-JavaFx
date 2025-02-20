@@ -1,0 +1,92 @@
+
+.dialog-pane {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 1px;
+    -fx-border-radius: 5px;
+    -fx-padding: 20px;
+}
+
+/* Header text */
+.dialog-pane .header-panel {
+    -fx-background-color: #f5f5f5;
+    -fx-padding: 15px;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.dialog-pane .header-panel .label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+/* Form styling */
+.profile-form {
+    -fx-spacing: 15px;
+}
+
+.form-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555555;
+    -fx-min-width: 100px;
+}
+
+.form-field {
+    -fx-pref-width: 250px;
+    -fx-padding: 8px;
+    -fx-background-color: #f9f9f9;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+}
+
+.form-field:focused {
+    -fx-border-color: #2196f3;
+}
+
+/* Upload button */
+.upload-button {
+    -fx-background-color: #2196f3;
+    -fx-text-fill: #ffffff;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 4px;
+}
+
+.upload-button:hover {
+    -fx-background-color: #1976d2;
+}
+
+/* Save and Cancel buttons */
+.button-bar {
+    -fx-padding: 15px;
+    -fx-spacing: 10px;
+}
+
+.button {
+    -fx-pref-width: 100px;
+    -fx-padding: 10px;
+    -fx-font-size: 14px;
+    -fx-border-radius: 4px;
+}
+
+.button:default {
+    -fx-background-color: #2196f3;
+    -fx-text-fill: #ffffff;
+}
+
+.button:default:hover {
+    -fx-background-color: #1976d2;
+}
+
+.button:cancel {
+    -fx-background-color: #f5f5f5;
+    -fx-text-fill: #333333;
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px;
+}
+
+.button:cancel:hover {
+    -fx-background-color: #e0e0e0;
+}

@@ -15,7 +15,7 @@ public class Matches {
     private LocalDateTime matchTime;
 
     private String locationMatch;
-    private Long idTournoi;
+    private int idTournoi;
     public Matches() {
     }
     public int getId() {
@@ -66,10 +66,10 @@ public class Matches {
     public void setLocationMatch(String locationMatch) {
         this.locationMatch = locationMatch;
     }
-    public Long getIdTournoi() {
+    public int getIdTournoi() {
         return idTournoi;
     }
-    public void setIdTournoi(Long idTournoi) {
+    public void setIdTournoi(int idTournoi) {
         this.idTournoi = idTournoi;
     }
     public String getTeamAName() {
@@ -87,13 +87,17 @@ public class Matches {
     public void setTeamBName(String teamBName) {
         this.teamBName = teamBName;
     }
-    public void setTeamANameAndId(String name, int id) {
-        this.teamAName = name;
-        this.idTeamA = id;
+
+    public Matches(int id, String teamAName, String teamBName, int scoreTeamA, int scoreTeamB, String status, LocalDateTime matchTime, String locationMatch, int idTournoi) {
+        this.id = id;
+        this.teamAName = teamAName;
+        this.teamBName = teamBName;
+        this.scoreTeamA = scoreTeamA;
+        this.scoreTeamB = scoreTeamB;
+        this.status = status;
+        this.matchTime = matchTime;
+        this.locationMatch = locationMatch;
+        this.idTournoi = idTournoi;
     }
 
-    public void setTeamBNameAndId(String name, int id) {
-        this.teamBName = name;
-        this.idTeamB = id;
-    }
 }

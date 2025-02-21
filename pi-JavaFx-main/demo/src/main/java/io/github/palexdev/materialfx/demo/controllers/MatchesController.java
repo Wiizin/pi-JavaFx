@@ -38,6 +38,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import javafx.geometry.Insets;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.scene.control.Label;
+import javafx.util.Duration;
 
 public class MatchesController implements Initializable {
 
@@ -175,7 +179,7 @@ public class MatchesController implements Initializable {
         System.out.println("Filtered matches count: " + filteredMatches.size());
     }
 
-    private void setupTable() {
+    public void setupTable() {
         System.out.println("MatchesController: Setting up table");
 
         if (paginated == null) {
@@ -184,9 +188,13 @@ public class MatchesController implements Initializable {
         }
 
         MFXTableColumn<Matches> teamAColumn = new MFXTableColumn<>("Team A", false);
+        teamAColumn.setPrefWidth(150);
+        teamAColumn.setMinWidth(100);
         teamAColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getTeamAName));
 
         MFXTableColumn<Matches> teamBColumn = new MFXTableColumn<>("Team B", false);
+        teamBColumn.setPrefWidth(150);
+        teamBColumn.setMinWidth(100);
         teamBColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getTeamBName));
 
         MFXTableColumn<Matches> idColumn = new MFXTableColumn<>("ID", false, Comparator.comparing(Matches::getId));
@@ -215,16 +223,24 @@ public class MatchesController implements Initializable {
         });
 
         MFXTableColumn<Matches> timeColumn = new MFXTableColumn<>("Match Time", false, Comparator.comparing(Matches::getMatchTime));
-        timeColumn.setPrefWidth(200);
-        timeColumn.setMinWidth(150);
+        timeColumn.setPrefWidth(150);
+        timeColumn.setMinWidth(100);
         timeColumn.setRowCellFactory(match -> new MFXTableRowCell<>(m ->
                 m.getMatchTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
 
         MFXTableColumn<Matches> locationColumn = new MFXTableColumn<>("Location", false, Comparator.comparing(Matches::getLocationMatch));
         locationColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getLocationMatch));
 
-        MFXTableColumn<Matches> tournoiColumn = new MFXTableColumn<>("Tournament ID", false, Comparator.comparing(Matches::getIdTournoi));
-        tournoiColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getIdTournoi));
+        MFXTableColumn<Matches> tournoiColumn = new MFXTableColumn<>("Tournament", false);
+        tournoiColumn.setPrefWidth(200);
+        tournoiColumn.setMinWidth(150);
+        tournoiColumn.setRowCellFactory(match -> new MFXTableRowCell<>(m -> {
+            return tournaments.stream()
+                    .filter(t -> t.getId() == m.getIdTournoi())
+                    .findFirst()
+                    .map(Tournois::getNom)
+                    .orElse("Unknown Tournament");
+        }));
 
         MFXTableColumn<Matches> actionColumn = new MFXTableColumn<>("Action", false);
         actionColumn.setPrefWidth(200);
@@ -240,10 +256,7 @@ public class MatchesController implements Initializable {
 
             // Create the Update button with inline style
             MFXButton updateButton = new MFXButton("Update");
-            updateButton.setStyle("-fx-background-color: #1976d2; " +  // blue background
-                    "-fx-text-fill: white; " +
-                    "-fx-background-radius: 4; " +
-                    "-fx-padding: 4 8 4 8;");
+            updateButton.getStyleClass().add("Add-button");
             updateButton.setOnAction(e -> {
                 // Call your update method for this match
                 updateMatch(match);
@@ -251,12 +264,9 @@ public class MatchesController implements Initializable {
 
             // Create the Delete button with inline style
             MFXButton deleteButton = new MFXButton("Delete");
-            deleteButton.setStyle("-fx-background-color: #d32f2f; " +  // red background
-                    "-fx-text-fill: white; " +
-                    "-fx-background-radius: 4; " +
-                    "-fx-padding: 4 8 4 8;");
+            deleteButton.getStyleClass().add("Delete-button");
             deleteButton.setOnAction(e -> {
-                // Optionally add confirmation here before deleting
+                // Optionally add confirmation here before deleting zidhaaa
                 deleteMatch(match);
             });
 
@@ -269,9 +279,12 @@ public class MatchesController implements Initializable {
 
 
         paginated.getTableColumns().addAll(
-                idColumn, teamAColumn, teamBColumn,
-                scoreAColumn, scoreBColumn, statusColumn,
-                timeColumn, locationColumn, tournoiColumn, actionColumn
+                tournoiColumn,  teamAColumn,
+                scoreAColumn,
+                scoreBColumn,
+                teamBColumn,
+                statusColumn,
+                timeColumn, locationColumn,  actionColumn
         );
 
         paginated.getTableColumns().forEach(column -> {
@@ -283,6 +296,13 @@ public class MatchesController implements Initializable {
                 new StringFilter<>("Status", Matches::getStatus),
                 new StringFilter<>("Location", Matches::getLocationMatch)
         );
+        paginated.setTableRowFactory(match -> {
+            MFXTableRow<Matches> row = new MFXTableRow<>(paginated, match);
+            row.setMinHeight(50);  // Adjust row height
+            row.setPrefHeight(50);
+            row.setMaxHeight(50);
+            return row;
+        });
 
         paginated.setCurrentPage(1);
         paginated.setRowsPerPage(10);
@@ -357,13 +377,33 @@ public class MatchesController implements Initializable {
         }
     }
 
-    private void updateLiveCount() {
-        long liveCount = matches.stream()
-                .filter(m -> "live".equalsIgnoreCase(m.getStatus()))
-                .count();
-        System.out.println("Updated live count: " + liveCount);
-        headerLabel.setText(String.format("Live Matches (%d)", liveCount));
-    }
+
+private void updateLiveCount() {
+    long liveCount = matches.stream()
+            .filter(m -> "live".equalsIgnoreCase(m.getStatus()))
+            .count();
+    System.out.println("Updated live count: " + liveCount);
+
+    headerLabel.setText(String.format("    \u26BD   Live Matches (%d)      ", liveCount));
+
+    // Remove previous animations if any
+    headerLabel.getStyleClass().remove("live-label");
+    headerLabel.getStyleClass().add("live-label");
+    headerLabel.setStyle("-fx-text-fill: -mfx-purple;-fx-background-radius: 55px; -fx-background-color: whitesmoke; -fx-border-color: whitesmoke; -fx-border-width: 1px; -fx-border-radius: 55px; ");
+
+//animated
+    Timeline timeline = new Timeline(
+            new KeyFrame(Duration.seconds(0), e -> headerLabel.setScaleX(1.0)),
+            new KeyFrame(Duration.seconds(0), e -> headerLabel.setScaleY(1.0)),
+            new KeyFrame(Duration.seconds(0.6), e -> headerLabel.setScaleX(0.9)),
+            new KeyFrame(Duration.seconds(0.6), e -> headerLabel.setScaleY(0.9)),
+            new KeyFrame(Duration.seconds(1), e -> headerLabel.setScaleX(1.0)),
+            new KeyFrame(Duration.seconds(1), e -> headerLabel.setScaleY(1.0))
+    );
+
+    timeline.setCycleCount(Timeline.INDEFINITE);
+    timeline.play();
+}
 
     private void handleAddMatch() {
         System.out.println("MatchesController: Add Match button clicked");
@@ -509,7 +549,7 @@ public class MatchesController implements Initializable {
                         .findFirst()
                         .map(Tournois::getId)
                         .orElseThrow(() -> new IllegalArgumentException("Invalid tournament"));
-                newMatch.setIdTournoi((long) tournamentId);
+                newMatch.setIdTournoi((int) tournamentId);
 
                 // Add to database
                 matchesService.insert(newMatch);
@@ -679,7 +719,7 @@ public class MatchesController implements Initializable {
                         .findFirst()
                         .map(Tournois::getId)
                         .orElseThrow(() -> new IllegalArgumentException("Invalid tournament"));
-                match.setIdTournoi((long) tournamentId);
+                match.setIdTournoi((int) tournamentId);
 
                 // Update in database
                 matchesService.update(match);

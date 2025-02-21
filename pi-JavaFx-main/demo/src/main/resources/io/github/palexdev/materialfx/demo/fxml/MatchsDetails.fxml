@@ -6,10 +6,11 @@
 <?import javafx.scene.text.Text?>
 
 <VBox styleClass="main-container"
-      stylesheets="@../css/Common.css, @../css/matches.css"
+      stylesheets="@../css/Common.css, @../css/MatchStyle.css"
       xmlns="http://javafx.com/javafx/17"
       xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="io.github.palexdev.materialfx.demo.controllers.MatchesController">
+      fx:controller="io.github.palexdev.materialfx.demo.controllers.MatchDetailsController">
+
 
     <!-- Top Navigation Bar -->
     <HBox styleClass="top-nav-bar" spacing="10">
@@ -67,5 +68,6 @@
             </StackPane.margin>
         </MFXPaginatedTableView>
     </StackPane>
+
 
 </VBox>

@@ -152,11 +152,73 @@ public class MatchesService implements CRUD<Matches> {
                 match.setStatus(rs.getString("status"));
                 match.setMatchTime(rs.getTimestamp("match_Time").toLocalDateTime());
                 match.setLocationMatch(rs.getString("location_Match"));
-                match.setIdTournoi(rs.getLong("id_tournoi"));
+                match.setIdTournoi(rs.getInt("id_tournoi"));
                 matches.add(match);
             }
         }
         return matches;
+    }
+
+
+    public List<Matches> getMatchesByTournament(int tournamentId) throws SQLException {
+        List<Matches> matches = new ArrayList<>();
+        String query = """
+        SELECT m.id, 
+               m.id_TeamA, tA.nom as teamA_name,
+               m.id_TeamB, tB.nom as teamB_name,
+               m.score_TeamA, m.score_TeamB, 
+               m.status, m.match_Time, 
+               m.location_Match, m.id_tournoi
+        FROM matches m
+        LEFT JOIN team tA ON m.id_TeamA = tA.id
+        LEFT JOIN team tB ON m.id_TeamB = tB.id
+        WHERE m.id_tournoi = ?
+        """;
+
+        try (PreparedStatement ps = cnx.prepareStatement(query)) {
+            ps.setInt(1, tournamentId);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Matches match = new Matches();
+                    match.setId(rs.getInt("id"));
+                    match.setIdTeamA(rs.getInt("id_TeamA"));
+                    match.setTeamAName(rs.getString("teamA_name"));
+                    match.setIdTeamB(rs.getInt("id_TeamB"));
+                    match.setTeamBName(rs.getString("teamB_name"));
+                    match.setScoreTeamA(rs.getInt("score_TeamA"));
+                    match.setScoreTeamB(rs.getInt("score_TeamB"));
+                    match.setStatus(rs.getString("status"));
+                    match.setMatchTime(rs.getTimestamp("match_Time").toLocalDateTime());
+                    match.setLocationMatch(rs.getString("location_Match"));
+                    match.setIdTournoi(rs.getInt("id_tournoi"));
+                    matches.add(match);
+                }
+            }
+        }
+        return matches;
+    }
+    public Matches getMatchById(int matchId) throws SQLException {
+        // Implement the logic to retrieve a match by its ID from the database
+        // For example:
+        String query = "SELECT * FROM matches WHERE id = ?";
+        try (PreparedStatement stmt = cnx.prepareStatement(query)) {
+            stmt.setInt(1, matchId);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Matches(
+                        rs.getInt("id"),
+                        rs.getString("teamAName"),
+                        rs.getString("teamBName"),
+                        rs.getInt("scoreTeamA"),
+                        rs.getInt("scoreTeamB"),
+                        rs.getString("status"),
+                        rs.getTimestamp("matchTime").toLocalDateTime(),
+                        rs.getString("locationMatch"),
+                        rs.getInt("idTournoi")
+                );
+            }
+        }
+        return null;
     }
 
 }

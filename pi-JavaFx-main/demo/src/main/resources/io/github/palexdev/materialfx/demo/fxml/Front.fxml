@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import io.github.palexdev.materialfx.controls.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox styleClass="main-container"
+      stylesheets="@../css/Common.css, @../css/matches.css"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="io.github.palexdev.materialfx.demo.controllers.FrontTournoisController">
+
+    <!-- Navigation Bar -->
+    <HBox styleClass="filters-section1" spacing="15">
+        <padding>
+            <Insets top="10" right="15" bottom="10" left="15"/>
+        </padding>
+
+        <MFXComboBox fx:id="tournamentFilter"
+                     floatingText="Tournament"
+                     styleClass="filter-combo"/>
+
+        <MFXComboBox fx:id="statusFilter"
+                     floatingText="Tournament Status"
+                     styleClass="filter-combo"/>
+
+        <MFXTextField fx:id="searchField"
+                      floatingText="🔎 Search Tournaments"
+                      styleClass="search-field"
+                      stylesheets="@../css/matches.css"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <MFXButton fx:id="seeAllButton"
+                   text="See All Matches"
+                   styleClass="match-add-button"/>
+    </HBox>
+
+    <!-- Main Content Container -->
+    <ScrollPane fitToWidth="true" styleClass="scroll-pane" stylesheets="@../css/TournoisCard.css">
+        <FlowPane fx:id="cardsContainer" alignment="CENTER" hgap="20" vgap="20">
+            <padding>
+                <Insets bottom="20" left="20" right="20" top="20" />
+            </padding>
+            <!-- Dynamic tournament cards will be added here by the controller -->
+        </FlowPane>
+    </ScrollPane>
+
+</VBox>

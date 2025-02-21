@@ -1,0 +1,94 @@
+.main-container {
+    -fx-background-color: #F4F4F4;
+}
+
+.top-nav-bar {
+    -fx-background-color: #1B1B3B;
+    -fx-alignment: center-left;
+}
+
+.header-label {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.match-refresh-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #FF9800;
+    -fx-cursor: hand;
+}
+
+.match-refresh-button:hover {
+    -fx-text-fill: white;
+}
+
+.filters-section {
+    -fx-background-color: #1B1B3B;
+    -fx-alignment: center-left;
+}
+
+.filter-combo {
+    -fx-background-color: #F4F4F4;
+    -fx-text-fill: #1B1B3B;
+    -fx-min-width: 180px;
+}
+
+.filter-combo .floating-text {
+    -fx-text-fill: #FF9800;
+}
+
+.search-field {
+    -fx-background-color: #F4F4F4;
+    -fx-text-fill: #1B1B3B;
+    -fx-min-width: 250px;
+}
+
+.search-field .floating-text {
+    -fx-text-fill: #FF9800;
+}
+
+.match-add-button {
+    -fx-background-color: #FF9800;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+
+.match-add-button:hover {
+    -fx-background-color: #FFA726;
+}
+
+.matches2-table {
+    -fx-background-color: white;
+}
+
+.matches2-table .column-header {
+    -fx-background-color: #FF9800;
+    -fx-text-fill: white;
+}
+
+.matches2-table .table-row {
+    -fx-background-color: white;
+    -fx-text-fill: #1B1B3B;
+}
+
+.matches2-table .table-row:hover {
+    -fx-background-color: #32325D;
+}
+
+.matches2-table .virtual-flow {
+    -fx-background-color: #f4f4f4;
+}
+
+.matches2-table .mfx-pagination {
+    -fx-background-color: #f4f4f4;
+}
+
+.matches2-table .mfx-pagination .mfx-pagination-cell {
+    -fx-background-color: #FF9800;
+    -fx-text-fill: white;
+}
+
+.matches2-table .mfx-pagination .mfx-pagination-cell:selected {
+    -fx-background-color: #FFA726;
+}

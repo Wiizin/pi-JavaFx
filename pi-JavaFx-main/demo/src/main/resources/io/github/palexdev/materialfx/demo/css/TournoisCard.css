@@ -14,13 +14,14 @@
     -fx-background-color: transparent;
 }
 .tournament-card {
-    -fx-background-color: white;
+    -fx-background-color: rgba(245, 245, 245, 0.76);
     -fx-background-radius: 8;
     -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 5);
     -fx-padding: 15;
     -fx-border-radius: 8;
     -fx-border-color: #1B1B3B;
     -fx-border-width: 4;
+
     -fx-pref-width: 300;
 
 }

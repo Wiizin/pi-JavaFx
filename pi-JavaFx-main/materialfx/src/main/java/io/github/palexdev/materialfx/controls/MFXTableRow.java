@@ -70,7 +70,7 @@ public class MFXTableRow<T> extends HBox implements Cell<T> {
 		this.tableView = tableView;
 		setData(data);
 		setMinHeight(USE_PREF_SIZE);
-		setPrefHeight(32);
+		setPrefHeight(40);
 		setMaxHeight(USE_PREF_SIZE);
 		initialize();
 		buildCells();

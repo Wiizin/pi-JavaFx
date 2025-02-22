@@ -25,15 +25,23 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.sql.SQLException;
 import java.util.Comparator;
 import java.util.List;
@@ -63,6 +71,7 @@ public class TeamController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         setupPaginated();
         paginated.autosizeColumnsOnInitialization();
+        paginated.setPrefSize(900, 400);
         // Fetch data from the database and populate the table
         try {
             teams.setAll(teamService.showAll()); // Fetch and set data
@@ -89,6 +98,11 @@ public class TeamController implements Initializable {
         MFXTableColumn<Team> id = new MFXTableColumn<>("ID", false, Comparator.comparing(Team::getId));
         id.setAlignment(Pos.CENTER);
         id.setFont(Font.font("System", FontWeight.BOLD, 12));
+
+        MFXTableColumn<Team> logo = new MFXTableColumn<>("Logo", false, Comparator.comparing(Team::getLogoPath));
+        logo.setAlignment(Pos.CENTER);
+        logo.setFont(Font.font("System", FontWeight.BOLD, 12));
+
         MFXTableColumn<Team> name = new MFXTableColumn<>("Name", false, Comparator.comparing(Team::getNom));
         name.setAlignment(Pos.CENTER);
         name.setFont(Font.font("System", FontWeight.BOLD, 12));
@@ -115,6 +129,43 @@ public class TeamController implements Initializable {
         id.setRowCellFactory(team -> new MFXTableRowCell<>(Team::getId){{
             setAlignment(Pos.CENTER);
         }});
+        // Set row cell factory for the logo column
+        logo.setRowCellFactory(team -> {
+            MFXTableRowCell<Team, Void> cell = new MFXTableRowCell<>(null); // Use String instead of Void
+
+            // Create an ImageView to display the logo
+            ImageView logoView = new ImageView();
+            logoView.setFitWidth(50); // Set appropriate width
+            logoView.setFitHeight(50); // Set appropriate height
+            logoView.setPreserveRatio(true);
+
+            // Check if the team has a valid logo path
+            String logoPath = team.getLogoPath();
+            if (logoPath != null && !logoPath.trim().isEmpty()) {
+                File logoFile = new File(logoPath);
+                //System.out.println("Loading logo from: " + logoFile.getAbsolutePath());
+
+                if (logoFile.exists() && logoFile.isFile()) {
+                    try {
+                        Image logoImage = new Image(logoFile.toURI().toString());
+                        logoView.setImage(logoImage);
+                    } catch (Exception e) {
+                        System.err.println("Failed to load logo: " + e.getMessage());
+                    }
+                } else {
+                    System.err.println("Logo file does not exist or is not a valid file: " + logoFile.getAbsolutePath());
+                }
+            } else {
+                System.err.println("Invalid logo path: " + logoPath);
+            }
+
+            // Add the ImageView to the cell
+            cell.setGraphic(logoView);
+            cell.setAlignment(Pos.CENTER);
+            return cell;
+        });
+
+
         name.setRowCellFactory(team -> new MFXTableRowCell<>(Team::getNom){{
             setAlignment(Pos.CENTER);
         }});
@@ -182,7 +233,7 @@ public class TeamController implements Initializable {
         });
 
         // Add columns to the table
-        paginated.getTableColumns().addAll(id, name, categoire, NBPlayers, ModeJeu,Ranking,Modify, Delete);
+        paginated.getTableColumns().addAll(id,logo,name, categoire, NBPlayers, ModeJeu,Ranking,Modify, Delete);
 
         // Add filters
         paginated.getFilters().addAll(
@@ -231,9 +282,44 @@ public class TeamController implements Initializable {
         id.setRowCellFactory(teamRank -> new MFXTableRowCell<>(TeamRanking::getId){{
             setAlignment(Pos.CENTER);
         }});
-        teamName.setRowCellFactory(teamRank -> new MFXTableRowCell<>(TeamRanking -> teamRank.getTeam().getNom()) {{
-            setAlignment(Pos.CENTER);
-        }});
+        teamName.setRowCellFactory(teamRank -> {
+            MFXTableRowCell<TeamRanking, Void> cell = new MFXTableRowCell<>(null);
+            // Create an HBox to hold the logo and team name
+            HBox content = new HBox(10); // 10 is the spacing between the logo and the name
+            content.setAlignment(Pos.CENTER_LEFT); // Align content to the left
+
+            // Create an ImageView to display the logo
+            ImageView logoView = new ImageView();
+            logoView.setFitWidth(30); // Set appropriate width
+            logoView.setFitHeight(30); // Set appropriate height
+            logoView.setPreserveRatio(true);
+
+            // Check if the team has a valid logo path
+            String logoPath = teamRank.getTeam().getLogoPath();
+            if (logoPath != null && !logoPath.trim().isEmpty()) {
+                File logoFile = new File(logoPath);
+                if (logoFile.exists() && logoFile.isFile()) {
+                    try {
+                        Image logoImage = new Image(logoFile.toURI().toString());
+                        logoView.setImage(logoImage);
+                    } catch (Exception e) {
+                        System.err.println("Failed to load logo: " + e.getMessage());
+                    }
+                } else {
+                    System.err.println("Logo file does not exist or is not a valid file: " + logoFile.getAbsolutePath());
+                }
+            } else {
+                System.err.println("Invalid logo path: " + logoPath);
+            }
+
+            // Add the logo and team name to the HBox
+            content.getChildren().addAll(logoView, new Label(teamRank.getTeam().getNom()));
+
+            // Set the HBox as the graphic of the cell
+            cell.setGraphic(content);
+            cell.setAlignment(Pos.CENTER_LEFT); // Align the cell content to the left
+            return cell;
+        });
         position.setRowCellFactory(teamRank -> new MFXTableRowCell<>(TeamRanking::getPosition){{
             setAlignment(Pos.CENTER);
         }});
@@ -310,12 +396,33 @@ public class TeamController implements Initializable {
         modeJeuComboBox.setStyle("-fx-pref-width: 450;\n" +
                 "    -fx-border-radius: 10;\n" +
                 "    -fx-padding: 5;");
-        // Add fields to the dialog
+
+        // Add a file upload field
+        MFXButton uploadButton = new MFXButton("Upload Logo");
+        uploadButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px;");
+        Label fileLabel = new Label("No file selected");
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
+        fileLabel.setStyle("-fx-text-fill: #333333; -fx-font-size: 14px; -fx-font-family: 'Roboto';");
+        uploadButton.setOnAction(e -> {
+            File selectedFile = fileChooser.showOpenDialog(dialogContent.getScene().getWindow());
+            if (selectedFile != null) {
+                fileLabel.setText(selectedFile.getAbsolutePath());
+            }
+        });
+
+        // Add validators to the dialog
         nameField.getValidator().constraint("Team name is required", nameField.textProperty().length().greaterThanOrEqualTo(1));
         categoryField.getValidator().constraint("Category is required", categoryField.textProperty().length().greaterThanOrEqualTo(1));
         nbPlayersField.getValidator().constraint("Number of players is required", nbPlayersField.textProperty().length().greaterThanOrEqualTo(1));
         modeJeuComboBox.getValidator().constraint("Game mode is required", modeJeuComboBox.valueProperty().isNotNull());
-        VBox form = new VBox(10, wrapNodeForValidation(nameField), wrapNodeForValidation(categoryField), wrapNodeForValidation(nbPlayersField), wrapNodeForValidation(modeJeuComboBox));
+        VBox form = new VBox(10,
+                wrapNodeForValidation(nameField),
+                wrapNodeForValidation(categoryField),
+                wrapNodeForValidation(nbPlayersField),
+                wrapNodeForValidation(modeJeuComboBox),
+                uploadButton,
+                fileLabel );
 
         dialogContent.setContent(form);
 
@@ -368,12 +475,23 @@ public class TeamController implements Initializable {
                // showAlert("Validation Error", "Number of players must be a valid integer.");
                 return;
             }
+            // Handle file upload
+            String logoPath = null;
+            if (fileLabel.getText() != null && !fileLabel.getText().equals("No file selected")) {
+                File selectedFile = new File(fileLabel.getText());
+                if (selectedFile.exists()) {
+                    logoPath = saveUploadedFile(selectedFile); // Save the file and get its path
+                } else {
+                    System.err.println("Selected file does not exist: " + selectedFile);
+                }
+            }
+
             Team newTeam = new Team();
             newTeam.setNom(nameField.getText());
             newTeam.setCategorie(categoryField.getText());
             newTeam.setNombreJoueurs(Integer.parseInt(nbPlayersField.getText()));
             newTeam.setModeJeu(modeJeuComboBox.getValue());
-
+            newTeam.setLogoPath(logoPath);
             try {
 
                 teamService.insert(newTeam);
@@ -404,6 +522,24 @@ public class TeamController implements Initializable {
         stage.setWidth(550); // Set the width of the dialog
         stage.setHeight(400); // Set the height of the dialog
         dialog.showDialog();
+    }
+    private String saveUploadedFile(File file) {
+        String uploadDir = "src/main/resources/io/github/palexdev/materialfx/demo/uploads/"; // Directory to save uploaded files
+        File dir = new File(uploadDir);
+        if (!dir.exists()) {
+            dir.mkdirs(); // Create the directory if it doesn't exist
+        }
+
+        String fileName = System.currentTimeMillis() + "_" + file.getName(); // Unique file name
+        File destFile = new File(uploadDir + fileName);
+
+        try {
+            Files.copy(file.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+            return "src/main/resources/io/github/palexdev/materialfx/demo/uploads/"+fileName; // Return the file path
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
     private void modifyTeam(Team team) {
         // Create a dialog for modifying the team
@@ -544,7 +680,7 @@ public class TeamController implements Initializable {
         // Create a confirmation dialog
         MFXGenericDialog dialogContent = MFXGenericDialogBuilder.build()
                 .setHeaderText("Delete Team")
-                .setContentText("Are you sure you want to delete this team?")
+                .setContentText("Are you sure you want to delete this team: "+team.getNom()+" ?")
                 .makeScrollable(true)
                 .get();
 
@@ -553,7 +689,7 @@ public class TeamController implements Initializable {
         confirmButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
         confirmButton.setOnAction(event -> {
             try {
-                teamService.delete(team); // Assuming delete method exists in TeamService
+                teamService.delete(team);
                 teams.setAll(teamService.showAll()); // Refresh the table
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -585,14 +721,9 @@ public class TeamController implements Initializable {
                 .setHeaderText("Team Ranking")
                 .makeScrollable(true)
                 .get();
-
-        // Initialize and set up the paginated2 table
-
-        initializePaginated2();
-
-
         // Fetch data from the database and populate the table
         try {
+
             teamsRanking.clear(); // Clear the list before adding new data
             teamsRanking.setAll(teamRankingService.showTeamRanking(team.getId())); // Refresh the table
 
@@ -602,9 +733,12 @@ public class TeamController implements Initializable {
                 Label noTournamentLabel = new Label("This team didn't join any tournament yet.");
                 noTournamentLabel.setStyle("-fx-font-size: 16; -fx-text-fill: red; -fx-alignment: center;");
                 dialogContent.setContent(noTournamentLabel);
+
             } else {
                 // If tournaments are found, display the table
                 // Add a listener to autosize columns when the page changes (only if not already registered)
+                // Initialize and set up the paginated2 table
+                initializePaginated2();
                 if (!isListenerRegistered) {
                     When.onChanged(paginated2.currentPageProperty())
                             .then((oldValue, newValue) -> paginated2.autosizeColumns())

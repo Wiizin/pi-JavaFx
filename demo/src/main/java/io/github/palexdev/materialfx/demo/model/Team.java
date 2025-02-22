@@ -10,6 +10,10 @@ public class Team {
     private ModeJeu modeJeu;
     private int nombreJoueurs;
     private List<User> membres;
+
+
+
+    private String logoPath;
     public Team() {
     }
     public Team( String nom, String categorie, ModeJeu modeJeu) {
@@ -25,6 +29,15 @@ public class Team {
         this.categorie = categorie;
         this.modeJeu = modeJeu;
         this.nombreJoueurs = 0;
+        this.membres = new ArrayList<>();
+    }
+    public Team(int id, String nom, String categorie, ModeJeu modeJeu, int nombreJoueurs,String logoPath) {
+        this.id = id;
+        this.nom = nom;
+        this.categorie = categorie;
+        this.modeJeu = modeJeu;
+        this.nombreJoueurs = nombreJoueurs;
+        this.logoPath = logoPath;
         this.membres = new ArrayList<>();
     }
     public int getId() {
@@ -62,18 +75,33 @@ public class Team {
     public int getNombreJoueurs() {
         return nombreJoueurs;
     }
+    public String getLogoPath() {
+        return logoPath;
+    }
 
+    public void setLogoPath(String logoPath) {
+        this.logoPath = logoPath;
+    }
+
+    public List<User> getMembres() {
+        return membres;
+    }
+
+    public void setMembres(List<User> membres) {
+        this.membres = membres;
+    }
     public void setNombreJoueurs(int nombreJoueurs) {
         this.nombreJoueurs = nombreJoueurs;
     }
     @java.lang.Override
     public java.lang.String toString() {
-        return "Person{" +
+        return "Team{" +
                 "id=" + id +
                 ", nom=" + nom +
                 ", categorie=" + categorie +
                 ", ModeJeu=" + modeJeu +
                 ", nombreJoueurs"+nombreJoueurs+
+                ", logoPath"+logoPath+
                 '}';
     }
     public boolean equals(Object object) {

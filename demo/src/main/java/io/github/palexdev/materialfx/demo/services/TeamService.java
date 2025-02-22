@@ -13,13 +13,14 @@ public class TeamService implements TeamCRUD<Team> {
 
     @Override
     public int insert(Team equipe) throws SQLException {
-        String req = "INSERT INTO `Team`(`nom`, `categorie`, `modeJeu`, `nombreJoueurs`) VALUES (?, ?, ?, ?)";
+        String req = "INSERT INTO `Team`(`nom`, `categorie`, `modeJeu`, `nombreJoueurs`, `logoPath`) VALUES (?, ?, ?, ?, ?)";
 
         try (PreparedStatement ps = cnx.prepareStatement(req)) {
             ps.setString(1, equipe.getNom());
             ps.setString(2, equipe.getCategorie());
-            ps.setString(3, equipe.getModeJeu().toString()); // Convertir l'enum en String
+            ps.setString(3, equipe.getModeJeu().toString()); // Convert enum to String
             ps.setInt(4, equipe.getNombreJoueurs());
+            ps.setString(5, equipe.getLogoPath()); // Set the logo path
 
             return ps.executeUpdate();
         }
@@ -40,13 +41,17 @@ public class TeamService implements TeamCRUD<Team> {
     }
 
     @Override
-    public int delete(Team equipe) throws SQLException {
-        String req = "DELETE FROM `Team` WHERE `id` = ?";
+    public int delete(Team equipe) {
+        String req = "DELETE FROM `team` WHERE `id` = ?";
         try (PreparedStatement ps = cnx.prepareStatement(req)) {
             ps.setInt(1, equipe.getId());
             return ps.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace(); // Consider logging instead of printing
+            return 0; // Indicate failure
         }
     }
+
 
     @Override
     public List<Team> showAll() throws SQLException {
@@ -61,9 +66,11 @@ public class TeamService implements TeamCRUD<Team> {
                         rs.getInt("id"),
                         rs.getString("nom"),
                         rs.getString("categorie"),
-                        ModeJeu.valueOf(rs.getString("modeJeu"))
+                        ModeJeu.valueOf(rs.getString("modeJeu")),
+                        rs.getInt("nombreJoueurs"),
+                        rs.getString("logoPath")
                 );
-                e.setNombreJoueurs(rs.getInt("nombreJoueurs"));
+                //e.setNombreJoueurs(rs.getInt("nombreJoueurs"));
                 equipes.add(e);
             }
         }
@@ -82,9 +89,10 @@ public class TeamService implements TeamCRUD<Team> {
                             rs.getInt("id"),
                             rs.getString("nom"),
                             rs.getString("categorie"),
-                            ModeJeu.valueOf(rs.getString("modeJeu"))
+                            ModeJeu.valueOf(rs.getString("modeJeu")),
+                            rs.getInt("nombreJoueurs"),
+                            rs.getString("logoPath")
                     );
-                    equipe.setNombreJoueurs(rs.getInt("nombreJoueurs"));
                 }
             }
         }

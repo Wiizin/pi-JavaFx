@@ -2,6 +2,7 @@ package io.github.palexdev.materialfx.demo.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 
 public class User {
     private int id;
@@ -12,15 +13,20 @@ public class User {
     private String role;
     private String phoneNumber;
     private LocalDate dateOfBirth;
-    private String profilePicture;
+    private byte[] profilePicture;  // Changed from String to byte[]
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private boolean isActive;  // New field
 
-    // Constructors
+    // Default Constructor
     public User() {
+        this.isActive = true;  // All users (admin and player) are active by default
     }
 
-    public User(int id, String firstname, String lastName, String email, String password, String role, String phoneNumber, LocalDate dateOfBirth, String profilePicture, LocalDateTime createdAt, LocalDateTime updatedAt) {
+    // Full Constructor
+    public User(int id, String firstname, String lastName, String email, String password,
+                String role, String phoneNumber, LocalDate dateOfBirth, byte[] profilePicture,
+                LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.firstname = firstname;
         this.lastName = lastName;
@@ -32,11 +38,10 @@ public class User {
         this.profilePicture = profilePicture;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
+        this.isActive = true;  // All users (admin and player) are active by default
     }
 
-
-
-    // Getters and Setters
+    // Getters and Setters remain the same except for profilePicture
     public int getId() {
         return id;
     }
@@ -101,11 +106,12 @@ public class User {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public String getProfilePicture() {
+    // Modified profilePicture getter and setter
+    public byte[] getProfilePicture() {
         return profilePicture;
     }
 
-    public void setProfilePicture(String profilePicture) {
+    public void setProfilePicture(byte[] profilePicture) {
         this.profilePicture = profilePicture;
     }
 
@@ -125,6 +131,14 @@ public class User {
         this.updatedAt = updatedAt;
     }
 
+    public boolean isActive() {
+        return isActive;
+    }
+
+    public void setActive(boolean active) {
+        isActive = active;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -136,9 +150,10 @@ public class User {
                 ", role='" + role + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 ", dateOfBirth=" + dateOfBirth +
-                ", profilePicture='" + profilePicture + '\'' +
+                ", profilePicture='" + (profilePicture != null ? "image data" : "null") + '\'' +
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
+                ", isActive=" + isActive +
                 '}';
     }
 }

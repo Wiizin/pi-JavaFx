@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import io.github.palexdev.materialfx.controls.MFXScrollPane?>
 <?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
 <?import javafx.geometry.Insets?>
@@ -10,18 +11,17 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="rootPane" prefHeight="800" prefWidth="1500" styleClass="rootPane" stylesheets="@../css/Demo.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.DemoController">
+<AnchorPane fx:id="rootPane" prefHeight="800" prefWidth="1400" styleClass="rootPane" stylesheets="@../css/Demo.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.DemoController">
     <HBox fx:id="windowHeader" alignment="CENTER_RIGHT" layoutX="3.2" layoutY="3.2" prefHeight="106.0" prefWidth="1277.0" spacing="10.0" AnchorPane.leftAnchor="2.0" AnchorPane.rightAnchor="1.0" AnchorPane.topAnchor="2.0">
         <padding>
             <Insets right="10.0" />
         </padding>
-      <Pane prefHeight="106.0" prefWidth="924.0" />
-
+        <Pane prefHeight="106.0" prefWidth="924.0" />
         <MFXFontIcon fx:id="minimizeIcon" description="fas-circle" size="15.0" styleClass="always-on-top-icon" />
         <MFXFontIcon fx:id="alwaysOnTopIcon" description="fas-circle" size="15.0" styleClass="minimize-icon" />
         <MFXFontIcon fx:id="closeIcon" description="fas-circle" size="15.0" styleClass="close-icon" />
     </HBox>
-    <VBox layoutX="227.0" layoutY="51.0" prefWidth="250.0" styleClass="sidebar" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+    <VBox layoutX="4.0" prefHeight="798.0" prefWidth="211.0" styleClass="sidebar" AnchorPane.bottomAnchor="3.0" AnchorPane.leftAnchor="3.0" AnchorPane.rightAnchor="1286.0" AnchorPane.topAnchor="-1.0">
         <padding>
             <Insets bottom="10.0" left="10.0" top="60.0" />
         </padding>
@@ -35,7 +35,7 @@
                 <Insets left="5.0" top="40.0" />
             </VBox.margin>
         </Label>
-        <MFXScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" VBox.vgrow="ALWAYS">
+        <MFXScrollPane fx:id="scrollPane" fitToWidth="true" hbarPolicy="NEVER" prefHeight="608.0" prefWidth="250.0" vbarPolicy="NEVER" VBox.vgrow="ALWAYS">
             <VBox.margin>
                 <Insets bottom="10.0" left="5.0" top="15.0" />
             </VBox.margin>
@@ -44,6 +44,19 @@
             </padding>
             <VBox fx:id="navBar" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" spacing="5.0" styleClass="navbar" />
         </MFXScrollPane>
+
+        <!-- Centered Logout Button -->
+        <HBox alignment="CENTER">
+            <MFXButton text="Logout" styleClass="logout-button" onAction="#handleLogout">
+                <graphic>
+                    <MFXFontIcon description="fas-arrow-right-from-bracket" size="16.0" />
+                </graphic>
+                <HBox.margin>
+                    <Insets top="20.0" />
+                </HBox.margin>
+            </MFXButton>
+        </HBox>
     </VBox>
-    <StackPane fx:id="contentPane" layoutX="253.60000000000002" layoutY="80.0" prefHeight="640.0" prefWidth="1003.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="253.0" AnchorPane.rightAnchor="24.0" AnchorPane.topAnchor="79.0" />
+    <StackPane fx:id="contentPane" layoutX="268.8" layoutY="85.6" prefHeight="713.0" prefWidth="1207.0" AnchorPane.bottomAnchor="2.0" AnchorPane.leftAnchor="268.0" AnchorPane.rightAnchor="25.0" AnchorPane.topAnchor="79.0" />
 </AnchorPane>
+

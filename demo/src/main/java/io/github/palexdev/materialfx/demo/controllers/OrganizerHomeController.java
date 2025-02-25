@@ -1,0 +1,450 @@
+package io.github.palexdev.materialfx.demo.controllers;
+
+import io.github.palexdev.materialfx.controls.*;
+import io.github.palexdev.materialfx.demo.Demo;
+import io.github.palexdev.materialfx.demo.MFXDemoResourcesLoader;
+import io.github.palexdev.materialfx.demo.model.Organizer;
+import io.github.palexdev.materialfx.demo.model.User;
+import io.github.palexdev.materialfx.demo.model.UserSession;
+import io.github.palexdev.materialfx.demo.services.UserService;
+import io.github.palexdev.materialfx.utils.ScrollUtils;
+import io.github.palexdev.materialfx.utils.SwingFXUtils;
+import io.github.palexdev.materialfx.utils.others.loader.MFXLoader;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
+import javafx.geometry.Bounds;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
+import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import javax.imageio.IIOImage;
+import javax.imageio.ImageIO;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.ResourceBundle;
+
+public class OrganizerHomeController implements Initializable {
+
+    @FXML
+    public MFXButton profileButton;
+    @FXML
+    public MFXButton notificationsButton;
+    @FXML
+    public Label userGreeting;
+    @FXML
+    public Label activeEventsLabel;
+    @FXML
+    private AnchorPane rootPane;
+    @FXML
+    private HBox windowHeader;
+    @FXML
+    private MFXScrollPane scrollPane;
+    @FXML
+    private VBox navBar;
+    @FXML
+    private StackPane contentPane;
+    @FXML
+    private StackPane logoContainer;
+
+    private final ToggleGroup toggleGroup = new ToggleGroup();
+    @FXML
+    private Label upcomingEventsLabel;
+    @FXML
+    private Label organizerStatusLabel;
+    @FXML
+    private Label totalPlayersLabel;
+    @FXML
+    private Label lastLoginLabel;
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        // Initialize the loader for navigation
+        initializeLoader();
+
+        // Add smooth scrolling to the scroll pane
+        ScrollUtils.addSmoothScrolling(scrollPane);
+
+        // Load and display the logo
+        Image image = new Image(MFXDemoResourcesLoader.load("sportify.png"), 64, 64, true, true);
+        ImageView logo = new ImageView(image);
+        Circle clip = new Circle(30);
+        clip.centerXProperty().bind(logo.layoutBoundsProperty().map(Bounds::getCenterX));
+        clip.centerYProperty().bind(logo.layoutBoundsProperty().map(Bounds::getCenterY));
+        logo.setClip(clip);
+        logoContainer.getChildren().add(logo);
+
+        // Initialize profile button
+        initializeProfileButton();
+
+        // Set greeting message
+        User currentUser = UserSession.getInstance().getCurrentUser();
+        if (currentUser instanceof Organizer) {
+            userGreeting.setText("Welcome, " + ((Organizer) currentUser).getFirstname() + "!");
+        }
+    }
+
+    private void initializeLoader() {
+        MFXLoader loader = new MFXLoader();
+        // Add organizer-specific views
+//        loader.addView(MFXLoaderBean.of("Dashboard", loadURL("fxml/OrganizerDashboard.fxml"))
+//                .setBeanToNodeMapper(() -> createToggle("fas-home", "Dashboard"))
+//                .setDefaultRoot(true)
+//                .get());
+
+//        loader.addView(MFXLoaderBean.of("Manage Events", loadURL("fxml/ManageEvents.fxml"))
+//                .setBeanToNodeMapper(() -> createToggle("fas-calendar", "Events"))
+//                .get());
+//
+//        loader.addView(MFXLoaderBean.of("Participants", loadURL("fxml/ManageParticipants.fxml"))
+//                .setBeanToNodeMapper(() -> createToggle("fas-users", "Participants"))
+//                .get());
+
+        loader.setOnLoadedAction(beans -> {
+            List<ToggleButton> nodes = beans.stream()
+                    .map(bean -> {
+                        ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
+                        toggle.setOnAction(event -> contentPane.getChildren().setAll(bean.getRoot()));
+                        if (bean.isDefaultView()) {
+                            contentPane.getChildren().setAll(bean.getRoot());
+                            toggle.setSelected(true);
+                        }
+                        return toggle;
+                    })
+                    .toList();
+            navBar.getChildren().setAll(nodes);
+        });
+        loader.start();
+    }
+
+    private ToggleButton createToggle(String icon, String text) {
+        MFXIconWrapper wrapper = new MFXIconWrapper(icon, 24, 32);
+        MFXRectangleToggleNode toggleNode = new MFXRectangleToggleNode(text, wrapper);
+        toggleNode.setAlignment(Pos.CENTER_LEFT);
+        toggleNode.setMaxWidth(Double.MAX_VALUE);
+        toggleNode.setToggleGroup(toggleGroup);
+        return toggleNode;
+    }
+
+    private void initializeProfileButton() {
+        ContextMenu contextMenu = new ContextMenu();
+
+        MenuItem profileItem = new MenuItem("Profile");
+        MenuItem eventsItem = new MenuItem("My Events");
+        MenuItem settingsItem = new MenuItem("Settings");
+        MenuItem logoutItem = new MenuItem("Logout");
+
+        profileItem.setOnAction(event -> handleProfileMenuItem());
+        eventsItem.setOnAction(event -> handleEventsMenuItem());
+        settingsItem.setOnAction(event -> handleSettingsMenuItem());
+        logoutItem.setOnAction(event -> handleLogoutMenuItem());
+
+        contextMenu.getItems().addAll(profileItem, eventsItem, settingsItem, logoutItem);
+
+        profileButton.setOnMouseClicked(event -> {
+            if (event.getButton() == javafx.scene.input.MouseButton.PRIMARY) {
+                contextMenu.show(profileButton, event.getScreenX(), event.getScreenY());
+            }
+        });
+    }
+
+    private void handleEventsMenuItem() {
+        // Implement events view navigation
+        System.out.println("Events menu item clicked!");
+    }
+
+    private void handleSettingsMenuItem() {
+        // Implement settings view navigation
+        System.out.println("Settings menu item clicked!");
+    }
+
+    private void handleLogoutMenuItem() {
+        UserSession.getInstance().logout();
+        try {
+            FXMLLoader loader = new FXMLLoader(Demo.class.getResource("fxml/login.fxml"));
+            Parent loginView = loader.load();
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            Scene scene = new Scene(loginView);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to logout: " + e.getMessage());
+        }
+    }
+
+    private void handleProfileMenuItem() {
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.initStyle(StageStyle.UNDECORATED);
+
+        VBox form = new VBox(10);
+        form.setAlignment(Pos.CENTER);
+        form.setPadding(new Insets(20));
+        form.setStyle("-fx-background-color: #1B1F3B; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-border-color: #ff9800; -fx-border-width: 2;");
+
+        // Get current user
+        User currentUser = UserSession.getInstance().getCurrentUser();
+        if (!(currentUser instanceof Organizer)) {
+            showAlert(Alert.AlertType.ERROR, "Error", "Invalid user type!");
+            return;
+        }
+
+        Organizer currentOrganizer = (Organizer) currentUser;
+
+        // Create circular ImageView for profile picture
+        ImageView profileImageView = new ImageView();
+        profileImageView.setFitWidth(100); // Set the desired width
+        profileImageView.setFitHeight(100); // Set the desired height
+        profileImageView.setPreserveRatio(true);
+
+        // Create a circular clip
+        Circle clip = new Circle(50, 50, 50); // Center X, Center Y, Radius
+        profileImageView.setClip(clip);
+
+        // Load the user's profile picture (or default if none exists)
+        if (currentOrganizer.getProfilePicture() != null) {
+            // Load the user's profile picture from byte array
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(currentOrganizer.getProfilePicture());
+            Image userImage = new Image(inputStream);
+            profileImageView.setImage(userImage);
+        } else {
+            // Load the default profile picture
+            Image defaultImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/default_profile.jpg"))); // Path to default image
+            profileImageView.setImage(defaultImage);
+        }
+
+        profileImageView.getStyleClass().add("profile-image");
+
+        // Add a button to upload a new profile picture
+        MFXButton uploadImageButton = new MFXButton("Change Picture");
+        uploadImageButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white;");
+        uploadImageButton.setOnAction(e -> handleImageUpload(profileImageView));
+
+        // Add basic profile fields
+        MFXTextField firstNameField = new MFXTextField();
+        firstNameField.setFloatingText("First Name");
+        firstNameField.setText(currentOrganizer.getFirstname());
+
+        MFXTextField lastNameField = new MFXTextField();
+        lastNameField.setFloatingText("Last Name");
+        lastNameField.setText(currentOrganizer.getLastName());
+
+        MFXTextField emailField = new MFXTextField();
+        emailField.setFloatingText("Email");
+        emailField.setText(currentOrganizer.getEmail());
+
+        MFXTextField phoneField = new MFXTextField();
+        phoneField.setFloatingText("Phone Number");
+        phoneField.setText(currentOrganizer.getPhoneNumber());
+
+        Label titleLabel = new Label("Edit Profile");
+        titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+
+        // Create buttons
+        HBox buttonBox = new HBox(10);
+        buttonBox.setAlignment(Pos.CENTER);
+
+        MFXButton saveButton = new MFXButton("Save");
+        saveButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white;");
+        saveButton.setPrefWidth(100);
+        saveButton.setPrefHeight(40);
+
+        MFXButton cancelButton = new MFXButton("Cancel");
+        cancelButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white;");
+        buttonBox.getChildren().addAll(saveButton, cancelButton);
+        cancelButton.setPrefWidth(100);
+        cancelButton.setPrefHeight(40);
+
+        // Add all components to form
+        form.getChildren().addAll(
+                profileImageView,
+                uploadImageButton,
+                titleLabel,
+                firstNameField,
+                lastNameField,
+                emailField,
+                phoneField,
+                buttonBox
+        );
+
+        // Handle save button
+        saveButton.setOnAction(e -> {
+            try {
+                // Update organizer information
+                currentOrganizer.setFirstname(firstNameField.getText());
+                currentOrganizer.setLastName(lastNameField.getText());
+                currentOrganizer.setEmail(emailField.getText());
+                currentOrganizer.setPhoneNumber(phoneField.getText());
+
+                // Convert the ImageView to a byte array and save it
+                byte[] imageData = imageViewToByteArray(profileImageView);
+                if (imageData != null) {
+                    currentUser.setProfilePicture(imageData);
+                }
+
+                // Save to database
+                UserService userService = new UserService();
+                userService.update(currentOrganizer);
+
+                popupStage.close();
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Profile updated successfully!");
+
+                // Reload the profile image in the main view
+                reloadProfileImage(profileImageView); // Pass the ImageView here
+            } catch (Exception ex) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to update profile: " + ex.getMessage());
+            }
+        });
+
+        // Handle cancel button
+        cancelButton.setOnAction(e -> popupStage.close());
+
+        Scene scene = new Scene(form, 600, 500);
+        popupStage.setScene(scene);
+        popupStage.show();
+    }
+
+    private byte[] imageViewToByteArray(ImageView imageView) {
+        if (imageView.getImage() == null) {
+            return null;
+        }
+
+        // Step 1: Convert the JavaFX Image to a BufferedImage
+        Image image = imageView.getImage();
+        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
+
+        // Step 2: Ensure the BufferedImage is in the sRGB color space
+        BufferedImage convertedImage = new BufferedImage(
+                bufferedImage.getWidth(),
+                bufferedImage.getHeight(),
+                BufferedImage.TYPE_INT_RGB // Force RGB color space
+        );
+
+        // Draw the original image onto the converted image
+        Graphics2D g = convertedImage.createGraphics();
+        g.drawImage(bufferedImage, 0, 0, null);
+        g.dispose();
+
+        // Step 3: Write the converted image to a byte array in JPEG format
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+
+        try {
+            // Get the JPEG image writer
+            Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpeg");
+            if (!writers.hasNext()) {
+                throw new IllegalStateException("No JPEG image writers found!");
+            }
+            ImageWriter writer = writers.next();
+
+            // Configure compression settings
+            ImageWriteParam param = writer.getDefaultWriteParam();
+            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
+            param.setCompressionQuality(0.7f); // Adjust quality (0.0-1.0)
+
+            // Write the image to the output stream
+            ImageOutputStream outputStream = ImageIO.createImageOutputStream(stream);
+            writer.setOutput(outputStream);
+            writer.write(null, new IIOImage(convertedImage, null, null), param);
+
+            // Clean up
+            writer.dispose();
+            outputStream.close();
+            return stream.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private void handleImageUpload(ImageView profileImageView) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Choose Profile Picture");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+        );
+
+        // Show the file chooser dialog
+        File selectedFile = fileChooser.showOpenDialog(null);
+
+        if (selectedFile != null) {
+            try {
+                // Load the selected image
+                Image image = new Image(selectedFile.toURI().toString());
+                profileImageView.setImage(image);
+            } catch (Exception e) {
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to load image: " + e.getMessage());
+            }
+        }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Stage alertStage = new Stage();
+        alertStage.initStyle(StageStyle.UNDECORATED);
+        alertStage.initModality(Modality.APPLICATION_MODAL);
+
+        VBox root = new VBox(20);
+        root.setAlignment(Pos.CENTER);
+        root.setPadding(new Insets(20));
+        root.setStyle("-fx-background-color: #1B1F3B; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-border-color: #ff9800; -fx-border-width: 2;");
+
+        Label titleLabel = new Label(title);
+        titleLabel.setStyle("-fx-text-fill: " + (type == Alert.AlertType.ERROR ? "#FF4444" : "#ff9800") +
+                "; -fx-font-size: 18px; -fx-font-weight: BOLD;");
+
+        Label contentLabel = new Label(content);
+        contentLabel.setStyle("-fx-text-fill: white; -fx-font-size: 14px;");
+        contentLabel.setWrapText(true);
+
+        MFXButton okButton = new MFXButton("OK");
+        okButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white;");
+        okButton.setOnAction(e -> alertStage.close());
+
+        root.getChildren().addAll(titleLabel, contentLabel, okButton);
+
+        Scene scene = new Scene(root, 400, 250);
+        alertStage.setScene(scene);
+        alertStage.showAndWait();
+    }
+
+
+    private void reloadProfileImage(ImageView profileImageView) {
+        User currentUser = UserSession.getInstance().getCurrentUser();
+
+        if (currentUser.getProfilePicture() != null) {
+            // Load the user's profile picture from byte array
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(currentUser.getProfilePicture());
+            Image userImage = new Image(inputStream);
+            profileImageView.setImage(userImage);
+        } else {
+            // Load the default profile picture
+            Image defaultImage = new Image(getClass().getResourceAsStream("/default_profile.jpg")); // Path to default image
+            profileImageView.setImage(defaultImage);
+        }
+    }
+}

@@ -98,7 +98,7 @@
 
 @font-face {
     font-family: 'Roboto ThinItalic';
-    font-weight: 100px;
+    font-weight: 100;
     font-style: italic;
     font-display: swap;
     src: url('Roboto-ThinItalic.ttf') format('truetype');

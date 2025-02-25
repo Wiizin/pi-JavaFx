@@ -1,13 +1,10 @@
 package io.github.palexdev.materialfx.demo.controllers;
+
+import io.github.palexdev.materialfx.demo.model.Organizer;
 import io.github.palexdev.materialfx.demo.model.User;
 import io.github.palexdev.materialfx.demo.services.UserService;
-import io.github.palexdev.materialfx.controls.MFXButton;
-import io.github.palexdev.materialfx.controls.MFXDatePicker;
-import io.github.palexdev.materialfx.controls.MFXFilterComboBox;
-import io.github.palexdev.materialfx.controls.MFXTextField;
-import io.github.palexdev.materialfx.dialogs.MFXGenericDialog;
-import io.github.palexdev.materialfx.dialogs.MFXGenericDialogBuilder;
-import io.github.palexdev.materialfx.dialogs.MFXStageDialog;
+import io.github.palexdev.materialfx.controls.*;
+import io.github.palexdev.materialfx.dialogs.*;
 import io.github.palexdev.materialfx.enums.ScrimPriority;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.animation.PauseTransition;
@@ -21,191 +18,308 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 public class AddUserController {
-
-    @FXML
-    private MFXTextField firstNameField;
-
-    @FXML
-    private MFXTextField lastNameField;
-
-    @FXML
-    private MFXTextField emailField;
-
-    @FXML
-    private MFXTextField passwordField;
-
-    @FXML
-    private MFXFilterComboBox<String> roleComboBox;
-
-    @FXML
-    private MFXTextField phoneField;
-
-    @FXML
-    private MFXDatePicker dateOfBirthPicker;
-
-    @FXML
-    private MFXTextField profilePictureField;
-
-    @FXML
-    private ImageView profilePicturePreview;
-
-    @FXML
-    private VBox rootPane; // Use VBox as the root pane
+    @FXML private MFXTextField firstNameField;
+    @FXML private MFXTextField lastNameField;
+    @FXML private MFXTextField emailField;
+    @FXML private MFXTextField passwordField;
+    @FXML private MFXFilterComboBox<String> roleComboBox;
+    @FXML private MFXTextField phoneField;
+    @FXML private MFXDatePicker dateOfBirthPicker;
+    @FXML private MFXTextField profilePictureField;
+    @FXML private ImageView profilePicturePreview;
+    @FXML private VBox rootPane;
 
     private UserService userService = new UserService();
-
     private MFXGenericDialog dialogContent;
     private MFXStageDialog dialog;
+    @FXML
+    private MFXTextField coachingLicenseField;
+    @FXML
+    private MFXCheckbox isActiveCheckBox;
+
     private enum Mode { ADD, UPDATE }
-    private Mode mode = Mode.ADD; // Default mode is ADD
+    private Mode mode = Mode.ADD;
     private User userToUpdate;
 
-    public void setUserToUpdate(User user) {
-        this.userToUpdate = user;
-        this.mode = Mode.UPDATE; // Switch to UPDATE mode
-        populateFields(); // Populate fields with the user's data
-    }
-    private void populateFields() {
-        if (userToUpdate != null) {
-            firstNameField.setText(userToUpdate.getFirstname());
-            lastNameField.setText(userToUpdate.getLastName());
-            emailField.setText(userToUpdate.getEmail());
-            passwordField.setText(userToUpdate.getPassword());
-            roleComboBox.selectItem(userToUpdate.getRole());
-            phoneField.setText(userToUpdate.getPhoneNumber());
-            dateOfBirthPicker.setValue(userToUpdate.getDateOfBirth());
-            profilePictureField.setText(userToUpdate.getProfilePicture());
+    private static final Pattern EMAIL_PATTERN = Pattern.compile("^[A-Za-z0-9+_.-]+@(.+)$");
+    private static final Pattern PHONE_PATTERN = Pattern.compile("^\\+?[1-9][0-9]{7,14}$");
 
-            if (userToUpdate.getProfilePicture() != null && !userToUpdate.getProfilePicture().isEmpty()) {
-                Image image = new Image(new File(userToUpdate.getProfilePicture()).toURI().toString());
-                profilePicturePreview.setImage(image);
-            }
-        }
-    }
+    private record ValidationResult(boolean isValid, String message) {}
 
     @FXML
     public void initialize() {
-        // Delay the dialog initialization until the scene is ready
         Platform.runLater(() -> {
-            Stage ownerStage = (Stage) rootPane.getScene().getWindow();
-            this.dialogContent = MFXGenericDialogBuilder.build()
-                    .setContentText("")
-                    .makeScrollable(true)
-                    .get();
-            this.dialog = MFXGenericDialogBuilder.build(dialogContent)
-                    .toStageDialogBuilder()
-                    .initOwner(ownerStage)
-                    .initModality(Modality.APPLICATION_MODAL)
-                    .setDraggable(true)
-                    .setTitle("Alert")
-                    .setOwnerNode(rootPane) // Set the ownerNode to rootPane
-                    .setScrimPriority(ScrimPriority.WINDOW)
-                    .setScrimOwner(true)
-                    .get();
+            // Set stage properties
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            stage.setWidth(600);  // Set fixed width
+            stage.setHeight(800); // Set fixed height
+            stage.setResizable(false); // Make it non-resizable
+            stage.centerOnScreen(); // Center on screen
 
-            // Add a close button to the dialog
-            dialogContent.addActions(
-                    Map.entry(new MFXButton("Confirm"), event -> {
-                    }),
-                    Map.entry(new MFXButton("Cancel"), event -> dialog.close())
-            );
+            initializeDialog();
+            setupValidationListeners();
+            initializeFields();
+        });
 
-            dialogContent.setMaxSize(400, 200);
+        // Add listener to roleComboBox for handling organizer-specific fields
+        roleComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
+            if (newValue == null) return;
+            
+            boolean isOrganizer = "organizer".equalsIgnoreCase(newValue);
+            updateOrganizerFields(isOrganizer);
         });
     }
 
-    @FXML
+    private void initializeDialog() {
+        Stage ownerStage = (Stage) rootPane.getScene().getWindow();
 
-    private void handleSaveUser() {
-        // Validate inputs (uncomment and implement your validation logic)
-        // if (firstNameField.getText().isEmpty() || ...) {
-        //     showMaterialFXAlert("Error", "Please fill all fields.", "fas-circle-info", "mfx-error-dialog");
-        //     return;
-        // }
+        this.dialogContent = MFXGenericDialogBuilder.build()
+                .setContentText("")
+                .makeScrollable(true)
+                .get();
 
-        // Get values from the form
-        String firstName = firstNameField.getText();
-        String lastName = lastNameField.getText();
-        String email = emailField.getText();
+        this.dialog = MFXGenericDialogBuilder.build(dialogContent)
+                .toStageDialogBuilder()
+                .initOwner(ownerStage)
+                .initModality(Modality.APPLICATION_MODAL)
+                .setDraggable(true)
+                .setTitle("Notification")
+                .setOwnerNode(rootPane)
+                .setScrimPriority(ScrimPriority.WINDOW)
+                .setScrimOwner(true)
+                .get();
+
+        MFXButton closeButton = new MFXButton("Close");
+        closeButton.setOnAction(event -> dialog.close());
+
+
+        dialogContent.addActions(Map.entry(closeButton, event -> dialog.close()));
+        dialogContent.setMaxSize(400, 200);
+    }
+
+    private void setupValidationListeners() {
+        emailField.textProperty().addListener((obs, old, newValue) -> {
+            if (!newValue.isEmpty() && !EMAIL_PATTERN.matcher(newValue).matches()) {
+                emailField.setStyle("-fx-border-color: #FF0000;");
+            } else {
+                emailField.setStyle("");
+            }
+        });
+
+        passwordField.textProperty().addListener((obs, old, newValue) -> {
+            boolean isValid = newValue.length() >= 8
+                    && newValue.matches(".*[A-Z].*")
+                    && newValue.matches(".*[a-z].*")
+                    && newValue.matches(".*\\d.*");
+
+            passwordField.setStyle(isValid || newValue.isEmpty() ? "" : "-fx-border-color: #FF0000;");
+        });
+
+        phoneField.textProperty().addListener((obs, old, newValue) -> {
+            if (!newValue.isEmpty() && !PHONE_PATTERN.matcher(newValue).matches()) {
+                phoneField.setStyle("-fx-border-color: #FF0000;");
+            } else {
+                phoneField.setStyle("");
+            }
+        });
+    }
+
+    private void initializeFields() {
+        // Set floating text labels
+        firstNameField.setFloatingText("First Name");
+        lastNameField.setFloatingText("Last Name");
+        emailField.setFloatingText("Email Address");
+        passwordField.setFloatingText("Password");
+        roleComboBox.setFloatingText("Role");
+        phoneField.setFloatingText("Phone Number");
+        dateOfBirthPicker.setFloatingText("Date of Birth");
+        profilePictureField.setFloatingText("Profile Picture");
+        coachingLicenseField.setFloatingText("Coaching License");
+
+        // Initialize role combo box only if it's empty
+        if (roleComboBox.getItems().isEmpty()) {
+            roleComboBox.getItems().addAll("admin", "player", "organizer");
+        }
+
+        // Only set default role for new users
+        if (mode == Mode.ADD) {
+            roleComboBox.selectItem("player"); // Set default role only for new users
+        }
+
+        // Initially hide organizer-specific fields
+        coachingLicenseField.setVisible(false);
+        coachingLicenseField.setManaged(false);
+        isActiveCheckBox.setVisible(false);
+        isActiveCheckBox.setManaged(false);
+    }
+
+    private ValidationResult validateInputs() {
+        if (firstNameField.getText().trim().isEmpty()) {
+            return new ValidationResult(false, "First name is required");
+        }
+        if (firstNameField.getText().length() < 2) {
+            return new ValidationResult(false, "First name must be at least 2 characters");
+        }
+
+        if (lastNameField.getText().trim().isEmpty()) {
+            return new ValidationResult(false, "Last name is required");
+        }
+        if (lastNameField.getText().length() < 2) {
+            return new ValidationResult(false, "Last name must be at least 2 characters");
+        }
+
+        String email = emailField.getText().trim();
+        if (email.isEmpty()) {
+            return new ValidationResult(false, "Email address is required");
+        }
+        if (!EMAIL_PATTERN.matcher(email).matches()) {
+            return new ValidationResult(false, "Please enter a valid email address");
+        }
+
         String password = passwordField.getText();
-        String role = (String) roleComboBox.getSelectedItem();
-        String phone = phoneField.getText();
-        String profilePicture = profilePictureField.getText();
-        LocalDate dateOfBirth = dateOfBirthPicker.getValue();
+        if (password.isEmpty()) {
+            return new ValidationResult(false, "Password is required");
+        }
+        if (password.length() < 8) {
+            return new ValidationResult(false, "Password must be at least 8 characters");
+        }
+        if (!password.matches(".*[A-Z].*")) {
+            return new ValidationResult(false, "Password must include an uppercase letter");
+        }
+        if (!password.matches(".*[a-z].*")) {
+            return new ValidationResult(false, "Password must include a lowercase letter");
+        }
+        if (!password.matches(".*\\d.*")) {
+            return new ValidationResult(false, "Password must include a number");
+        }
+
+        if (roleComboBox.getSelectedItem() == null) {
+            return new ValidationResult(false, "Please select a role");
+        }
+
+        String phone = phoneField.getText().trim();
+        if (!phone.isEmpty() && !PHONE_PATTERN.matcher(phone).matches()) {
+            return new ValidationResult(false, "Please enter a valid phone number");
+        }
+
+        LocalDate dob = dateOfBirthPicker.getValue();
+        if (dob == null) {
+            return new ValidationResult(false, "Date of birth is required");
+        }
+        if (dob.isAfter(LocalDate.now().minusYears(18))) {
+            return new ValidationResult(false, "User must be at least 18 years old");
+        }
+
+        // Validate coaching license only for organizers
+        if ("organizer".equalsIgnoreCase(roleComboBox.getSelectedItem()) && 
+            coachingLicenseField.getText().trim().isEmpty()) {
+            return new ValidationResult(false, "Coaching license is required for organizers");
+        }
+
+        return new ValidationResult(true, "");
+    }
+
+    @FXML
+    private void handleSaveUser() {
+        ValidationResult validationResult = validateInputs();
+        if (!validationResult.isValid()) {
+            showMaterialFXAlert("Validation Error", validationResult.message(), "fas-triangle-exclamation", "mfx-error-dialog");
+            return;
+        }
 
         try {
-            if (mode == Mode.ADD) {
-                // Create a new User object
-                User newUser = new User();
-                newUser.setFirstname(firstName);
-                newUser.setLastName(lastName);
-                newUser.setEmail(email);
-                newUser.setPassword(password);
-                newUser.setRole(role);
-                newUser.setPhoneNumber(phone);
-                newUser.setDateOfBirth(dateOfBirth);
-                newUser.setProfilePicture(profilePicture);
+            User user = mode == Mode.ADD ? new User() : userToUpdate;
+            String selectedRole = roleComboBox.getSelectedItem();
 
-                // Save the user
-                userService.create(newUser);
-
-                // Show success message
-                showMaterialFXAlert("Success", "User added successfully!", "fas-check-circle", "mfx-success-dialog");
-            } else if (mode == Mode.UPDATE && userToUpdate != null) {
-                // Update the existing user
-                userToUpdate.setFirstname(firstName);
-                userToUpdate.setLastName(lastName);
-                userToUpdate.setEmail(email);
-                userToUpdate.setPassword(password);
-                userToUpdate.setRole(role);
-                userToUpdate.setPhoneNumber(phone);
-                userToUpdate.setDateOfBirth(dateOfBirth);
-                userToUpdate.setProfilePicture(profilePicture);
-
-                // Update the user in the database
-                userService.update(userToUpdate);
-
-                // Show success message
-                showMaterialFXAlert("Success", "User updated successfully!", "fas-check-circle", "mfx-success-dialog");
+            // Handle role-specific user type
+            if ("organizer".equalsIgnoreCase(selectedRole)) {
+                Organizer organizer;
+                if (user instanceof Organizer) {
+                    organizer = (Organizer) user;
+                } else {
+                    organizer = new Organizer();
+                    // Copy common fields if updating
+                    if (mode == Mode.UPDATE) {
+                        organizer.setId(user.getId());
+                        organizer.setCreatedAt(user.getCreatedAt());
+                    }
+                }
+                organizer.setCoachingLicense(coachingLicenseField.getText().trim());
+                // Explicitly set the active status from checkbox
+                boolean isActive = isActiveCheckBox.isSelected();
+                System.out.println("Setting organizer active status to: " + isActive); // Debug log
+                organizer.setActive(isActive);
+                user = organizer;
+            } else {
+                // For admin and player users, always set active to true
+                user.setActive(true);
             }
 
-            // Delay closing the window for 1 second after the alert is shown
+            // Set common fields
+            user.setFirstname(firstNameField.getText().trim());
+            user.setLastName(lastNameField.getText().trim());
+            user.setEmail(emailField.getText().trim());
+            user.setPassword(passwordField.getText());
+            user.setRole(selectedRole.toLowerCase());
+            user.setPhoneNumber(phoneField.getText().trim());
+            user.setDateOfBirth(dateOfBirthPicker.getValue());
+
+            // Handle profile picture
+            String profilePicturePath = profilePictureField.getText().trim();
+            if (!profilePicturePath.isEmpty()) {
+                try {
+                    File imageFile = new File(profilePicturePath);
+                    BufferedImage bufferedImage = ImageIO.read(imageFile);
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    ImageIO.write(bufferedImage, "jpg", baos);
+                    user.setProfilePicture(baos.toByteArray());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    user.setProfilePicture(new byte[0]);
+                }
+            } else {
+                user.setProfilePicture(new byte[0]);
+            }
+
+            if (mode == Mode.ADD) {
+                userService.create(user);
+                showMaterialFXAlert("Success", "User successfully added", "fas-circle-check", "mfx-success-dialog");
+            } else {
+                System.out.println("Updating user with active status: " + user.isActive()); // Debug log
+                userService.update(user);
+                showMaterialFXAlert("Success", "User successfully updated", "fas-circle-check", "mfx-success-dialog");
+            }
+
             PauseTransition delay = new PauseTransition(Duration.seconds(1));
             delay.setOnFinished(event -> {
-                // Close the window
                 Stage stage = (Stage) rootPane.getScene().getWindow();
                 stage.close();
             });
             delay.play();
 
         } catch (Exception e) {
-            System.out.println("Error saving user: " + e.getMessage()); // Debugging
             e.printStackTrace();
-
-            // Show error message
-            showMaterialFXAlert("Error", "An error occurred while saving the user: " + e.getMessage(), "fas-circle-info", "mfx-error-dialog");
+            showMaterialFXAlert("Error", "Failed to save user: " + e.getMessage(), "fas-circle-x", "mfx-error-dialog");
         }
-    }
-
-
-
-    @FXML
-    private void handleCancel() {
-        // Close the pop-up window
-        Stage stage = (Stage) rootPane.getScene().getWindow();
-        stage.close();
     }
 
     @FXML
     private void handleBrowseImage() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Profile Picture");
-        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg"));
+        fileChooser.getExtensionFilters().add(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+        );
+
         File file = fileChooser.showOpenDialog(profilePicturePreview.getScene().getWindow());
         if (file != null) {
             Image image = new Image(file.toURI().toString());
@@ -215,30 +329,117 @@ public class AddUserController {
     }
 
     private void showMaterialFXAlert(String title, String message, String iconCode, String styleClass) {
-        // Create an MFXFontIcon for the alert
-        MFXFontIcon icon = new MFXFontIcon(iconCode, 32); // Use the provided icon code
+        // Update icon codes to use correct MaterialFX FontAwesome icons
+        String updatedIconCode;
+        switch (iconCode) {
+            case "fas-check-circle":
+                updatedIconCode = "fas-circle-check";
+                break;
+            case "fas-circle-exclamation":
+                updatedIconCode = "fas-triangle-exclamation";
+                break;
+            case "fas-circle-xmark":
+                updatedIconCode = "fas-circle-x";
+                break;
+            default:
+                updatedIconCode = "fas-info-circle";
+        }
 
-        // Set the dialog content
+        MFXFontIcon icon = new MFXFontIcon(updatedIconCode, 32);
+
         dialogContent.setHeaderText(title);
         dialogContent.setContentText(message);
-        dialogContent.setHeaderIcon(icon); // Set the icon
+        dialogContent.setHeaderIcon(icon);
 
-        // Apply the appropriate style class
         convertDialogTo(styleClass);
 
-        // Show the dialog
         dialog.showAndWait();
     }
+
     private void convertDialogTo(String styleClass) {
-        // Remove existing style classes
-        dialogContent.getStyleClass().removeIf(
-                s -> s.equals("mfx-info-dialog") || s.equals("mfx-warn-dialog") || s.equals("mfx-error-dialog")
+        dialogContent.getStyleClass().removeIf(s ->
+                s.equals("mfx-info-dialog") ||
+                        s.equals("mfx-warn-dialog") ||
+                        s.equals("mfx-error-dialog") ||
+                        s.equals("mfx-success-dialog")
         );
 
-        // Add the new style class if provided
         if (styleClass != null) {
             dialogContent.getStyleClass().add(styleClass);
         }
     }
 
+    @FXML
+    private void handleCancel() {
+        Stage stage = (Stage) rootPane.getScene().getWindow();
+        stage.close();
+    }
+
+    public void setUserToUpdate(User user) {
+        this.userToUpdate = user;
+        this.mode = Mode.UPDATE;
+        populateFields();
+    }
+
+    private void updateOrganizerFields(boolean isOrganizer) {
+        coachingLicenseField.setVisible(isOrganizer);
+        coachingLicenseField.setManaged(isOrganizer);
+        isActiveCheckBox.setVisible(isOrganizer);
+        isActiveCheckBox.setManaged(isOrganizer);
+        
+        if (isOrganizer) {
+            if (mode == Mode.ADD) {
+                isActiveCheckBox.setSelected(false); // New organizers start as inactive
+                coachingLicenseField.clear();
+            } else if (mode == Mode.UPDATE && userToUpdate instanceof Organizer) {
+                // Restore previous organizer data during update
+                Organizer organizer = (Organizer) userToUpdate;
+                coachingLicenseField.setText(organizer.getCoachingLicense());
+                isActiveCheckBox.setSelected(organizer.isActive());
+                System.out.println("Restoring organizer data - License: " + organizer.getCoachingLicense() + 
+                                 ", Active: " + organizer.isActive());
+            }
+        } else {
+            coachingLicenseField.clear();
+            isActiveCheckBox.setSelected(true); // Non-organizers are always active
+        }
+    }
+
+    private void populateFields() {
+        if (userToUpdate != null) {
+            firstNameField.setText(userToUpdate.getFirstname());
+            lastNameField.setText(userToUpdate.getLastName());
+            emailField.setText(userToUpdate.getEmail());
+            passwordField.setText(userToUpdate.getPassword());
+            phoneField.setText(userToUpdate.getPhoneNumber());
+            dateOfBirthPicker.setValue(userToUpdate.getDateOfBirth());
+
+            // Ensure the roleComboBox is populated before selecting an item
+            if (roleComboBox.getItems().isEmpty()) {
+                roleComboBox.getItems().addAll("admin", "player", "organizer");
+            }
+
+            // Get the role and handle organizer-specific fields
+            String role = userToUpdate.getRole();
+            if (role != null) {
+                System.out.println("Setting role for update: " + role); // Debug log
+                boolean isOrganizer = "organizer".equalsIgnoreCase(role);
+                
+                // Set the role first
+                roleComboBox.selectItem(role.toLowerCase());
+                
+                // Manually update organizer fields
+                updateOrganizerFields(isOrganizer);
+                
+                // Then populate organizer-specific fields if applicable
+                if (isOrganizer && userToUpdate instanceof Organizer) {
+                    Organizer organizer = (Organizer) userToUpdate;
+                    coachingLicenseField.setText(organizer.getCoachingLicense());
+                    boolean isActive = organizer.isActive();
+                    System.out.println("Setting organizer active status to: " + isActive); // Debug log
+                    isActiveCheckBox.setSelected(isActive);
+                }
+            }
+        }
+    }
 }

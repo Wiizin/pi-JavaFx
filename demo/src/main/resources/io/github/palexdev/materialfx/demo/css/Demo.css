@@ -67,7 +67,7 @@
  * Sidebar
 **************************************************/
 .rootPane .sidebar {
-	-fx-background-color: #00008B;
+	-fx-background-color: #1B1F3B;
 	-fx-background-insets: -1 -5 -1 -1;
 	-fx-background-radius: 0 20 20 0;
 }
@@ -119,14 +119,87 @@
 .rootPane .sidebar .navbar .mfx-rectangle-toggle-node:selected {
 	-fx-background-color: white;
 	-fx-background-radius: 5;
-	-fx-text-fill: #00008B;
+	-fx-text-fill: #1B1F3B;
 }
 
 .rootPane .sidebar .navbar .mfx-rectangle-toggle-node:selected .selection-rectangle {
 	-fx-stroke: transparent;
-	-fx-fill: #00008B;
+	-fx-fill:#1B1F3B;
 }
 
 .rootPane .sidebar .navbar .mfx-rectangle-toggle-node:selected .mfx-icon-wrapper .mfx-font-icon {
-	-mfx-color: #00008B;
+	-mfx-color: #1B1F3B;
 }
+.profile-button {
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+	-fx-cursor: hand;
+}
+
+.profile-button:hover {
+	-fx-background-color: #e0e0e0;
+}
+
+.notifications-icon {
+	-fx-fill: #333333;
+}
+
+.dark-mode-toggle {
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+	-fx-cursor: hand;
+}
+
+.dark-mode-toggle:hover {
+	-fx-background-color: #e0e0e0;
+}
+
+.user-greeting {
+	-fx-font-size: 14px;
+	-fx-text-fill: #333333;
+}
+
+.sidebar {
+	-fx-background-color: #f4f4f4;
+
+	-fx-border-width: 0 1px 0 0;
+}
+
+.navbar {
+	-fx-spacing: 10px;
+}
+
+.menu-label {
+	-fx-font-size: 16px;
+	-fx-font-weight: bold;
+	-fx-text-fill: #333333;
+}
+
+.header {
+	-fx-font-size: 20px;
+	-fx-font-weight: bold;
+	-fx-text-fill: #333333;
+}
+.profile-image {
+	-fx-border-radius: 50%;
+	-fx-background-radius: 50%;
+	-fx-border-color: #1B1F3B;
+	-fx-border-width: 2;
+}
+.mfx-button.logout-button{
+	-fx-background-color: white; /* Sidebar color as base */
+	-fx-text-fill: #1B1F3B; /* White text for contrast */
+	-fx-font-family: "Segoe UI", sans-serif; /* Modern font */
+	-fx-font-size: 20px; /* Font size */
+	-fx-font-weight: bold; /* Bold text */
+	-fx-padding: 10px 20px; /* Padding */
+	-fx-border-radius: 5px; /* Slightly rounded corners */
+	-fx-background-radius: 5px; /* Slightly rounded corners for background */
+	-fx-border-width: 0; /* No border */
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 3); /* Subtle shadow */
+	-fx-cursor: hand; /* Pointer cursor on hover */
+	-fx-transition: all 0.3s ease; /* Smooth transition for hover effects */
+
+}
+
+

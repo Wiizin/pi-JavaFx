@@ -3,7 +3,6 @@
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
 <?import io.github.palexdev.materialfx.controls.MFXPasswordField?>
 <?import io.github.palexdev.materialfx.controls.MFXTextField?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
@@ -15,9 +14,9 @@
 
 <BorderPane nodeOrientation="LEFT_TO_RIGHT" prefHeight="800.0" prefWidth="1500.0" style="-fx-background-color: #1B1F3B;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.LoginController">
     <top>
-        <AnchorPane fx:id="rootPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1600.0" BorderPane.alignment="CENTER">
+        <AnchorPane fx:id="rootPane" prefHeight="800.0" prefWidth="1400.0" BorderPane.alignment="CENTER">
             <!-- Login Form Container -->
-            <Pane layoutX="502.0" layoutY="187.0" prefHeight="500.0" prefWidth="500.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);" AnchorPane.bottomAnchor="99.40000000000009" AnchorPane.leftAnchor="502.0" AnchorPane.rightAnchor="550.0" AnchorPane.topAnchor="187.0">
+            <Pane layoutX="502.0" layoutY="188.8" prefHeight="517.0" prefWidth="489.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);" AnchorPane.bottomAnchor="89.0" AnchorPane.leftAnchor="502.0" AnchorPane.rightAnchor="618.0" AnchorPane.topAnchor="189.0">
                 <!-- Title -->
                 <Text layoutX="63.0" layoutY="74.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Login into your account" wrappingWidth="508.0515441894531">
                     <font>
@@ -26,13 +25,18 @@
                 </Text>
 
                 <!-- Username Field -->
-                <MFXTextField fx:id="UserNameTextField" layoutX="63.0" layoutY="120.0" prefWidth="374.0" floatingText="Username" promptText="Enter your username" style="-fx-border-color: #F8891A;" />
+                <MFXTextField fx:id="userNameTextField" floatingText="Username" layoutX="63.0" layoutY="120.0" prefWidth="374.0" promptText="Enter your username" style="-fx-border-color: #F8891A;" text="admin@gmail.com" />
 
                 <!-- Password Field -->
-                <MFXPasswordField fx:id="PasswordTextField" layoutX="63.0" layoutY="200.0" prefWidth="374.0" floatingText="Password" promptText="Enter your password" style="-fx-border-color: #F8891A;" />
+                <MFXPasswordField fx:id="passwordTextField" floatingText="Password" layoutX="63.0" layoutY="180.0" prefWidth="374.0" promptText="Enter your password" style="-fx-border-color: #F8891A;" text="root" />
+                <Text layoutX="63.0" layoutY="250.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Forgot Password?" fill="#000000" style="-fx-underline: true; -fx-cursor: hand;" onMouseClicked="#onForgotPasswordClicked">
+                    <font>
+                        <Font name="System Bold" size="14.0" />
+                    </font>
+                </Text>
 
                 <!-- Login Button -->
-                <MFXButton fx:id="loginButton" layoutX="63.0" layoutY="300.0" prefWidth="374.0" prefHeight="50.0" text="LOGIN" style="-fx-background-color: #F8891A; -fx-text-fill: white;" rippleColor="WHITE" onAction="#OnLoginClicked">
+                <MFXButton fx:id="loginButton" layoutX="63.0" layoutY="300.0" onAction="#OnLoginClicked" prefHeight="50.0" prefWidth="374.0" rippleColor="WHITE" style="-fx-background-color: #F8891A; -fx-text-fill: white;" text="LOGIN">
                     <font>
                         <Font name="System Bold" size="17.0" />
                     </font>
@@ -48,7 +52,7 @@
                 </StackPane>
 
                 <!-- Sign Up Button -->
-                <MFXButton fx:id="signupButton" layoutX="63.0" layoutY="450.0" prefWidth="374.0" prefHeight="50.0" text="SIGN UP" style="-fx-background-color: #F8891A; -fx-text-fill: white;" rippleColor="WHITE" onAction="#OnSignUpClicked">
+                <MFXButton fx:id="signupButton" layoutX="63.0" layoutY="450.0" onAction="#OnSignUpClicked" prefHeight="50.0" prefWidth="374.0" rippleColor="WHITE" style="-fx-background-color: #F8891A; -fx-text-fill: white;" text="SIGN UP">
                     <font>
                         <Font name="System Bold" size="17.0" />
                     </font>

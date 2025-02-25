@@ -1,38 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXPaginatedTableView?>
 <?import io.github.palexdev.materialfx.controls.MFXTableColumn?>
-<?import io.github.palexdev.materialfx.controls.MFXTableView?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.StackPane?>
+<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
 
-<?import io.github.palexdev.materialfx.controls.MFXButton?>
-<?import io.github.palexdev.materialfx.controls.MFXPaginatedTableView?>
-<StackPane xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" stylesheets="@../css/Buttons.css" fx:controller="io.github.palexdev.materialfx.demo.controllers.AdminHomeController">
+<StackPane stylesheets="@../css/Buttons.css"
+           xmlns="http://javafx.com/javafx/23.0.1"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="io.github.palexdev.materialfx.demo.controllers.AdminHomeController">
 
-    <AnchorPane fx:id="contentArea">
-        <!-- Add Button -->
-        <MFXButton fx:id="addButton" onAction="#handleAddUser" text="Add User" layoutX="500.0" layoutY="10.0" />
-        <!-- Centered TableView -->
-        <MFXPaginatedTableView fx:id="usersTable" prefHeight="300.0" prefWidth="690.0"
-                                visible="true" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="60.0" AnchorPane.rightAnchor="50.0" AnchorPane.topAnchor="50.0">
+    <AnchorPane fx:id="contentArea" prefHeight="800.0" prefWidth="1200.0">
+        <!-- Welcome Label -->
+        <Label fx:id="contentLabel"
+               AnchorPane.topAnchor="20.0"
+               AnchorPane.leftAnchor="40.0"
+               style="-fx-font-size: 24px; -fx-text-fill: #34495E;"
+               text="Welcome to the Dashboard" />
+
+        <!-- Users Table -->
+        <MFXPaginatedTableView fx:id="usersTable"
+                               AnchorPane.topAnchor="80.0"
+                               AnchorPane.leftAnchor="40.0"
+                               AnchorPane.rightAnchor="40.0"
+                               AnchorPane.bottomAnchor="100.0">
 
             <tableColumns>
-                <MFXTableColumn fx:id="firstNameColumn" prefWidth="200" text="First Name" />
-                <MFXTableColumn fx:id="lastNameColumn" prefWidth="200" text="Last Name" />
-                <MFXTableColumn fx:id="emailColumn" prefWidth="400" text="Email" />
-                <MFXTableColumn fx:id="roleColumn" prefWidth="200" text="Role" />
-                <MFXTableColumn fx:id="phoneNumberColumn" prefWidth="200" text="Phone Number" />
-                <MFXTableColumn fx:id="dateOfBirthColumn" prefWidth="200" text="Date of Birth" />
-                <MFXTableColumn fx:id="profilePictureColumn" prefWidth="200" text="Profile Picture" />
-                <MFXTableColumn fx:id="createdAtColumn" prefWidth="200" text="Created At" />
-                <MFXTableColumn fx:id="updatedAtColumn" prefWidth="200" text="Updated At" />
-                <!-- Actions Column -->
-                <MFXTableColumn fx:id="actionsColumn" prefWidth="400" text="Actions" />
+                <MFXTableColumn fx:id="firstNameColumn" prefWidth="120" text="First Name" />
+                <MFXTableColumn fx:id="lastNameColumn" prefWidth="120" text="Last Name" />
+                <MFXTableColumn fx:id="emailColumn" prefWidth="200" text="Email" />
+                <MFXTableColumn fx:id="roleColumn" prefWidth="100" text="Role" />
+                <MFXTableColumn fx:id="phoneNumberColumn" prefWidth="120" text="Phone Number" />
+                <MFXTableColumn fx:id="dateOfBirthColumn" prefWidth="100" text="Date of Birth" />
+                <MFXTableColumn fx:id="profilePictureColumn" prefWidth="100" text="Profile Picture" />
+                <MFXTableColumn fx:id="createdAtColumn" prefWidth="100" text="Created At" />
+                <MFXTableColumn fx:id="updatedAtColumn" prefWidth="100" text="Updated At" />
+                <MFXTableColumn fx:id="isActiveColumn" prefWidth="80" text="Active" />
+                <MFXTableColumn fx:id="coachingLicenseColumn" prefWidth="120" text="Coaching License" />
+                <MFXTableColumn fx:id="actionsColumn" prefWidth="100" text="Actions" />
             </tableColumns>
         </MFXPaginatedTableView>
 
-        <!-- Label at the top -->
-        <Label fx:id="contentLabel" layoutX="60.0" layoutY="14.0" style="-fx-font-size: 24px; -fx-text-fill: #34495E;" text="Welcome to the Dashboard" />
+        <!-- Add Button -->
+        <MFXButton fx:id="addButton"
+                   AnchorPane.bottomAnchor="40.0"
+                   AnchorPane.leftAnchor="40.0"
+                   onAction="#handleAddUser"
+                   styleClass="mfx-button-primary"
+                   prefHeight="35.0"
+                   prefWidth="122.0"
+                   text="Add User">
+            <graphic>
+                <MFXFontIcon description="fas-plus" size="16.0" />
+            </graphic>
+        </MFXButton>
     </AnchorPane>
 </StackPane>

@@ -15,7 +15,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="900.0" prefWidth="1500.0" style="-fx-background-color: #1B1F3B;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.SignUpController">
+<AnchorPane style="-fx-background-color: #1B1F3B;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.SignUpController">
 
     <!-- Logo Image -->
     <ImageView fitHeight="131.0" fitWidth="156.0" layoutX="481.0" layoutY="14.0">
@@ -65,8 +65,10 @@
         <!-- Phone Number -->
         <MFXTextField fx:id="phoneNumberField" floatingText="Phone Number" prefWidth="520.0" style="-fx-border-color: #F8891A;" styleClass="mfx-text-field" />
 
-
+        <HBox spacing="20">
         <MFXComboBox fx:id="roleComboBox" floatingText="Role" prefWidth="250.0" style="-fx-border-color: #F8891A;" styleClass="mfx-combo-box" />
+            <MFXTextField fx:id="coachingLicenseField" floatingText="License" prefWidth="250.0" style="-fx-border-color: #F8891A;" styleClass="mfx-text-field" visible="false" />
+        </HBox>
 
 
         <!-- Date of Birth -->

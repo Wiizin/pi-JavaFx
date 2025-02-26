@@ -45,6 +45,8 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
@@ -229,14 +231,14 @@ public class OrganizerHomeController implements Initializable {
 
         // Load the user's profile picture (or default if none exists)
         if (currentOrganizer.getProfilePicture() != null) {
-            // Load the user's profile picture from byte array
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(currentOrganizer.getProfilePicture());
-            Image userImage = new Image(inputStream);
-            profileImageView.setImage(userImage);
+            try {
+                Image userImage = new Image(currentOrganizer.getProfilePicture());
+                profileImageView.setImage(userImage);
+            } catch (Exception e) {
+                setDefaultProfileImage(profileImageView);
+            }
         } else {
-            // Load the default profile picture
-            Image defaultImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/default_profile.jpg"))); // Path to default image
-            profileImageView.setImage(defaultImage);
+            setDefaultProfileImage(profileImageView);
         }
 
         profileImageView.getStyleClass().add("profile-image");
@@ -302,12 +304,6 @@ public class OrganizerHomeController implements Initializable {
                 currentOrganizer.setEmail(emailField.getText());
                 currentOrganizer.setPhoneNumber(phoneField.getText());
 
-                // Convert the ImageView to a byte array and save it
-                byte[] imageData = imageViewToByteArray(profileImageView);
-                if (imageData != null) {
-                    currentUser.setProfilePicture(imageData);
-                }
-
                 // Save to database
                 UserService userService = new UserService();
                 userService.update(currentOrganizer);
@@ -316,7 +312,7 @@ public class OrganizerHomeController implements Initializable {
                 showAlert(Alert.AlertType.INFORMATION, "Success", "Profile updated successfully!");
 
                 // Reload the profile image in the main view
-                reloadProfileImage(profileImageView); // Pass the ImageView here
+                reloadProfileImage(profileImageView);
             } catch (Exception ex) {
                 showAlert(Alert.AlertType.ERROR, "Error", "Failed to update profile: " + ex.getMessage());
             }
@@ -330,76 +326,101 @@ public class OrganizerHomeController implements Initializable {
         popupStage.show();
     }
 
-    private byte[] imageViewToByteArray(ImageView imageView) {
-        if (imageView.getImage() == null) {
-            return null;
-        }
-
-        // Step 1: Convert the JavaFX Image to a BufferedImage
-        Image image = imageView.getImage();
-        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
-
-        // Step 2: Ensure the BufferedImage is in the sRGB color space
-        BufferedImage convertedImage = new BufferedImage(
-                bufferedImage.getWidth(),
-                bufferedImage.getHeight(),
-                BufferedImage.TYPE_INT_RGB // Force RGB color space
+    private void handleImageUpload(ImageView profileImageView) {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Select Profile Picture");
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
         );
 
-        // Draw the original image onto the converted image
-        Graphics2D g = convertedImage.createGraphics();
-        g.drawImage(bufferedImage, 0, 0, null);
-        g.dispose();
+        File selectedFile = fileChooser.showOpenDialog(rootPane.getScene().getWindow());
+        if (selectedFile != null) {
+            try {
+                // Get the file extension
+                String fileName = selectedFile.getName();
+                String extension = fileName.substring(fileName.lastIndexOf("."));
 
-        // Step 3: Write the converted image to a byte array in JPEG format
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                // Generate a unique filename using timestamp
+                String uniqueFileName = System.currentTimeMillis() + extension;
 
-        try {
-            // Get the JPEG image writer
-            Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpeg");
-            if (!writers.hasNext()) {
-                throw new IllegalStateException("No JPEG image writers found!");
+                // Create an "uploads" directory in the user's home directory
+                String userHome = System.getProperty("user.home");
+                File uploadsDir = new File(userHome, "sportify/uploads/images");
+                if (!uploadsDir.exists()) {
+                    uploadsDir.mkdirs();
+                }
+
+                // Create the destination file
+                File destinationFile = new File(uploadsDir, uniqueFileName);
+
+                // Copy the file
+                Files.copy(selectedFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                // Store only the relative path
+                String relativePath = "sportify/uploads/images/" + uniqueFileName;
+
+                // Update the current user's profile picture with relative path
+                User currentUser = UserSession.getInstance().getCurrentUser();
+                currentUser.setProfilePicture(relativePath);
+
+                // For display, we need the full path
+                String imageUrl = destinationFile.toURI().toString();
+                Image image = new Image(imageUrl,
+                        profileImageView.getFitWidth(),
+                        profileImageView.getFitHeight(),
+                        true, true);
+                profileImageView.setImage(image);
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to save image: " + e.getMessage());
             }
-            ImageWriter writer = writers.next();
-
-            // Configure compression settings
-            ImageWriteParam param = writer.getDefaultWriteParam();
-            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-            param.setCompressionQuality(0.7f); // Adjust quality (0.0-1.0)
-
-            // Write the image to the output stream
-            ImageOutputStream outputStream = ImageIO.createImageOutputStream(stream);
-            writer.setOutput(outputStream);
-            writer.write(null, new IIOImage(convertedImage, null, null), param);
-
-            // Clean up
-            writer.dispose();
-            outputStream.close();
-            return stream.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
         }
     }
 
-    private void handleImageUpload(ImageView profileImageView) {
-        FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose Profile Picture");
-        fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
-        );
-
-        // Show the file chooser dialog
-        File selectedFile = fileChooser.showOpenDialog(null);
-
-        if (selectedFile != null) {
+    private void reloadProfileImage(ImageView profileImageView) {
+        User currentUser = UserSession.getInstance().getCurrentUser();
+        if (currentUser != null && currentUser.getProfilePicture() != null) {
             try {
-                // Load the selected image
-                Image image = new Image(selectedFile.toURI().toString());
+                String relativePath = currentUser.getProfilePicture();
+                String fullPath;
+
+                if (relativePath.equals("default_profile.jpg")) {
+                    // Load from resources for default image
+                    fullPath = getClass().getResource("/" + relativePath).toExternalForm();
+                } else {
+                    // Load from user home directory for uploaded images
+                    String userHome = System.getProperty("user.home");
+                    File imageFile = new File(userHome, relativePath);
+                    fullPath = imageFile.toURI().toString();
+                }
+
+                Image image = new Image(fullPath,
+                        profileImageView.getFitWidth(),
+                        profileImageView.getFitHeight(),
+                        true, true);
                 profileImageView.setImage(image);
             } catch (Exception e) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Failed to load image: " + e.getMessage());
+                e.printStackTrace();
+                setDefaultProfileImage(profileImageView);
             }
+        } else {
+            setDefaultProfileImage(profileImageView);
+        }
+    }
+
+    private void setDefaultProfileImage(ImageView profileImageView) {
+        try {
+            String defaultImagePath = "default_profile.jpg";
+            String defaultImageUrl = getClass().getResource("/" + defaultImagePath).toExternalForm();
+            Image defaultImage = new Image(defaultImageUrl,
+                    profileImageView.getFitWidth(),
+                    profileImageView.getFitHeight(),
+                    true, true);
+            profileImageView.setImage(defaultImage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load default profile image");
         }
     }
 
@@ -430,21 +451,5 @@ public class OrganizerHomeController implements Initializable {
         Scene scene = new Scene(root, 400, 250);
         alertStage.setScene(scene);
         alertStage.showAndWait();
-    }
-
-
-    private void reloadProfileImage(ImageView profileImageView) {
-        User currentUser = UserSession.getInstance().getCurrentUser();
-
-        if (currentUser.getProfilePicture() != null) {
-            // Load the user's profile picture from byte array
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(currentUser.getProfilePicture());
-            Image userImage = new Image(inputStream);
-            profileImageView.setImage(userImage);
-        } else {
-            // Load the default profile picture
-            Image defaultImage = new Image(getClass().getResourceAsStream("/default_profile.jpg")); // Path to default image
-            profileImageView.setImage(defaultImage);
-        }
     }
 }

@@ -14,7 +14,7 @@ public class Organizer extends User {
 
     // Full Constructor
     public Organizer(int id, String firstname, String lastName, String email, String password,
-                     String role, String phoneNumber, LocalDate dateOfBirth, byte[] profilePicture,
+                     String role, String phoneNumber, LocalDate dateOfBirth, String profilePicture,
                      LocalDateTime createdAt, LocalDateTime updatedAt,
                      String coachingLicense) {
         super(id, firstname, lastName, email, password, role, phoneNumber, dateOfBirth, profilePicture, createdAt, updatedAt);

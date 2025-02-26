@@ -141,4 +141,11 @@ public final class UserSession {
     public User getCurrentUser() {
         return currentUser;
     }
+
+    public void updateUser(User user) {
+        synchronized (LOCK) {
+            this.currentUser = user;
+            updateLastActivityTime();
+        }
+    }
 }

@@ -1,87 +1,101 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import io.github.palexdev.materialfx.controls.MFXButton?>
-<?import io.github.palexdev.materialfx.controls.MFXDatePicker?>
-<?import io.github.palexdev.materialfx.controls.MFXTextField?>
-<?import io.github.palexdev.materialfx.controls.MFXFilterComboBox?>
 <?import io.github.palexdev.materialfx.controls.MFXCheckbox?>
+<?import io.github.palexdev.materialfx.controls.MFXDatePicker?>
+<?import io.github.palexdev.materialfx.controls.MFXFilterComboBox?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.image.Image?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<?import javafx.collections.FXCollections?>
-<?import java.lang.String?>
-<VBox fx:id="rootPane" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="io.github.palexdev.materialfx.demo.controllers.AddUserController">
+<VBox fx:id="rootPane" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.AddUserController">
 
     <GridPane hgap="10" vgap="10">
         <padding>
-            <Insets top="10" right="10" bottom="10" left="10"/>
+            <Insets bottom="10" left="10" right="10" top="10" />
         </padding>
 
         <!-- First Name -->
-        <Label text="First Name:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
-        <MFXTextField fx:id="firstNameField" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+        <Label text="First Name:" GridPane.columnIndex="0" GridPane.rowIndex="0" />
+        <MFXTextField fx:id="firstNameField" prefHeight="50.0" prefWidth="198.0" GridPane.columnIndex="1" GridPane.rowIndex="0" />
 
         <!-- Last Name -->
-        <Label text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
-        <MFXTextField fx:id="lastNameField" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+        <Label text="Last Name:" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <MFXTextField fx:id="lastNameField" prefHeight="50.0" prefWidth="202.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
 
         <!-- Email -->
-        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
-        <MFXTextField fx:id="emailField" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <Label text="Email:" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <MFXTextField fx:id="emailField" prefHeight="50.0" prefWidth="201.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
 
         <!-- Password -->
-        <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="3"/>
-        <MFXTextField fx:id="passwordField" GridPane.columnIndex="1" GridPane.rowIndex="3"/>
+        <Label text="Password:" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <MFXTextField fx:id="passwordField" prefHeight="50.0" prefWidth="203.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
 
         <!-- Role -->
-        <Label text="Role:" GridPane.columnIndex="0" GridPane.rowIndex="4"/>
-        <MFXFilterComboBox fx:id="roleComboBox" GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        <Label text="Role:" GridPane.columnIndex="0" GridPane.rowIndex="4" />
+        <MFXFilterComboBox fx:id="roleComboBox" prefHeight="40.0" prefWidth="203.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
 
         <!-- Phone Number -->
-        <Label text="Phone Number:" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
-        <MFXTextField fx:id="phoneField" GridPane.columnIndex="1" GridPane.rowIndex="5"/>
+        <Label text="Phone Number:" GridPane.columnIndex="0" GridPane.rowIndex="5" />
+        <MFXTextField fx:id="phoneField" prefHeight="50.0" prefWidth="202.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
 
         <!-- Date of Birth -->
-        <Label text="Date of Birth:" GridPane.columnIndex="0" GridPane.rowIndex="6"/>
-        <MFXDatePicker fx:id="dateOfBirthPicker" GridPane.columnIndex="1" GridPane.rowIndex="6"/>
+        <Label text="Date of Birth:" GridPane.columnIndex="0" GridPane.rowIndex="6" />
+        <MFXDatePicker fx:id="dateOfBirthPicker" GridPane.columnIndex="1" GridPane.rowIndex="6" />
 
         <!-- Coaching License -->
-        <Label text="Coaching License:" GridPane.columnIndex="0" GridPane.rowIndex="7" visible="false" managed="false"/>
-        <MFXTextField fx:id="coachingLicenseField" GridPane.columnIndex="1" GridPane.rowIndex="7" visible="false" managed="false"/>
+        <Label managed="false" text="Coaching License:" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="7" />
+        <MFXTextField fx:id="coachingLicenseField" managed="false" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="7" />
 
         <!-- Is Active Checkbox -->
-        <Label text="Active:" GridPane.columnIndex="0" GridPane.rowIndex="8" visible="false" managed="false"/>
-        <MFXCheckbox fx:id="isActiveCheckBox" GridPane.columnIndex="1" GridPane.rowIndex="8" text="Active" visible="false" managed="false"/>
+        <Label managed="false" text="Active:" visible="false" GridPane.columnIndex="0" GridPane.rowIndex="8" />
+        <MFXCheckbox fx:id="isActiveCheckBox" managed="false" text="Active" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="8" />
 
         <!-- Profile Picture -->
-        <Label text="Profile Picture:" GridPane.columnIndex="0" GridPane.rowIndex="9"/>
+        <Label text="Profile Picture:" GridPane.columnIndex="0" GridPane.rowIndex="9" />
         <HBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="9">
-            <MFXTextField fx:id="profilePictureField"/>
-            <MFXButton text="Browse" onAction="#handleBrowseImage"/>
+            <MFXTextField fx:id="profilePictureField" />
+            <MFXButton onAction="#handleBrowseImage" text="Browse" />
         </HBox>
 
         <!-- Profile Picture Preview -->
-        <ImageView fx:id="profilePicturePreview" fitWidth="100" fitHeight="100" 
-                  GridPane.columnIndex="1" GridPane.rowIndex="10">
+        <ImageView fx:id="profilePicturePreview" fitHeight="100" fitWidth="100" GridPane.columnIndex="1" GridPane.rowIndex="10">
             <GridPane.margin>
-                <Insets top="10"/>
+                <Insets top="10" />
             </GridPane.margin>
         </ImageView>
+      <columnConstraints>
+         <ColumnConstraints />
+         <ColumnConstraints />
+      </columnConstraints>
+      <rowConstraints>
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+         <RowConstraints />
+      </rowConstraints>
     </GridPane>
 
     <!-- Buttons Section -->
-    <HBox spacing="10" alignment="CENTER">
+    <HBox alignment="CENTER" spacing="10">
         <padding>
-            <Insets top="10"/>
+            <Insets top="10" />
         </padding>
-        <MFXButton text="Save" onAction="#handleSaveUser"/>
-        <MFXButton text="Cancel" onAction="#handleCancel"/>
+        <MFXButton onAction="#handleSaveUser" text="Save" />
+        <MFXButton onAction="#handleCancel" text="Cancel" />
     </HBox>
 
 </VBox>

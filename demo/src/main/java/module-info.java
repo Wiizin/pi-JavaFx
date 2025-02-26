@@ -6,8 +6,7 @@ module MaterialFX.Demo {
 
 	requires javafx.controls;
 	requires javafx.fxml;
-	requires javafx.graphics;
-	requires javafx.media;
+    requires javafx.media;
 
 	requires fr.brouillard.oss.cssfx;
 	requires org.kordamp.ikonli.javafx;
@@ -17,7 +16,7 @@ module MaterialFX.Demo {
     requires jakarta.mail;
     requires jbcrypt;
     requires java.net.http;
-
+    requires javafx.swing;
 
 
     opens io.github.palexdev.materialfx.demo;

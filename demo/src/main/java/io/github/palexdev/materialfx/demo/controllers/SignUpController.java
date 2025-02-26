@@ -16,6 +16,7 @@ import javafx.stage.Stage;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 public class SignUpController {
 
@@ -107,7 +108,11 @@ public class SignUpController {
             user.setRole(selectedRole.toLowerCase());
             user.setPhoneNumber(phoneNumberField.getText().trim());
             user.setDateOfBirth(dateOfBirthPicker.getValue());
-            user.setProfilePicture("default.png".getBytes());
+            
+            // Set default profile picture URL
+            String defaultImageUrl = Objects.requireNonNull(getClass().getResource("/default_profile.jpg")).toExternalForm();
+            user.setProfilePicture(defaultImageUrl);
+            
             user.setCreatedAt(LocalDateTime.now());
             user.setUpdatedAt(LocalDateTime.now());
 

@@ -25,10 +25,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
@@ -87,6 +84,7 @@ public class PlayerHomeController implements Initializable {
     private MFXFontIcon notificationsIcon;
     @FXML
     private Label userGreeting;
+    private File tempProfileImageFile = null; // Temporary storage for the selected image
 
 
     @Override
@@ -96,7 +94,7 @@ public class PlayerHomeController implements Initializable {
 
         // Initialize the loader for navigation
         initializeLoader();
-       //this.userGreeting.setText("welcome " + UserSession.getInstance().getCurrentUser().getFirstname());
+        //this.userGreeting.setText("welcome " + UserSession.getInstance().getCurrentUser().getFirstname());
 
         // Add smooth scrolling to the scroll pane
         ScrollUtils.addSmoothScrolling(scrollPane);
@@ -204,410 +202,323 @@ public class PlayerHomeController implements Initializable {
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.initStyle(StageStyle.UNDECORATED);
 
-        VBox form = new VBox(10);
-        form.setAlignment(Pos.CENTER);
-        form.setPadding(new Insets(20));
-        form.setStyle("-fx-background-color: #1B1F3B; -fx-border-radius: 10px; -fx-background-radius: 10px ;-fx-border-color: #ff9800;-fx-border-width: 2;");
+        // Main container
+        VBox mainContainer = new VBox(20);
+        mainContainer.setStyle("-fx-background-color: #1B1F3B;");
+        mainContainer.setPadding(new Insets(20));
 
-        String textFieldStyle = "-fx-text-fill: white; -fx-prompt-text-fill: white; -fx-background-color: #2A2F4F; -fx-border-color: #ff9800;";
-
-        // Get the current user
-        User currentUser = UserSession.getInstance().getCurrentUser();
-
-        // Create circular ImageView for profile picture
-        ImageView profileImageView = new ImageView();
-        profileImageView.setFitWidth(100); // Set the desired width
-        profileImageView.setFitHeight(100); // Set the desired height
-        profileImageView.setPreserveRatio(true);
-
-        // Create a circular clip
-        Circle clip = new Circle(50, 50, 50); // Center X, Center Y, Radius
-        profileImageView.setClip(clip);
-
-        // Load the user's profile picture (or default if none exists)
-        if (currentUser.getProfilePicture() != null) {
-            // Load the user's profile picture from byte array
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(currentUser.getProfilePicture());
-            Image userImage = new Image(inputStream);
-            profileImageView.setImage(userImage);
-        } else {
-            // Load the default profile picture
-            Image defaultImage = new Image(Objects.requireNonNull(getClass().getResourceAsStream("/default_profile.jpg"))); // Path to default image
-            profileImageView.setImage(defaultImage);
-        }
-
-        profileImageView.getStyleClass().add("profile-image");
-
-        // Add a button to upload a new profile picture
-        MFXButton uploadImageButton = new MFXButton("Change Picture");
-        uploadImageButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white;");
-        uploadImageButton.setOnAction(e -> handleImageUpload(profileImageView));
-
-        // Create form fields
-        MFXTextField firstNameField = new MFXTextField();
-        firstNameField.setStyle(textFieldStyle);
-        firstNameField.setFloatingText("First Name");
-        firstNameField.setText(currentUser.getFirstname());
-        firstNameField.setPrefWidth(300);
-        firstNameField.setPrefHeight(40);
-
-        MFXTextField lastNameField = new MFXTextField();
-        lastNameField.setStyle(textFieldStyle);
-        lastNameField.setFloatingText("Last Name");
-        lastNameField.setText(currentUser.getLastName());
-        lastNameField.setPrefWidth(300);
-        lastNameField.setPrefHeight(40);
-
-        MFXTextField emailField = new MFXTextField();
-        emailField.setStyle(textFieldStyle);
-        emailField.setFloatingText("Email");
-        emailField.setText(currentUser.getEmail());
-        emailField.setPrefWidth(300);
-        emailField.setPrefHeight(40);
-
-        MFXTextField phoneField = new MFXTextField();
-        phoneField.setStyle(textFieldStyle);
-        phoneField.setFloatingText("Phone Number");
-        phoneField.setText(currentUser.getPhoneNumber());
-        phoneField.setPrefWidth(300);
-        phoneField.setPrefHeight(40);
+        // Header section with close button
+        HBox header = new HBox();
+        header.setAlignment(Pos.CENTER_LEFT);
+        header.setSpacing(10);
 
         Label titleLabel = new Label("Edit Profile");
-        titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px;");
+        titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;");
 
-        // Create buttons
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        MFXButton closeButton = new MFXButton("×");
+        closeButton.setStyle("-fx-font-size: 18px; -fx-background-color: transparent; -fx-text-fill: white;");
+        closeButton.setOnAction(e -> popupStage.close());
+
+        header.getChildren().addAll(titleLabel, spacer, closeButton);
+
+        // Profile section
+        VBox profileSection = new VBox(10);
+        profileSection.setAlignment(Pos.CENTER);
+
+        // Profile picture setup
+        ImageView profileImageView = new ImageView();
+        profileImageView.setFitWidth(120);
+        profileImageView.setFitHeight(120);
+
+        // Set proper image preservation settings
+        profileImageView.setPreserveRatio(false);
+        profileImageView.setSmooth(true);
+
+        // Create a StackPane to center the ImageView
+        StackPane imageContainer = new StackPane(profileImageView);
+        imageContainer.setMaxSize(120, 120);
+        imageContainer.setMinSize(120, 120);
+
+        // Create and apply circular clip
+        Circle clip = new Circle(60);
+        clip.setCenterX(60);
+        clip.setCenterY(60);
+        imageContainer.setClip(clip);
+
+        // Load current profile picture
+        reloadProfileImage(profileImageView);
+
+        MFXButton uploadImageButton = new MFXButton("Change Picture");
+        uploadImageButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white; -fx-font-size: 14px;");
+        uploadImageButton.setOnAction(e -> handleImageUpload(profileImageView));
+
+        profileSection.getChildren().addAll(imageContainer, uploadImageButton);
+
+        // Form sections
+        VBox formContainer = new VBox(20);
+        formContainer.setStyle("-fx-background-color: #2A2F4F; -fx-padding: 20; -fx-background-radius: 10;");
+
+        // Personal Information Section
+        VBox personalInfoSection = new VBox(10);
+        Label personalInfoLabel = new Label("Personal Information");
+        personalInfoLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;");
+
+        MFXTextField firstNameField = new MFXTextField();
+        firstNameField.setFloatingText("First Name");
+        firstNameField.setText(UserSession.getInstance().getCurrentUser().getFirstname());
+        firstNameField.setStyle("-fx-text-fill: black;");
+
+        MFXTextField lastNameField = new MFXTextField();
+        lastNameField.setFloatingText("Last Name");
+        lastNameField.setText(UserSession.getInstance().getCurrentUser().getLastName());
+        lastNameField.setStyle("-fx-text-fill: black;");
+
+        MFXTextField emailField = new MFXTextField();
+        emailField.setFloatingText("Email");
+        emailField.setText(UserSession.getInstance().getCurrentUser().getEmail());
+        emailField.setStyle("-fx-text-fill: black;");
+
+        MFXTextField phoneField = new MFXTextField();
+        phoneField.setFloatingText("Phone Number");
+        phoneField.setText(UserSession.getInstance().getCurrentUser().getPhoneNumber());
+        phoneField.setStyle("-fx-text-fill: black;");
+
+        personalInfoSection.getChildren().addAll(personalInfoLabel, firstNameField, lastNameField, emailField, phoneField);
+
+        // Password Change Section
+        VBox passwordSection = new VBox(10);
+        Label passwordLabel = new Label("Change Password");
+        passwordLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;");
+
+        MFXPasswordField currentPasswordField = new MFXPasswordField();
+        currentPasswordField.setFloatingText("Current Password");
+        currentPasswordField.setStyle("-fx-text-fill: black;");
+
+        MFXPasswordField newPasswordField = new MFXPasswordField();
+        newPasswordField.setFloatingText("New Password");
+        newPasswordField.setStyle("-fx-text-fill: black;");
+
+        MFXPasswordField confirmPasswordField = new MFXPasswordField();
+        confirmPasswordField.setFloatingText("Confirm New Password");
+        confirmPasswordField.setStyle("-fx-text-fill: black;");
+
+        passwordSection.getChildren().addAll(passwordLabel, currentPasswordField, newPasswordField, confirmPasswordField);
+
+        // Add sections to form container
+        formContainer.getChildren().addAll(personalInfoSection, passwordSection);
+
+        // Create a scroll pane for the form
+        MFXScrollPane scrollPane = new MFXScrollPane(formContainer);
+        scrollPane.setFitToWidth(true);
+        scrollPane.setStyle("-fx-background-color: transparent;");
+
+        // Buttons
         HBox buttonBox = new HBox(10);
         buttonBox.setAlignment(Pos.CENTER);
 
-        MFXButton saveButton = new MFXButton("Save");
-        saveButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white;");
-        saveButton.setPrefWidth(100);
-        saveButton.setPrefHeight(40);
+        MFXButton saveButton = new MFXButton("Save Changes");
+        saveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
 
         MFXButton cancelButton = new MFXButton("Cancel");
-        cancelButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white;");
+        cancelButton.setStyle("-fx-background-color: #F44336; -fx-text-fill: white;");
+        cancelButton.setOnAction(e -> popupStage.close());
+
         buttonBox.getChildren().addAll(saveButton, cancelButton);
-        cancelButton.setPrefWidth(100);
-        cancelButton.setPrefHeight(40);
 
-        // Add all components to form
-        form.getChildren().addAll(
-                profileImageView,
-                uploadImageButton,
-                titleLabel,
-                firstNameField,
-                lastNameField,
-                emailField,
-                phoneField,
-                buttonBox
-
-
-        );
-
-        // Handle save button
+        // Save button action
         saveButton.setOnAction(e -> {
-            try {
-                // Update the user object with new values
+            User currentUser = UserSession.getInstance().getCurrentUser();
+            boolean hasChanges = false;
+
+            // Check for changes in text fields
+            if (!firstNameField.getText().equals(currentUser.getFirstname())) {
                 currentUser.setFirstname(firstNameField.getText());
+                hasChanges = true;
+            }
+            if (!lastNameField.getText().equals(currentUser.getLastName())) {
                 currentUser.setLastName(lastNameField.getText());
+                hasChanges = true;
+            }
+            if (!emailField.getText().equals(currentUser.getEmail())) {
                 currentUser.setEmail(emailField.getText());
+                hasChanges = true;
+            }
+            if (!phoneField.getText().equals(currentUser.getPhoneNumber())) {
                 currentUser.setPhoneNumber(phoneField.getText());
+                hasChanges = true;
+            }
 
-                // Convert the ImageView to a byte array and save it
-                byte[] imageData = imageViewToByteArray(profileImageView);
-                if (imageData != null) {
-                    currentUser.setProfilePicture(imageData);
+            // Handle password change if new password is provided
+            if (!newPasswordField.getText().isEmpty()) {
+                if (!currentPasswordField.getText().equals(currentUser.getPassword())) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Current password is incorrect");
+                    return;
                 }
+                if (!newPasswordField.getText().equals(confirmPasswordField.getText())) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "New passwords do not match");
+                    return;
+                }
+                currentUser.setPassword(newPasswordField.getText());
+                hasChanges = true;
+            }
 
-                // Save to database
-                UserService userService = new UserService();
-                userService.update(currentUser);
+            // Handle profile picture change if a new image was selected
+            if (tempProfileImageFile != null) {
+                try {
+                    // Generate a unique filename
+                    String extension = tempProfileImageFile.getName().substring(tempProfileImageFile.getName().lastIndexOf("."));
+                    String uniqueFileName = System.currentTimeMillis() + "_" + (int)(Math.random() * 1000) + extension;
 
-                // Close the popup
+                    // Create an "uploads" directory in the user's home directory if it doesn't exist
+                    String userHome = System.getProperty("user.home");
+                    File uploadsDir = new File(userHome + "/sportify/uploads/images");
+                    if (!uploadsDir.exists()) {
+                        uploadsDir.mkdirs();
+                    }
+
+                    // Create the destination file
+                    File destinationFile = new File(uploadsDir, uniqueFileName);
+
+                    // Copy the selected file to the destination
+                    Files.copy(tempProfileImageFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                    // Update user profile picture in the database with the new filename
+                    currentUser.setProfilePicture(uniqueFileName);
+                    hasChanges = true;
+
+                    // Clear the temporary file
+                    tempProfileImageFile = null;
+                } catch (Exception ex) {
+
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to upload profile picture: " + ex.getMessage());
+                    return;
+                }
+            }
+
+            // Save changes if any
+            if (hasChanges) {
+                try {
+                    UserService userService = new UserService();
+                    userService.update(currentUser);
+
+                    // Update the session with the modified user
+                    UserSession.getInstance().updateUser(currentUser);
+
+                    // Reload the profile image in the main view if it was changed
+                    if (currentUser.getProfilePicture() != null) {
+                        reloadProfileImage(profileImageView);
+                    }
+
+                    showAlert(Alert.AlertType.INFORMATION, "Success", "Profile updated successfully");
+                    popupStage.close();
+                } catch (Exception ex) {
+                    showAlert(Alert.AlertType.ERROR, "Error", "Failed to update profile: " + ex.getMessage());
+                }
+            } else {
                 popupStage.close();
-
-                // Show success message
-                showAlert(Alert.AlertType.INFORMATION, "Success", "Profile updated successfully!");
-
-                // Reload the profile image in the main view
-                reloadProfileImage(profileImageView); // Pass the ImageView here
-            } catch (Exception ex) {
-                showAlert(Alert.AlertType.ERROR, "Error", "Failed to update profile: " + ex.getMessage());
             }
         });
 
-        // Handle cancel button
-        cancelButton.setOnAction(e -> popupStage.close());
+        // Add all components to main container
+        mainContainer.getChildren().addAll(header, profileSection, scrollPane, buttonBox);
 
-        Scene scene = new Scene(form, 700, 700);
+        Scene scene = new Scene(mainContainer, 700, 800);
         popupStage.setScene(scene);
         popupStage.show();
     }
 
     private void reloadProfileImage(ImageView profileImageView) {
         User currentUser = UserSession.getInstance().getCurrentUser();
+        if (currentUser != null && currentUser.getProfilePicture() != null) {
+            try {
+                String fileName = currentUser.getProfilePicture();
+                String fullPath;
 
-        if (currentUser.getProfilePicture() != null) {
-            // Load the user's profile picture from byte array
-            ByteArrayInputStream inputStream = new ByteArrayInputStream(currentUser.getProfilePicture());
-            Image userImage = new Image(inputStream);
-            profileImageView.setImage(userImage);
+                if (fileName.equals("default_profile.jpg")) {
+                    // Load default image from resources
+                    URL resourceUrl = getClass().getResource("/default_profile.jpg");
+                    if (resourceUrl != null) {
+                        fullPath = resourceUrl.toExternalForm();
+                    } else {
+                        throw new IOException("Default profile image not found in resources");
+                    }
+                } else {
+                    // Load from uploads directory
+                    String userHome = System.getProperty("user.home");
+                    File imageFile = new File(userHome + "/sportify/uploads/images/" + fileName);
+                    if (!imageFile.exists()) {
+                        throw new IOException("Profile image not found: " + imageFile.getAbsolutePath());
+                    }
+                    fullPath = imageFile.toURI().toString();
+                }
+
+                Image image = new Image(fullPath,
+                        profileImageView.getFitWidth(),
+                        profileImageView.getFitHeight(),
+                        true, true);
+
+                profileImageView.setImage(image);
+
+                // Add the style class for future updates
+                profileImageView.getStyleClass().add("profile-image-view");
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                setDefaultProfileImage(profileImageView);
+            }
         } else {
-            // Load the default profile picture
-            Image defaultImage = new Image(getClass().getResourceAsStream("/default_profile.jpg")); // Path to default image
-            profileImageView.setImage(defaultImage);
+            setDefaultProfileImage(profileImageView);
         }
     }
 
+    private void setDefaultProfileImage(ImageView profileImageView) {
+        try {
+            String defaultImagePath = "default_profile.jpg";
+            String defaultImageUrl = getClass().getResource("/" + defaultImagePath).toExternalForm();
+            Image defaultImage = new Image(defaultImageUrl,
+                    profileImageView.getFitWidth(),
+                    profileImageView.getFitHeight(),
+                    true, true);
+            profileImageView.setImage(defaultImage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Failed to load default profile image");
+        }
+    }
 
     private void handleImageUpload(ImageView profileImageView) {
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setTitle("Choose Profile Picture");
+        fileChooser.setTitle("Select Profile Picture");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
         );
 
-        File selectedFile = fileChooser.showOpenDialog(profileImageView.getScene().getWindow());
+        File selectedFile = fileChooser.showOpenDialog(rootPane.getScene().getWindow());
         if (selectedFile != null) {
             try {
-                // Load the original image
-                BufferedImage originalImage = ImageIO.read(selectedFile);
-                
-                // Create the image editor window
-                Stage editorStage = new Stage();
-                editorStage.initModality(Modality.APPLICATION_MODAL);
-                editorStage.setTitle("Edit Profile Picture");
+                // Temporarily store the selected file
+                tempProfileImageFile = selectedFile;
 
-                VBox editorRoot = new VBox(10);
-                editorRoot.setAlignment(Pos.CENTER);
-                editorRoot.setPadding(new Insets(20));
-                editorRoot.setStyle("-fx-background-color: #1B1F3B;");
+                // Display the selected image in the ImageView
+                Image image = new Image(selectedFile.toURI().toString());
+                profileImageView.setImage(image);
 
-                // Create ImageView for preview
-                ImageView previewImageView = new ImageView();
-                previewImageView.setFitWidth(200);
-                previewImageView.setFitHeight(200);
-                previewImageView.setPreserveRatio(true);
-                
-                // Convert BufferedImage to JavaFX Image
-                Image fxImage = SwingFXUtils.toFXImage(originalImage, null);
-                previewImageView.setImage(fxImage);
-
-                // Add size controls
-                Label sizeLabel = new Label("Image Size: 200px");
-                sizeLabel.setStyle("-fx-text-fill: white;");
-                
-                MFXSlider sizeSlider = new MFXSlider();
-                sizeSlider.setMin(50);
-                sizeSlider.setMax(400);
-                sizeSlider.setValue(200);
-                sizeSlider.setPrefWidth(300);
-                sizeSlider.setStyle("-fx-text-fill: white;");
-                
-                // Update image size when slider changes
-                sizeSlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-                    double size = newVal.doubleValue();
-                    previewImageView.setFitWidth(size);
-                    previewImageView.setFitHeight(size);
-                    sizeLabel.setText(String.format("Image Size: %.0fpx", size));
-                });
-
-                // Add quality control
-                Label qualityLabel = new Label("Image Quality: 80%");
-                qualityLabel.setStyle("-fx-text-fill: white;");
-                
-                MFXSlider qualitySlider = new MFXSlider();
-                qualitySlider.setMin(10);
-                qualitySlider.setMax(100);
-                qualitySlider.setValue(80);
-                qualitySlider.setPrefWidth(300);
-                qualitySlider.setStyle("-fx-text-fill: white;");
-                
-                // Update quality label when slider changes
-                qualitySlider.valueProperty().addListener((obs, oldVal, newVal) -> {
-                    qualityLabel.setText(String.format("Image Quality: %.0f%%", newVal.doubleValue()));
-                });
-
-                // Add buttons
-                HBox buttonBox = new HBox(10);
-                buttonBox.setAlignment(Pos.CENTER);
-
-                MFXButton cropButton = new MFXButton("Crop");
-                cropButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white;");
-                
-                MFXButton rotateButton = new MFXButton("Rotate");
-                rotateButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white;");
-                rotateButton.setOnAction(e -> {
-                    previewImageView.setRotate(previewImageView.getRotate() + 90);
-                });
-
-                MFXButton saveButton = new MFXButton("Save");
-                saveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
-                saveButton.setOnAction(e -> {
-                    try {
-                        // Get the final image with all transformations
-                        BufferedImage finalImage = createTransformedImage(previewImageView, 
-                            qualitySlider.getValue() / 100.0); // Convert percentage to decimal
-                        
-                        // Update the profile image view
-                        Image processedImage = SwingFXUtils.toFXImage(finalImage, null);
-                        profileImageView.setImage(processedImage);
-                        
-                        // Save to database
-                        UserService userService = new UserService();
-                        User currentUser = UserSession.getInstance().getCurrentUser();
-                        currentUser.setProfilePicture(imageToByteArray(finalImage, qualitySlider.getValue() / 100.0));
-                        userService.update(currentUser);
-                        
-                        editorStage.close();
-                        showAlert(Alert.AlertType.INFORMATION, "Success", "Profile picture updated successfully!");
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                        showAlert(Alert.AlertType.ERROR, "Error", "Failed to save profile picture.");
-                    }
-                });
-
-                MFXButton cancelButton = new MFXButton("Cancel");
-                cancelButton.setStyle("-fx-background-color: #f44336; -fx-text-fill: white;");
-                cancelButton.setOnAction(e -> editorStage.close());
-
-                buttonBox.getChildren().addAll(cropButton, rotateButton, saveButton, cancelButton);
-
-                editorRoot.getChildren().addAll(
-                    previewImageView,
-                    sizeLabel,
-                    sizeSlider,
-                    qualityLabel,
-                    qualitySlider,
-                    buttonBox
-                );
-
-                Scene editorScene = new Scene(editorRoot);
-                editorStage.setScene(editorScene);
-                editorStage.show();
-
-            } catch (IOException e) {
+                showAlert(Alert.AlertType.INFORMATION, "Success", "Profile picture selected. Click 'Save' to upload.");
+            } catch (Exception e) {
                 e.printStackTrace();
-                showAlert(Alert.AlertType.ERROR, "Error", "Failed to load image.");
+                showAlert(Alert.AlertType.ERROR, "Error", "Failed to load image: " + e.getMessage());
             }
         }
     }
 
-    private BufferedImage createTransformedImage(ImageView imageView, double quality) {
-        try {
-            // Get the displayed image
-            Image fxImage = imageView.getImage();
-            
-            // Create a new BufferedImage with the desired dimensions
-            BufferedImage resizedImage = new BufferedImage(
-                (int) imageView.getFitWidth(),
-                (int) imageView.getFitHeight(),
-                BufferedImage.TYPE_INT_RGB
-            );
-
-            // Draw the image with transformations
-            Graphics2D g2d = resizedImage.createGraphics();
-            
-            // Apply rotation if any
-            if (imageView.getRotate() != 0) {
-                g2d.rotate(Math.toRadians(imageView.getRotate()), 
-                    resizedImage.getWidth() / 2, 
-                    resizedImage.getHeight() / 2);
-            }
-
-            // Draw the image
-            g2d.drawImage(
-                SwingFXUtils.fromFXImage(fxImage, null),
-                0, 0,
-                (int) imageView.getFitWidth(),
-                (int) imageView.getFitHeight(),
-                null
-            );
-            
-            g2d.dispose();
-            return resizedImage;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
+    private String imageViewToUrl(ImageView imageView) {
+        if (imageView.getImage() != null && imageView.getImage().getUrl() != null) {
+            return imageView.getImage().getUrl();
         }
-    }
-
-    private byte[] imageToByteArray(BufferedImage image, double quality) throws IOException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        
-        // Get JPG writer
-        Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpg");
-        ImageWriter writer = writers.next();
-        
-        // Set up output
-        ImageOutputStream ios = ImageIO.createImageOutputStream(outputStream);
-        writer.setOutput(ios);
-        
-        // Set the compression quality
-        ImageWriteParam param = writer.getDefaultWriteParam();
-        param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-        param.setCompressionQuality((float) quality);
-        
-        // Write the image
-        writer.write(null, new IIOImage(image, null, null), param);
-        
-        // Cleanup
-        ios.close();
-        writer.dispose();
-        
-        return outputStream.toByteArray();
-    }
-
-    private byte[] imageViewToByteArray(ImageView imageView) {
-        if (imageView.getImage() == null) {
-            return null;
-        }
-
-        // Step 1: Convert the JavaFX Image to a BufferedImage
-        Image image = imageView.getImage();
-        BufferedImage bufferedImage = SwingFXUtils.fromFXImage(image, null);
-
-        // Step 2: Ensure the BufferedImage is in the sRGB color space
-        BufferedImage convertedImage = new BufferedImage(
-                bufferedImage.getWidth(),
-                bufferedImage.getHeight(),
-                BufferedImage.TYPE_INT_RGB // Force RGB color space
-        );
-
-        // Draw the original image onto the converted image
-        Graphics2D g = convertedImage.createGraphics();
-        g.drawImage(bufferedImage, 0, 0, null);
-        g.dispose();
-
-        // Step 3: Write the converted image to a byte array in JPEG format
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-
-        try {
-            // Get the JPEG image writer
-            Iterator<ImageWriter> writers = ImageIO.getImageWritersByFormatName("jpeg");
-            if (!writers.hasNext()) {
-                throw new IllegalStateException("No JPEG image writers found!");
-            }
-            ImageWriter writer = writers.next();
-
-            // Configure compression settings
-            ImageWriteParam param = writer.getDefaultWriteParam();
-            param.setCompressionMode(ImageWriteParam.MODE_EXPLICIT);
-            param.setCompressionQuality(0.7f); // Adjust quality (0.0-1.0)
-
-            // Write the image to the output stream
-            ImageOutputStream outputStream = ImageIO.createImageOutputStream(stream);
-            writer.setOutput(outputStream);
-            writer.write(null, new IIOImage(convertedImage, null, null), param);
-
-            // Clean up
-            writer.dispose();
-            outputStream.close();
-            return stream.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
+        return null;
     }
 
     private void showAlert(Alert.AlertType type, String title, String content) {

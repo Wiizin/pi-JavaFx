@@ -13,7 +13,7 @@ public class User {
     private String role;
     private String phoneNumber;
     private LocalDate dateOfBirth;
-    private byte[] profilePicture;  // Changed from String to byte[]
+    private String profilePicture;  // Changed from byte[] to String
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private boolean isActive;  // New field
@@ -25,7 +25,7 @@ public class User {
 
     // Full Constructor
     public User(int id, String firstname, String lastName, String email, String password,
-                String role, String phoneNumber, LocalDate dateOfBirth, byte[] profilePicture,
+                String role, String phoneNumber, LocalDate dateOfBirth, String profilePicture,
                 LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.firstname = firstname;
@@ -107,11 +107,11 @@ public class User {
     }
 
     // Modified profilePicture getter and setter
-    public byte[] getProfilePicture() {
+    public String getProfilePicture() {
         return profilePicture;
     }
 
-    public void setProfilePicture(byte[] profilePicture) {
+    public void setProfilePicture(String profilePicture) {
         this.profilePicture = profilePicture;
     }
 

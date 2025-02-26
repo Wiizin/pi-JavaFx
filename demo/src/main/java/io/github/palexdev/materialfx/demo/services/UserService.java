@@ -37,7 +37,7 @@ public class UserService implements IService<User> {
             pstmt.setString(5, user.getRole());
             pstmt.setString(6, user.getPhoneNumber());
             pstmt.setDate(7, Date.valueOf(user.getDateOfBirth()));
-            pstmt.setBytes(8, user.getProfilePicture());
+            pstmt.setString(8, user.getProfilePicture());
 
             LocalDateTime now = LocalDateTime.now();
             pstmt.setTimestamp(9, Timestamp.valueOf(now));
@@ -86,11 +86,11 @@ public class UserService implements IService<User> {
                 if ("organizer".equalsIgnoreCase(role)) {
                     Organizer organizer = new Organizer();
                     organizer.setCoachingLicense(rs.getString("coachinglicense"));
-                    organizer.setActive(isActive); // Explicitly set active status for organizer
+                    organizer.setActive(isActive);
                     user = organizer;
                 } else {
                     user = new User();
-                    user.setActive(true); // Non-organizers are always active
+                    user.setActive(true);
                 }
 
                 // Set common fields
@@ -102,7 +102,7 @@ public class UserService implements IService<User> {
                 user.setRole(role);
                 user.setPhoneNumber(rs.getString("phonenumber"));
                 user.setDateOfBirth(rs.getDate("dateofbirth").toLocalDate());
-                user.setProfilePicture(rs.getBytes("profilepicture"));
+                user.setProfilePicture(rs.getString("profilepicture"));
                 user.setCreatedAt(rs.getTimestamp("createdat").toLocalDateTime());
                 user.setUpdatedAt(rs.getTimestamp("updatedat").toLocalDateTime());
 
@@ -130,7 +130,7 @@ public class UserService implements IService<User> {
             pstmt.setString(5, user.getRole());
             pstmt.setString(6, user.getPhoneNumber());
             pstmt.setDate(7, Date.valueOf(user.getDateOfBirth()));
-            pstmt.setBytes(8, user.getProfilePicture());
+            pstmt.setString(8, user.getProfilePicture());
             pstmt.setTimestamp(9, Timestamp.valueOf(LocalDateTime.now()));
             
             // Handle active status based on role with debug logging
@@ -221,7 +221,7 @@ public class UserService implements IService<User> {
                     user.setRole(role);
                     user.setPhoneNumber(rs.getString("phonenumber"));
                     user.setDateOfBirth(rs.getDate("dateofbirth").toLocalDate());
-                    user.setProfilePicture(rs.getBytes("profilepicture"));
+                    user.setProfilePicture(rs.getString("profilepicture"));
                     user.setCreatedAt(rs.getTimestamp("createdat").toLocalDateTime());
                     user.setUpdatedAt(rs.getTimestamp("updatedat").toLocalDateTime());
                     user.setActive(isActive);

@@ -13,6 +13,7 @@ import javafx.fxml.FXML;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
+import javafx.scene.shape.Circle;
 import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -22,8 +23,14 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Pattern;
 
 public class AddUserController {
@@ -73,7 +80,7 @@ public class AddUserController {
         // Add listener to roleComboBox for handling organizer-specific fields
         roleComboBox.valueProperty().addListener((obs, oldValue, newValue) -> {
             if (newValue == null) return;
-            
+
             boolean isOrganizer = "organizer".equalsIgnoreCase(newValue);
             updateOrganizerFields(isOrganizer);
         });
@@ -220,8 +227,8 @@ public class AddUserController {
         }
 
         // Validate coaching license only for organizers
-        if ("organizer".equalsIgnoreCase(roleComboBox.getSelectedItem()) && 
-            coachingLicenseField.getText().trim().isEmpty()) {
+        if ("organizer".equalsIgnoreCase(roleComboBox.getSelectedItem()) &&
+                coachingLicenseField.getText().trim().isEmpty()) {
             return new ValidationResult(false, "Coaching license is required for organizers");
         }
 
@@ -229,102 +236,59 @@ public class AddUserController {
     }
 
     @FXML
-    private void handleSaveUser() {
-        ValidationResult validationResult = validateInputs();
-        if (!validationResult.isValid()) {
-            showMaterialFXAlert("Validation Error", validationResult.message(), "fas-triangle-exclamation", "mfx-error-dialog");
-            return;
-        }
-
-        try {
-            User user = mode == Mode.ADD ? new User() : userToUpdate;
-            String selectedRole = roleComboBox.getSelectedItem();
-
-            // Handle role-specific user type
-            if ("organizer".equalsIgnoreCase(selectedRole)) {
-                Organizer organizer;
-                if (user instanceof Organizer) {
-                    organizer = (Organizer) user;
-                } else {
-                    organizer = new Organizer();
-                    // Copy common fields if updating
-                    if (mode == Mode.UPDATE) {
-                        organizer.setId(user.getId());
-                        organizer.setCreatedAt(user.getCreatedAt());
-                    }
-                }
-                organizer.setCoachingLicense(coachingLicenseField.getText().trim());
-                // Explicitly set the active status from checkbox
-                boolean isActive = isActiveCheckBox.isSelected();
-                System.out.println("Setting organizer active status to: " + isActive); // Debug log
-                organizer.setActive(isActive);
-                user = organizer;
-            } else {
-                // For admin and player users, always set active to true
-                user.setActive(true);
-            }
-
-            // Set common fields
-            user.setFirstname(firstNameField.getText().trim());
-            user.setLastName(lastNameField.getText().trim());
-            user.setEmail(emailField.getText().trim());
-            user.setPassword(passwordField.getText());
-            user.setRole(selectedRole.toLowerCase());
-            user.setPhoneNumber(phoneField.getText().trim());
-            user.setDateOfBirth(dateOfBirthPicker.getValue());
-
-            // Handle profile picture
-            String profilePicturePath = profilePictureField.getText().trim();
-            if (!profilePicturePath.isEmpty()) {
-                try {
-                    File imageFile = new File(profilePicturePath);
-                    BufferedImage bufferedImage = ImageIO.read(imageFile);
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    ImageIO.write(bufferedImage, "jpg", baos);
-                    user.setProfilePicture(baos.toByteArray());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                    user.setProfilePicture(new byte[0]);
-                }
-            } else {
-                user.setProfilePicture(new byte[0]);
-            }
-
-            if (mode == Mode.ADD) {
-                userService.create(user);
-                showMaterialFXAlert("Success", "User successfully added", "fas-circle-check", "mfx-success-dialog");
-            } else {
-                System.out.println("Updating user with active status: " + user.isActive()); // Debug log
-                userService.update(user);
-                showMaterialFXAlert("Success", "User successfully updated", "fas-circle-check", "mfx-success-dialog");
-            }
-
-            PauseTransition delay = new PauseTransition(Duration.seconds(1));
-            delay.setOnFinished(event -> {
-                Stage stage = (Stage) rootPane.getScene().getWindow();
-                stage.close();
-            });
-            delay.play();
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            showMaterialFXAlert("Error", "Failed to save user: " + e.getMessage(), "fas-circle-x", "mfx-error-dialog");
-        }
-    }
-
-    @FXML
     private void handleBrowseImage() {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Profile Picture");
-        fileChooser.getExtensionFilters().add(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg")
+        fileChooser.getExtensionFilters().addAll(
+                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
         );
 
-        File file = fileChooser.showOpenDialog(profilePicturePreview.getScene().getWindow());
-        if (file != null) {
-            Image image = new Image(file.toURI().toString());
-            profilePicturePreview.setImage(image);
-            profilePictureField.setText(file.getAbsolutePath());
+        File selectedFile = fileChooser.showOpenDialog(rootPane.getScene().getWindow());
+        if (selectedFile != null) {
+            try {
+                // Get the file extension
+                String fileName = selectedFile.getName();
+                String extension = fileName.substring(fileName.lastIndexOf("."));
+
+                // Generate a unique filename using timestamp
+                String uniqueFileName = System.currentTimeMillis() + extension;
+
+                // Create an "uploads" directory in the user's home directory
+                String userHome = System.getProperty("user.home");
+                File uploadsDir = new File(userHome, "sportify/uploads/images");
+                if (!uploadsDir.exists()) {
+                    uploadsDir.mkdirs();
+                }
+
+                // Create the destination file
+                File destinationFile = new File(uploadsDir, uniqueFileName);
+
+                // Copy the file
+                Files.copy(selectedFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+                // Store only the relative path
+                String relativePath = "sportify/uploads/images/" + uniqueFileName;
+                profilePictureField.setText(relativePath);
+
+                // For display, we need the full URL
+                String imageUrl = destinationFile.toURI().toString();
+                Image image = new Image(imageUrl, 100, 100, true, true);
+                profilePicturePreview.setImage(image);
+                profilePicturePreview.setFitWidth(100);
+                profilePicturePreview.setFitHeight(100);
+
+                // Make the preview circular
+                Circle clip = new Circle(50, 50, 50);
+                profilePicturePreview.setClip(clip);
+            } catch (Exception e) {
+                e.printStackTrace();
+                showMaterialFXAlert(
+                        "Error",
+                        "Failed to save image: " + e.getMessage(),
+                        "fas-circle-xmark",
+                        "mfx-error-dialog"
+                );
+            }
         }
     }
 
@@ -378,7 +342,59 @@ public class AddUserController {
     public void setUserToUpdate(User user) {
         this.userToUpdate = user;
         this.mode = Mode.UPDATE;
-        populateFields();
+        
+        // Wait for FXML to be fully loaded before populating fields
+        Platform.runLater(() -> {
+            populateFields();
+            
+            // Update the role combo box and related fields
+            if (user.getRole() != null) {
+                roleComboBox.setValue(user.getRole().toUpperCase());
+                updateOrganizerFields("organizer".equalsIgnoreCase(user.getRole()));
+            }
+            
+            // Load the profile picture
+            if (user.getProfilePicture() != null && !user.getProfilePicture().isEmpty()) {
+                try {
+                    String fileName = user.getProfilePicture();
+                    String fullPath;
+                    
+                    if (fileName.equals("default_profile.jpg")) {
+                        URL resourceUrl = getClass().getResource("/default_profile.jpg");
+                        if (resourceUrl != null) {
+                            fullPath = resourceUrl.toExternalForm();
+                        } else {
+                            throw new IOException("Default profile image not found");
+                        }
+                    } else {
+                        String userHome = System.getProperty("user.home");
+                        File imageFile = new File(userHome + "/sportify/uploads/images/" + fileName);
+                        if (!imageFile.exists()) {
+                            throw new IOException("Profile image not found");
+                        }
+                        fullPath = imageFile.toURI().toString();
+                    }
+                    
+                    Image image = new Image(fullPath, 100, 100, true, true);
+                    profilePicturePreview.setImage(image);
+                    profilePicturePreview.setFitWidth(100);
+                    profilePicturePreview.setFitHeight(100);
+                    
+                    // Make the preview circular
+                    Circle clip = new Circle(50, 50, 50);
+                    profilePicturePreview.setClip(clip);
+                    
+                    // Set the profile picture field
+                    profilePictureField.setText(fileName);
+                    
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    setDefaultProfileImage();
+                }
+            } else {
+                setDefaultProfileImage();
+            }
+        });
     }
 
     private void updateOrganizerFields(boolean isOrganizer) {
@@ -386,7 +402,7 @@ public class AddUserController {
         coachingLicenseField.setManaged(isOrganizer);
         isActiveCheckBox.setVisible(isOrganizer);
         isActiveCheckBox.setManaged(isOrganizer);
-        
+
         if (isOrganizer) {
             if (mode == Mode.ADD) {
                 isActiveCheckBox.setSelected(false); // New organizers start as inactive
@@ -396,8 +412,6 @@ public class AddUserController {
                 Organizer organizer = (Organizer) userToUpdate;
                 coachingLicenseField.setText(organizer.getCoachingLicense());
                 isActiveCheckBox.setSelected(organizer.isActive());
-                System.out.println("Restoring organizer data - License: " + organizer.getCoachingLicense() + 
-                                 ", Active: " + organizer.isActive());
             }
         } else {
             coachingLicenseField.clear();
@@ -413,33 +427,128 @@ public class AddUserController {
             passwordField.setText(userToUpdate.getPassword());
             phoneField.setText(userToUpdate.getPhoneNumber());
             dateOfBirthPicker.setValue(userToUpdate.getDateOfBirth());
+            
+            // Handle organizer-specific fields
+            if (userToUpdate instanceof Organizer) {
+                Organizer organizer = (Organizer) userToUpdate;
+                coachingLicenseField.setText(organizer.getCoachingLicense());
+                isActiveCheckBox.setSelected(organizer.isActive());
+                
+                // Make organizer fields visible
+                coachingLicenseField.setVisible(true);
+                coachingLicenseField.setManaged(true);
+                isActiveCheckBox.setVisible(true);
+                isActiveCheckBox.setManaged(true);
+            } else {
+                // Hide organizer fields for non-organizers
+                coachingLicenseField.setVisible(false);
+                coachingLicenseField.setManaged(false);
+                isActiveCheckBox.setVisible(false);
+                isActiveCheckBox.setManaged(false);
+            }
+        }
+    }
 
-            // Ensure the roleComboBox is populated before selecting an item
-            if (roleComboBox.getItems().isEmpty()) {
-                roleComboBox.getItems().addAll("admin", "player", "organizer");
+    private void setDefaultProfileImage() {
+        String defaultImagePath = "default_profile.jpg";
+        profilePictureField.setText(defaultImagePath);
+
+        try {
+            String defaultImageUrl = Objects.requireNonNull(getClass().getResource("/" + defaultImagePath)).toExternalForm();
+            Image defaultImage = new Image(defaultImageUrl, 100, 100, true, true);
+            profilePicturePreview.setImage(defaultImage);
+            profilePicturePreview.setFitWidth(100);
+            profilePicturePreview.setFitHeight(100);
+
+            // Make the preview circular
+            Circle clip = new Circle(50, 50, 50);
+            profilePicturePreview.setClip(clip);
+        } catch (Exception e) {
+            e.printStackTrace();
+            showMaterialFXAlert(
+                    "Error",
+                    "Failed to load default profile image: " + e.getMessage(),
+                    "fas-circle-xmark",
+                    "mfx-error-dialog"
+            );
+        }
+    }
+
+    @FXML
+    private void handleSaveUser() {
+        ValidationResult validationResult = validateInputs();
+        if (!validationResult.isValid()) {
+            showMaterialFXAlert(
+                "Validation Error",
+                validationResult.message(),
+                "fas-circle-xmark",
+                "mfx-error-dialog"
+            );
+            return;
+        }
+
+        try {
+            User user;
+            String selectedRole = roleComboBox.getValue().toLowerCase();
+
+            // Create or update the appropriate user type
+            if ("organizer".equals(selectedRole)) {
+                Organizer organizer = (mode == Mode.UPDATE && userToUpdate instanceof Organizer) 
+                    ? (Organizer) userToUpdate 
+                    : new Organizer();
+                organizer.setCoachingLicense(coachingLicenseField.getText().trim());
+                organizer.setActive(isActiveCheckBox.isSelected());
+                user = organizer;
+            } else {
+                user = (mode == Mode.UPDATE) ? userToUpdate : new User();
+                user.setActive(true);
             }
 
-            // Get the role and handle organizer-specific fields
-            String role = userToUpdate.getRole();
-            if (role != null) {
-                System.out.println("Setting role for update: " + role); // Debug log
-                boolean isOrganizer = "organizer".equalsIgnoreCase(role);
-                
-                // Set the role first
-                roleComboBox.selectItem(role.toLowerCase());
-                
-                // Manually update organizer fields
-                updateOrganizerFields(isOrganizer);
-                
-                // Then populate organizer-specific fields if applicable
-                if (isOrganizer && userToUpdate instanceof Organizer) {
-                    Organizer organizer = (Organizer) userToUpdate;
-                    coachingLicenseField.setText(organizer.getCoachingLicense());
-                    boolean isActive = organizer.isActive();
-                    System.out.println("Setting organizer active status to: " + isActive); // Debug log
-                    isActiveCheckBox.setSelected(isActive);
-                }
+            // Set common fields
+            user.setFirstname(firstNameField.getText().trim());
+            user.setLastName(lastNameField.getText().trim());
+            user.setEmail(emailField.getText().trim());
+            user.setPassword(passwordField.getText());
+            user.setRole(selectedRole);
+            user.setPhoneNumber(phoneField.getText().trim());
+            user.setDateOfBirth(dateOfBirthPicker.getValue());
+
+            // Handle profile picture
+            String profilePicturePath = profilePictureField.getText().trim();
+            if (profilePicturePath.isEmpty()) {
+                profilePicturePath = "default_profile.jpg";
+            } else if (profilePicturePath.contains("/") || profilePicturePath.contains("\\")) {
+                // Extract just the filename if it's a full path
+                profilePicturePath = profilePicturePath.substring(profilePicturePath.lastIndexOf(File.separator) + 1);
             }
+            user.setProfilePicture(profilePicturePath);
+
+            if (mode == Mode.ADD) {
+                user.setCreatedAt(LocalDateTime.now());
+                user.setUpdatedAt(LocalDateTime.now());
+                userService.create(user);
+                showMaterialFXAlert("Success", "User created successfully!", "fas-circle-check", "mfx-success-dialog");
+
+            } else {
+                user.setId(userToUpdate.getId());
+                user.setCreatedAt(userToUpdate.getCreatedAt());
+                user.setUpdatedAt(LocalDateTime.now());
+                userService.update(user);
+                showMaterialFXAlert("Success", "User updated successfully!", "fas-circle-check", "mfx-success-dialog");
+            }
+
+            // Close the form
+            Stage stage = (Stage) rootPane.getScene().getWindow();
+            stage.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            showMaterialFXAlert(
+                "Error",
+                "Failed to " + (mode == Mode.ADD ? "create" : "update") + " user: " + e.getMessage(),
+                "fas-circle-xmark",
+                "mfx-error-dialog"
+            );
         }
     }
 }

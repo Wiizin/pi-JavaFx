@@ -17,6 +17,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -27,6 +28,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 
+import java.io.IOException;
 import java.net.URL;
 import java.sql.SQLException;
 import java.util.Comparator;
@@ -133,7 +135,7 @@ public class AdminHomeController implements Initializable {
             updateButton.setGraphic(new MFXFontIcon("fas-arrow-rotate-right", 12));
             updateButton.getStyleClass().addAll("mfx-button-primary", "icon-only");
             updateButton.setMinWidth(20);
-            updateButton.setOnAction(event -> handleUpdateUser((User) user));
+            updateButton.setOnAction(event -> handleEditUser((User) user));
 
             HBox hbox = new HBox(5, updateButton, deleteButton);
             hbox.setAlignment(Pos.CENTER);
@@ -208,16 +210,44 @@ public class AdminHomeController implements Initializable {
         });
     }
 
-    private void handleUpdateUser(User user) {
-        openUserForm(user, "Update User", null);
+    private void handleEditUser(User user) {
+        try {
+            FXMLLoader loader = new FXMLLoader(Demo.class.getResource("fxml/addUser.fxml"));
+            Parent root = loader.load();
+
+            // Get the controller and set the user to update
+            AddUserController controller = loader.getController();
+            controller.setUserToUpdate(user);  // This sets the mode to UPDATE
+
+            // Create and configure the stage
+            Stage stage = new Stage();
+            stage.initModality(Modality.APPLICATION_MODAL);
+            stage.setTitle("Update User");
+
+            // Create scene and show the stage
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+
+            // Show the popup and wait for it to close
+            stage.showAndWait();
+
+            // Refresh the table after the popup closes
+            loadUsers();
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not open update form: " + e.getMessage());
+        }
+    }
+
+    private void showAlert(Alert.AlertType alertType, String error, String s) {
     }
 
     private void loadUsers() {
         List<User> users = userService.getAll();
-        userList.clear(); // Ensure the list is cleared before adding new items
-        userList.addAll(users);
+        userList.clear(); // Clear the existing items
+        userList.addAll(users); // Add the updated list
         usersTable.setItems(null); // Force refresh
-        usersTable.setItems(userList);
+        usersTable.setItems(userList); // Set the items in the table
     }
 
     @FXML
@@ -227,7 +257,16 @@ public class AdminHomeController implements Initializable {
 
     private void openUserForm(User user, String title, ActionEvent actionEvent) {
         try {
-            FXMLLoader loader = new FXMLLoader(Demo.class.getResource("fxml/addUser.fxml"));
+            // Debug: Check if the FXML file exists
+            URL fxmlUrl = Demo.class.getResource("fxml/addUser.fxml");
+            if (fxmlUrl == null) {
+                System.err.println("FXML file not found at: fxml/addUser.fxml");
+                throw new IOException("FXML file not found at: fxml/addUser.fxml");
+            } else {
+                System.out.println("FXML file found at: " + fxmlUrl);
+            }
+
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
             VBox form = loader.load();
 
             AddUserController controller = loader.getController();
@@ -237,13 +276,28 @@ public class AdminHomeController implements Initializable {
 
             Stage popupStage = new Stage();
             popupStage.initModality(Modality.APPLICATION_MODAL);
-            popupStage.initOwner(actionEvent != null ?
-                    ((Node) actionEvent.getSource()).getScene().getWindow() :
-                    contentArea.getScene().getWindow());
+
+            // Determine the owner stage
+            Stage ownerStage = null;
+            if (actionEvent != null) {
+                // Use the source of the action event as the owner
+                ownerStage = (Stage) ((Node) actionEvent.getSource()).getScene().getWindow();
+            } else if (contentArea.getScene() != null && contentArea.getScene().getWindow() != null) {
+                // Use the contentArea's scene window as the owner
+                ownerStage = (Stage) contentArea.getScene().getWindow();
+            } else {
+                // Fallback to the primary stage
+                ownerStage = (Stage) contentArea.getScene().getWindow();
+            }
+
+            popupStage.initOwner(ownerStage);
             popupStage.setTitle(title);
             popupStage.setScene(new Scene(form));
 
+            // Show the popup and wait for it to close
             popupStage.showAndWait();
+
+            // Refresh the table after the popup closes
             loadUsers();
         } catch (Exception e) {
             e.printStackTrace();

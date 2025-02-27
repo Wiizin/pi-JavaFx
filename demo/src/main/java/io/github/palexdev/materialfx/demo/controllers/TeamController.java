@@ -15,11 +15,16 @@ import io.github.palexdev.materialfx.filter.EnumFilter;
 import io.github.palexdev.materialfx.filter.IntegerFilter;
 import io.github.palexdev.materialfx.filter.StringFilter;
 import io.github.palexdev.materialfx.utils.others.observables.When;
+import io.github.palexdev.materialfx.filter.EnumFilter;
+import io.github.palexdev.materialfx.filter.base.AbstractFilter;
+
 
 import io.github.palexdev.mfxcore.controls.Label;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
@@ -51,6 +56,7 @@ import io.github.palexdev.materialfx.validation.Constraint;
 import io.github.palexdev.materialfx.validation.MFXValidator;
 import io.github.palexdev.materialfx.validation.Validated;
 import javafx.beans.binding.Bindings;
+import java.util.function.Predicate;
 public class TeamController implements Initializable {
     @FXML
     private MFXPaginatedTableView<Team> paginated;
@@ -237,12 +243,38 @@ public class TeamController implements Initializable {
 
         // Add filters
         paginated.getFilters().addAll(
-                new IntegerFilter<>("ID", Team::getId),
-                new StringFilter<>("Name", Team::getNom),
-                new StringFilter<>("Categorie", Team::getCategorie),
-                new IntegerFilter<>("NBPlayers", Team::getNombreJoueurs),
-                new EnumFilter<>("ModeJeu", Team::getModeJeu, ModeJeu.class)
+            new IntegerFilter<>("ID", Team::getId),
+            new StringFilter<>("Name", Team::getNom),
+            new StringFilter<>("Categorie", Team::getCategorie), 
+            new IntegerFilter<>("NBPlayers", Team::getNombreJoueurs),
+            new EnumFilter<>("ModeJeu", Team::getModeJeu, ModeJeu.class)
         );
+
+        // Create a FilteredList to handle the filtering
+        FilteredList<Team> filteredData = new FilteredList<>(teams);
+        // Add a listener to the filters collection
+        paginated.getFilters().addListener((ListChangeListener<Object>) change -> {
+            filteredData.setPredicate(team -> {
+                if (paginated.getFilters().isEmpty()) {
+                    return true;
+                }
+                try {
+                for (var filter : paginated.getFilters()) {
+                    if (!((Predicate<Team>) filter).test(team)) {
+                        return false;
+                    }
+                }
+                return true;
+                } catch (IllegalArgumentException e) {
+                    // Handle invalid range values
+                    System.out.println("Invalid filter range: " + e.getMessage());
+                    return true; // Show all items when filter is invalid
+                } catch (Exception e) {
+                    System.out.println("Filter error: " + e.getMessage());
+                    return true; // Show all items on error
+                }
+            });
+        });
     }
     private void setupPaginated2() {
         MFXTableColumn<TeamRanking> id = new MFXTableColumn<>("ID", false, Comparator.comparing(TeamRanking::getId));
@@ -351,7 +383,7 @@ public class TeamController implements Initializable {
         // Add filters
         paginated2.getFilters().addAll(
                 new IntegerFilter<>("ID", TeamRanking::getId),
-                new IntegerFilter<>("teamName", TeamRanking::getIdTeam),
+                new StringFilter<>("teamName", teamRanking -> teamRanking.getTeam().getNom()),
                 new IntegerFilter<>("position", TeamRanking::getPosition),
                 new IntegerFilter<>("Points", TeamRanking::getPoints),
                 new IntegerFilter<>("wins", TeamRanking::getWins),
@@ -361,6 +393,34 @@ public class TeamController implements Initializable {
                 new IntegerFilter<>("Goals_Conceded", TeamRanking::getGoalsConceded),
                 new IntegerFilter<>("Goals_Difference", TeamRanking::getGoalDifference)
         );
+        // Create a FilteredList to handle the filtering
+        FilteredList<TeamRanking> filteredData = new FilteredList<>(teamsRanking);
+        paginated2.setItems(filteredData);
+        
+        // Add a listener to the filters collection
+        paginated2.getFilters().addListener((ListChangeListener<Object>) change -> {
+            filteredData.setPredicate(teamRank -> {
+                if (paginated2.getFilters().isEmpty()) {
+                    return true;
+                }
+                
+                try {
+                    for (var filter : paginated2.getFilters()) {
+                        if (!((Predicate<TeamRanking>) filter).test(teamRank)) {
+                            return false;
+                        }
+                    }
+                    return true;
+                } catch (IllegalArgumentException e) {
+                    // Handle invalid range values
+                    System.out.println("Invalid filter range: " + e.getMessage());
+                    return true; // Show all items when filter is invalid
+                } catch (Exception e) {
+                    System.out.println("Filter error: " + e.getMessage());
+                    return true; // Show all items on error
+                }
+            });
+        });
     }
     @FXML
     private void showAddTeamDialog(javafx.event.ActionEvent event) {

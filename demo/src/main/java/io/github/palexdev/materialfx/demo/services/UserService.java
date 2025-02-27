@@ -201,8 +201,13 @@ public class UserService implements IService<User> {
                 if (rs.next()) {
                     User user;
                     String role = rs.getString("role");
-                    boolean isActive = rs.getBoolean("isactive");
-
+                    int isActiveIn = rs.getInt("isActive");
+                    boolean isActive;
+                    if(isActiveIn==1) {
+                         isActive = true;
+                    }else{
+                        isActive = false;
+                    }
                     // Create appropriate user type based on role
                     if ("organizer".equalsIgnoreCase(role)) {
                         Organizer organizer = new Organizer();

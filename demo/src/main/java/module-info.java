@@ -17,6 +17,7 @@ module MaterialFX.Demo {
     requires jbcrypt;
     requires java.net.http;
     requires javafx.swing;
+    requires org.slf4j;
 
 
     opens io.github.palexdev.materialfx.demo;

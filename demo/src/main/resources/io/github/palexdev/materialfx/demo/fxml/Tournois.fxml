@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.TournoisController">
+<VBox xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.TournoisController">
     <GridPane styleClass="scroll-pane" stylesheets="@../css/TournoisCard.css">
         <FlowPane fx:id="addButtonContainer" alignment="CENTER" hgap="20" vgap="20">
             <padding>

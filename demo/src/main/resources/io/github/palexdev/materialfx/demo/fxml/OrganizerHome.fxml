@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane fx:id="rootPane" prefHeight="800" prefWidth="1500.0" styleClass="rootPane" stylesheets="@../css/Demo.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.OrganizerHomeController">
+<AnchorPane fx:id="rootPane" prefHeight="800" prefWidth="1500.0" styleClass="rootPane" stylesheets="@../css/Demo.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.OrganizerHomeController">
     <!-- Header -->
     <HBox fx:id="windowHeader" alignment="CENTER" prefHeight="45.0" prefWidth="1495.0" spacing="10.0" AnchorPane.leftAnchor="4.0" AnchorPane.rightAnchor="3.0" AnchorPane.topAnchor="4.0">
         <!-- Flexible Spacer -->

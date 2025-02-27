@@ -15,7 +15,7 @@
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane style="-fx-background-color: #1B1F3B;" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.SignUpController">
+<AnchorPane style="-fx-background-color: #1B1F3B;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.SignUpController">
 
     <!-- Logo Image -->
     <ImageView fitHeight="131.0" fitWidth="156.0" layoutX="481.0" layoutY="14.0">

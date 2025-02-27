@@ -21,4 +21,23 @@ subprojects {
         version = "$jfx"
         modules = ['javafx.controls', 'javafx.fxml', 'javafx.media', 'javafx.swing', 'javafx.web']
     }
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
+        testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+        implementation 'org.openjfx:javafx-controls:21'
+        implementation 'org.openjfx:javafx-fxml:21'
+        implementation 'org.openjfx:javafx-base:21'
+        implementation 'org.openjfx:javafx-graphics:21'
+    }
+
+
+    test {
+        useJUnitPlatform()
+        doFirst {
+            jvmArgs = [
+                    '--module-path', javafx.getRuntime().toString(),
+                    '--add-modules', javafx.getModules().join(',')
+            ]
+        }
+    }
 }

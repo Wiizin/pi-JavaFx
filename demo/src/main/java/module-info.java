@@ -12,14 +12,15 @@ module MaterialFX.Demo {
 	requires org.kordamp.ikonli.javafx;
 	requires org.kordamp.ikonli.fontawesome5;
 	requires org.scenicview.scenicview;
-    requires java.sql;
     requires jakarta.mail;
     requires jbcrypt;
     requires java.net.http;
     requires javafx.swing;
     requires org.slf4j;
+    requires com.google.gson;
+	requires java.sql;
 
 
-    opens io.github.palexdev.materialfx.demo;
+	opens io.github.palexdev.materialfx.demo;
 	opens io.github.palexdev.materialfx.demo.controllers;
 }

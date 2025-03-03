@@ -16,7 +16,9 @@ public class User {
     private String profilePicture;  // Changed from byte[] to String
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private boolean isActive;  // New field
+    private boolean isActive;  
+    private int id_team;
+    
 
     // Default Constructor
     public User() {
@@ -26,7 +28,7 @@ public class User {
     // Full Constructor
     public User(int id, String firstname, String lastName, String email, String password,
                 String role, String phoneNumber, LocalDate dateOfBirth, String profilePicture,
-                LocalDateTime createdAt, LocalDateTime updatedAt) {
+                LocalDateTime createdAt, LocalDateTime updatedAt,int id_team) {
         this.id = id;
         this.firstname = firstname;
         this.lastName = lastName;
@@ -39,6 +41,7 @@ public class User {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.isActive = true;  // All users (admin and player) are active by default
+        this.id_team=id_team;
     }
 
     // Getters and Setters remain the same except for profilePicture
@@ -49,7 +52,13 @@ public class User {
     public void setId(int id) {
         this.id = id;
     }
+    public int getIdteam() {
+        return id_team;
+    }
 
+    public void setIdteam(int id_team) {
+        this.id_team = id_team;
+    }
     public String getFirstname() {
         return firstname;
     }
@@ -154,6 +163,7 @@ public class User {
                 ", createdAt=" + createdAt +
                 ", updatedAt=" + updatedAt +
                 ", isActive=" + isActive +
+                ",idTeam="+id_team+
                 '}';
     }
 }

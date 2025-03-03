@@ -1,5 +1,7 @@
 package io.github.palexdev.materialfx.demo.services;
 
+import io.github.palexdev.materialfx.demo.model.ModeJeu;
+import io.github.palexdev.materialfx.demo.model.Team;
 import io.github.palexdev.materialfx.demo.model.Tournois;
 import io.github.palexdev.materialfx.demo.utils.DbConnection;
 
@@ -45,7 +47,36 @@ public class TournoisService implements CRUD<Tournois> {
             return rowsAffected;
         }
     }
+    public int insert2(Tournois tournament) throws SQLException {
+        String req = "INSERT INTO tournoi (nom, format, status, start_date, end_date, nbEquipe, tournoiLocation, reglements,id_organizer) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?,?)";
+        try (PreparedStatement ps = cnx.prepareStatement(req, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, tournament.getNom());
+            ps.setString(2, tournament.getFormat());
+            ps.setString(3, tournament.getStatus());
+            ps.setDate(4, Date.valueOf(tournament.getStartDate()));
+            ps.setDate(5, Date.valueOf(tournament.getEndDate()));
+            ps.setInt(6, tournament.getNbEquipe());
+            ps.setString(7, tournament.getTournoisLocation());
+            ps.setString(8, tournament.getReglements());
+            ps.setInt(9, tournament.getIdorganiser());
+            int rowsAffected = ps.executeUpdate();
 
+            // Check if the insertion was successful
+            if (rowsAffected == 0) {
+                throw new SQLException("Failed to insert tournoi: No rows affected.");
+            }
+
+            // Retrieve the generated team ID
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // Return the generated id_team
+                } else {
+                    throw new SQLException("Failed to insert tournoi: No generated key returned.");
+                }
+            }
+        }
+    }
 
     @Override
     public int update(Tournois tournament) throws SQLException {
@@ -108,4 +139,29 @@ public class TournoisService implements CRUD<Tournois> {
         }
         return tournaments;
     }
+    public Tournois GetTournoisByName(String name) throws SQLException {
+        Tournois tournament = null;
+        String req = "SELECT * FROM Team WHERE nom = ?";
+
+        try (PreparedStatement pst = cnx.prepareStatement(req)) {
+            pst.setString(1, name);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    tournament.setId(rs.getInt("id"));
+                    tournament.setNom(rs.getString("nom"));
+                    tournament.setFormat(rs.getString("format"));
+                    tournament.setStatus(rs.getString("status"));
+                    tournament.setStartDate(rs.getDate("start_date").toLocalDate());
+                    tournament.setEndDate(rs.getDate("end_date").toLocalDate());
+                    tournament.setNbEquipe(rs.getInt("nbEquipe"));
+                    tournament.setTournoisLocation(rs.getString("tournoiLocation"));
+                    tournament.setReglements(rs.getString("reglements"));
+                    tournament.setIdorganiser(rs.getInt("id_organizer"));
+                }
+            }
+        }
+        return tournament;
+    }
+
 }

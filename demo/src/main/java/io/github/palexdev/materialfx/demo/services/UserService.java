@@ -1,7 +1,6 @@
 package io.github.palexdev.materialfx.demo.services;
 
-import io.github.palexdev.materialfx.demo.model.Organizer;
-import io.github.palexdev.materialfx.demo.model.User;
+import io.github.palexdev.materialfx.demo.model.*;
 import io.github.palexdev.materialfx.demo.utils.DbConnection;
 
 import java.security.SecureRandom;
@@ -105,13 +104,48 @@ public class UserService implements IService<User> {
                 user.setProfilePicture(rs.getString("profilepicture"));
                 user.setCreatedAt(rs.getTimestamp("createdat").toLocalDateTime());
                 user.setUpdatedAt(rs.getTimestamp("updatedat").toLocalDateTime());
-
+                user.setIdteam(rs.getInt("id_team"));
                 users.add(user);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return users;
+    }
+    public List<Player> getAvailablePlayers() {
+        List<Player> players = new ArrayList<>();
+        String sql = "SELECT * \n" +
+                "FROM user \n" +
+                "WHERE (id_team = 0 OR id_team IS NULL) \n" +
+                "  AND role = 'player' \n" +
+                "  AND isActive = 1;";
+
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+
+            while (rs.next()) {
+                Player player = new Player(
+                        rs.getInt("id"),
+                        rs.getString("firstname"),
+                        rs.getString("lastname"),
+                        rs.getString("email"),
+                        rs.getString("password"),
+                        rs.getString("role"),
+                        rs.getString("phonenumber"),
+                        rs.getDate("dateofbirth") != null ? rs.getDate("dateofbirth").toLocalDate() : null,
+                        rs.getString("profilepicture"),
+                        rs.getTimestamp("createdat") != null ? rs.getTimestamp("createdat").toLocalDateTime() : null,
+                        rs.getTimestamp("updatedat") != null ? rs.getTimestamp("updatedat").toLocalDateTime() : null,
+                        rs.getInt("id_team"),
+                        rs.getInt("Rating"),
+                        rs.getString("position")
+                );
+                players.add(player);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace(); // Consider logging the exception instead of printing the stack trace
+        }
+        return players;
     }
 
     @Override
@@ -120,9 +154,23 @@ public class UserService implements IService<User> {
     }
 
     public void update(User user) {
-        String sql = "UPDATE user SET firstname=?, lastname=?, email=?, password=?, role=?, phonenumber=?, dateofbirth=?, profilepicture=?, updatedat=?, isactive=?, coachinglicense=? WHERE id=?";
+        String sql = "UPDATE user SET firstname=?, lastname=?, email=?, password=?, role=?, phonenumber=?, dateofbirth=?, profilepicture=?, updatedat=?, isactive=?, coachinglicense=?, id_team=? WHERE id=?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            // Verify that the team exists
+            int idTeam = user.getIdteam();
+            if (idTeam > 0) {
+                String teamCheckSql = "SELECT COUNT(*) FROM team WHERE id = ?";
+                try (PreparedStatement teamCheckStmt = connection.prepareStatement(teamCheckSql)) {
+                    teamCheckStmt.setInt(1, idTeam);
+                    ResultSet rs = teamCheckStmt.executeQuery();
+                    if (rs.next() && rs.getInt(1) == 0) {
+                        throw new SQLException("Team with ID " + idTeam + " does not exist.");
+                    }
+                }
+            }
+
+            // Set user fields
             pstmt.setString(1, user.getFirstname());
             pstmt.setString(2, user.getLastName());
             pstmt.setString(3, user.getEmail());
@@ -132,8 +180,8 @@ public class UserService implements IService<User> {
             pstmt.setDate(7, Date.valueOf(user.getDateOfBirth()));
             pstmt.setString(8, user.getProfilePicture());
             pstmt.setTimestamp(9, Timestamp.valueOf(LocalDateTime.now()));
-            
-            // Handle active status based on role with debug logging
+
+            // Handle active status based on role
             if ("organizer".equalsIgnoreCase(user.getRole())) {
                 boolean isActive = user.isActive();
                 System.out.println("Updating organizer active status to: " + isActive);
@@ -148,11 +196,12 @@ public class UserService implements IService<User> {
                 System.out.println("Setting coaching license: " + license);
                 pstmt.setString(11, license);
             } else {
-                pstmt.setString(11, null);
+                pstmt.setString(11, ""); // Provide a default value (empty string)
             }
 
-            pstmt.setInt(12, user.getId());
-            
+            pstmt.setInt(12, user.getIdteam());
+            pstmt.setInt(13, user.getId());
+
             System.out.println("Executing update for user ID: " + user.getId());
             int rowsAffected = pstmt.executeUpdate();
             System.out.println("Rows affected by update: " + rowsAffected);
@@ -212,6 +261,56 @@ public class UserService implements IService<User> {
                     if ("organizer".equalsIgnoreCase(role)) {
                         Organizer organizer = new Organizer();
                         organizer.setCoachingLicense(rs.getString("coachinglicense"));
+                        if(organizer.getIdteam()!=0){
+                            Team equipe = null;
+                            String req2 = "SELECT * FROM Team WHERE id = ?";
+
+                            try (PreparedStatement pst = connection.prepareStatement(req2)) {
+                                pst.setInt(1, organizer.getIdteam());
+
+                                try (ResultSet rs2 = pst.executeQuery()) {
+                                    if (rs2.next()) {
+                                        equipe = new Team(
+                                                rs2.getInt("id"),
+                                                rs2.getString("nom"),
+                                                rs2.getString("categorie"),
+                                                ModeJeu.valueOf(rs2.getString("modeJeu")),
+                                                rs2.getInt("nombreJoueurs"),
+                                                rs2.getString("logoPath")
+                                        );
+                                    }
+                                }
+                            }
+                            List<User> members = new ArrayList<>();
+                            String req3 = "SELECT * FROM user WHERE id_team = ? AND id != ?";
+
+                            try (PreparedStatement pst = connection.prepareStatement(req3)) {
+                                pst.setInt(1, organizer.getIdteam());
+                                pst.setInt(2, organizer.getId());
+                                try (ResultSet rs3 = pst.executeQuery()) {
+                                    while (rs3.next()) {
+                                        User member = new User(
+                                            rs3.getInt("id"),
+                                            rs3.getString("firstname"),
+                                            rs3.getString("lastname"), 
+                                            rs3.getString("email"),
+                                            rs3.getString("password"),
+                                            rs3.getString("role"),
+                                            rs3.getString("phonenumber"),
+                                            rs3.getDate("dateofbirth").toLocalDate(),
+                                            rs3.getString("profilepicture"),
+                                            rs3.getTimestamp("createdat").toLocalDateTime(),
+                                            rs3.getTimestamp("updatedat").toLocalDateTime(),
+                                            rs3.getInt("id_team")
+                                        );
+                                        member.setActive(rs3.getBoolean("isActive"));
+                                        members.add(member);
+                                    }
+                                }
+                            }
+                            equipe.setMembres(members);
+                            organizer.setTeam(equipe);
+                        }
                         user = organizer;
                     } else {
                         user = new User();
@@ -229,6 +328,7 @@ public class UserService implements IService<User> {
                     user.setProfilePicture(rs.getString("profilepicture"));
                     user.setCreatedAt(rs.getTimestamp("createdat").toLocalDateTime());
                     user.setUpdatedAt(rs.getTimestamp("updatedat").toLocalDateTime());
+                    user.setIdteam(rs.getInt("id_team"));
                     user.setActive(isActive);
 
                     return user;

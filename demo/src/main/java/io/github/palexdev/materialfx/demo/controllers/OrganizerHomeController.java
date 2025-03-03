@@ -1,5 +1,4 @@
 package io.github.palexdev.materialfx.demo.controllers;
-
 import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.demo.Demo;
 import io.github.palexdev.materialfx.demo.MFXDemoResourcesLoader;
@@ -7,9 +6,11 @@ import io.github.palexdev.materialfx.demo.model.Organizer;
 import io.github.palexdev.materialfx.demo.model.User;
 import io.github.palexdev.materialfx.demo.model.UserSession;
 import io.github.palexdev.materialfx.demo.services.UserService;
+import io.github.palexdev.materialfx.dialogs.MFXDialogs;
 import io.github.palexdev.materialfx.utils.ScrollUtils;
 import io.github.palexdev.materialfx.utils.SwingFXUtils;
 import io.github.palexdev.materialfx.utils.others.loader.MFXLoader;
+import io.github.palexdev.materialfx.utils.others.loader.MFXLoaderBean;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -52,69 +53,72 @@ import java.util.List;
 import java.util.Objects;
 import java.util.ResourceBundle;
 
-public class OrganizerHomeController implements Initializable {
+import static io.github.palexdev.materialfx.demo.MFXDemoResourcesLoader.loadURL;
 
-    @FXML
-    public MFXButton profileButton;
-    @FXML
-    public MFXButton notificationsButton;
-    @FXML
-    public Label userGreeting;
-    @FXML
-    public Label activeEventsLabel;
-    @FXML
-    private AnchorPane rootPane;
-    @FXML
-    private HBox windowHeader;
-    @FXML
-    private MFXScrollPane scrollPane;
-    @FXML
-    private VBox navBar;
-    @FXML
-    private StackPane contentPane;
-    @FXML
-    private StackPane logoContainer;
+public class OrganizerHomeController implements Initializable{
 
-    private final ToggleGroup toggleGroup = new ToggleGroup();
-    @FXML
-    private Label upcomingEventsLabel;
-    @FXML
-    private Label organizerStatusLabel;
-    @FXML
-    private Label totalPlayersLabel;
-    @FXML
-    private Label lastLoginLabel;
 
-    @Override
-    public void initialize(URL location, ResourceBundle resources) {
-        // Initialize the loader for navigation
-        initializeLoader();
+        @FXML
+        public MFXButton profileButton;
+        @FXML
+        public MFXButton notificationsButton;
+        @FXML
+        public Label userGreeting;
+        @FXML
+        public Label activeEventsLabel;
+        @FXML
+        private AnchorPane rootPane;
+        @FXML
+        private HBox windowHeader;
+        @FXML
+        private MFXScrollPane scrollPane;
+        @FXML
+        private VBox navBar;
+        @FXML
+        private StackPane contentPane;
+        @FXML
+        private StackPane logoContainer;
 
-        // Add smooth scrolling to the scroll pane
-        ScrollUtils.addSmoothScrolling(scrollPane);
+        private final ToggleGroup toggleGroup = new ToggleGroup();
+        @FXML
+        private Label upcomingEventsLabel;
+        @FXML
+        private Label organizerStatusLabel;
+        @FXML
+        private Label totalPlayersLabel;
+        @FXML
+        private Label lastLoginLabel;
 
-        // Load and display the logo
-        Image image = new Image(MFXDemoResourcesLoader.load("sportify.png"), 64, 64, true, true);
-        ImageView logo = new ImageView(image);
-        Circle clip = new Circle(30);
-        clip.centerXProperty().bind(logo.layoutBoundsProperty().map(Bounds::getCenterX));
-        clip.centerYProperty().bind(logo.layoutBoundsProperty().map(Bounds::getCenterY));
-        logo.setClip(clip);
-        logoContainer.getChildren().add(logo);
+        @Override
+        public void initialize(URL location, ResourceBundle resources) {
+            // Initialize the loader for navigation
+            initializeLoader();
 
-        // Initialize profile button
-        initializeProfileButton();
+            // Add smooth scrolling to the scroll pane
+            ScrollUtils.addSmoothScrolling(scrollPane);
 
-        // Set greeting message
-        User currentUser = UserSession.getInstance().getCurrentUser();
-        if (currentUser instanceof Organizer) {
-            userGreeting.setText("Welcome, " + ((Organizer) currentUser).getFirstname() + "!");
+            // Load and display the logo
+            Image image = new Image(MFXDemoResourcesLoader.load("sportify.png"), 64, 64, true, true);
+            ImageView logo = new ImageView(image);
+            Circle clip = new Circle(30);
+            clip.centerXProperty().bind(logo.layoutBoundsProperty().map(Bounds::getCenterX));
+            clip.centerYProperty().bind(logo.layoutBoundsProperty().map(Bounds::getCenterY));
+            logo.setClip(clip);
+            logoContainer.getChildren().add(logo);
+
+            // Initialize profile button
+            initializeProfileButton();
+
+            // Set greeting message
+            User currentUser = UserSession.getInstance().getCurrentUser();
+            if (currentUser instanceof Organizer) {
+                userGreeting.setText("Welcome, " + ((Organizer) currentUser).getFirstname() + "!");
+            }
         }
-    }
 
-    private void initializeLoader() {
-        MFXLoader loader = new MFXLoader();
-        // Add organizer-specific views
+        private void initializeLoader() {
+            MFXLoader loader = new MFXLoader();
+            // Add organizer-specific views
 //        loader.addView(MFXLoaderBean.of("Dashboard", loadURL("fxml/OrganizerDashboard.fxml"))
 //                .setBeanToNodeMapper(() -> createToggle("fas-home", "Dashboard"))
 //                .setDefaultRoot(true)
@@ -127,6 +131,22 @@ public class OrganizerHomeController implements Initializable {
 //        loader.addView(MFXLoaderBean.of("Participants", loadURL("fxml/ManageParticipants.fxml"))
 //                .setBeanToNodeMapper(() -> createToggle("fas-users", "Participants"))
 //                .get());
+
+            // Check if organizer has a team to manage
+            User currentUser = UserSession.getInstance().getCurrentUser();
+            if (currentUser.getIdteam() == 0) {
+                loader.addView(MFXLoaderBean.of("Teams", loadURL("fxml/TeamSelection.fxml"))
+                        .setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Teams"))
+                        .setDefaultRoot(false)
+                        .get());
+            } else {
+                loader.addView(MFXLoaderBean.of("Teams", loadURL("fxml/TeamFrontOffice.fxml"))
+                        .setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Teams"))
+                        .setDefaultRoot(false)
+                        .get());
+
+            }
+
 
         loader.setOnLoadedAction(beans -> {
             List<ToggleButton> nodes = beans.stream()

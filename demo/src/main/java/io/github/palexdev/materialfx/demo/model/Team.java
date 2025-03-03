@@ -9,8 +9,11 @@ public class Team {
     private String categorie;
     private ModeJeu modeJeu;
     private int nombreJoueurs;
-    private List<User> membres;
 
+
+
+    private int idtournoi;
+    private List<User> membres;
 
 
     private String logoPath;
@@ -39,6 +42,23 @@ public class Team {
         this.nombreJoueurs = nombreJoueurs;
         this.logoPath = logoPath;
         this.membres = new ArrayList<>();
+    }
+    public Team(int id, String nom, String categorie, ModeJeu modeJeu, int nombreJoueurs,String logoPath,int idtournoi) {
+        this.id = id;
+        this.nom = nom;
+        this.categorie = categorie;
+        this.modeJeu = modeJeu;
+        this.nombreJoueurs = nombreJoueurs;
+        this.logoPath = logoPath;
+        this.membres = new ArrayList<>();
+        this.idtournoi = idtournoi;
+    }
+    public int getIdtournoi() {
+        return idtournoi;
+    }
+
+    public void setIdtournoi(int idtournoi) {
+        this.idtournoi = idtournoi;
     }
     public int getId() {
         return id;

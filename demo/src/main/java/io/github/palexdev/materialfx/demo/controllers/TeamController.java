@@ -102,6 +102,7 @@ public class TeamController implements Initializable {
             grid.add(paginated2, 0, 1); // Example: Add to a GridPane
         }
     }
+
     private void setupPaginated() {
         MFXTableColumn<Team> id = new MFXTableColumn<>("ID", false, Comparator.comparing(Team::getId));
         id.setAlignment(Pos.CENTER);

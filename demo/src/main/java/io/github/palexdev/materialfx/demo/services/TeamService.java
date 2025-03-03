@@ -25,6 +25,36 @@ public class TeamService implements TeamCRUD<Team> {
             return ps.executeUpdate();
         }
     }
+    public int insert2(Team team) throws SQLException {
+        String req = "INSERT INTO team (nom, categorie, modeJeu, nombreJoueurs, logoPath,idtournoi) VALUES (?, ?, ?, ?, ?,?)";
+
+        // Specify Statement.RETURN_GENERATED_KEYS to retrieve the generated keys
+        try (PreparedStatement ps = cnx.prepareStatement(req, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setString(1, team.getNom());
+            ps.setString(2, team.getCategorie());
+            ps.setString(3, team.getModeJeu().toString()); // Convert enum to String
+            ps.setInt(4, team.getNombreJoueurs());
+            ps.setString(5, team.getLogoPath());
+            ps.setInt(6, team.getIdtournoi());
+
+            // Execute the insert statement
+            int rowsAffected = ps.executeUpdate();
+
+            // Check if the insertion was successful
+            if (rowsAffected == 0) {
+                throw new SQLException("Failed to insert team: No rows affected.");
+            }
+
+            // Retrieve the generated team ID
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) {
+                    return rs.getInt(1); // Return the generated id_team
+                } else {
+                    throw new SQLException("Failed to insert team: No generated key returned.");
+                }
+            }
+        }
+    }
 
     @Override
     public int update(Team equipe) throws SQLException {
@@ -68,7 +98,8 @@ public class TeamService implements TeamCRUD<Team> {
                         rs.getString("categorie"),
                         ModeJeu.valueOf(rs.getString("modeJeu")),
                         rs.getInt("nombreJoueurs"),
-                        rs.getString("logoPath")
+                        rs.getString("logoPath"),
+                        rs.getInt("idtournoi")
                 );
                 //e.setNombreJoueurs(rs.getInt("nombreJoueurs"));
                 equipes.add(e);
@@ -82,6 +113,28 @@ public class TeamService implements TeamCRUD<Team> {
 
         try (PreparedStatement pst = cnx.prepareStatement(req)) {
             pst.setInt(1, id);
+
+            try (ResultSet rs = pst.executeQuery()) {
+                if (rs.next()) {
+                    equipe = new Team(
+                            rs.getInt("id"),
+                            rs.getString("nom"),
+                            rs.getString("categorie"),
+                            ModeJeu.valueOf(rs.getString("modeJeu")),
+                            rs.getInt("nombreJoueurs"),
+                            rs.getString("logoPath")
+                    );
+                }
+            }
+        }
+        return equipe; // Returns null if not found
+    }
+    public Team GetTeamByName(String name) throws SQLException {
+        Team equipe = null;
+        String req = "SELECT * FROM Team WHERE nom = ?";
+
+        try (PreparedStatement pst = cnx.prepareStatement(req)) {
+            pst.setString(1, name);
 
             try (ResultSet rs = pst.executeQuery()) {
                 if (rs.next()) {

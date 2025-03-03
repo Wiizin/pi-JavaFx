@@ -12,6 +12,7 @@ public class TeamRanking {
         private int goalsScored;
         private int goalsConceded;
         private int goalDifference;
+        private Team team;
 
     public Team getTeam() {
         return team;
@@ -21,7 +22,7 @@ public class TeamRanking {
         this.team = team;
     }
 
-    private Team team;
+    
         public TeamRanking() {}
         public TeamRanking(int id, int idTeam, int idTournoi){
             this.id = id;

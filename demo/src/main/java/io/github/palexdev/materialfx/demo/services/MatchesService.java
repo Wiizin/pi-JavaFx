@@ -85,7 +85,39 @@ public class MatchesService implements CRUD<Matches> {
             return rowsAffected;
         }
     }
+    public int insert2(Matches match) throws SQLException {
+        // SQL query to insert a match
+        String req = "INSERT INTO matches (id_TeamA, id_TeamB, score_TeamA, score_TeamB, status, match_Time, location_Match, id_tournoi) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
+        try (PreparedStatement ps = cnx.prepareStatement(req, Statement.RETURN_GENERATED_KEYS)) {
+            // Set parameters for the PreparedStatement
+            ps.setInt(1, match.getIdTeamA()); // id_TeamA
+            ps.setInt(2, match.getIdTeamB()); // id_TeamB
+            ps.setInt(3, match.getScoreTeamA()); // score_TeamA
+            ps.setInt(4, match.getScoreTeamB()); // score_TeamB
+            ps.setString(5, match.getStatus()); // status
+            ps.setTimestamp(6, Timestamp.valueOf(match.getMatchTime())); // match_Time
+            ps.setString(7, match.getLocationMatch()); // location_Match
+            ps.setLong(8, match.getIdTournoi()); // id_tournoi
+
+            // Execute the query
+            int rowsAffected = ps.executeUpdate();
+
+            // Retrieve the generated keys (if any)
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int generatedId = generatedKeys.getInt(1); // Get the generated ID
+                    match.setId(generatedId); // Set the ID in the Matches object
+                    System.out.println("Match inserted with ID: " + generatedId);
+                } else {
+                    throw new SQLException("Inserting match failed, no ID obtained.");
+                }
+            }
+
+            return rowsAffected; // Return the number of rows affected
+        }
+    }
     @Override
     public int update(Matches match) throws SQLException {
         String req = "UPDATE matches SET id_TeamA=?, id_TeamB=?, score_TeamA=?, score_TeamB=?, status=?, match_Time=?, location_Match=?, id_tournoi=? WHERE id=?";

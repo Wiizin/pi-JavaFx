@@ -27,6 +27,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import io.github.palexdev.materialfx.utils.others.observables.When;
 
 import java.io.IOException;
 import java.net.URL;
@@ -72,6 +73,7 @@ public class AdminHomeController implements Initializable {
 
     private final UserService userService = new UserService();
     private final ObservableList<User> userList = FXCollections.observableArrayList();
+    private boolean usersTableInitialized = false;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -83,6 +85,17 @@ public class AdminHomeController implements Initializable {
     }
 
     private void initializeUsersTable() {
+        if (usersTableInitialized) return;
+        usersTableInitialized = true;
+
+        // Set table size constraints
+        usersTable.setPrefSize(1100, 600);
+        usersTable.setMinSize(800, 400);
+        usersTable.setMaxSize(1200, 800);
+
+        // Clear existing columns before adding new ones
+        usersTable.getTableColumns().clear();
+
         // Define column cell factories
         firstNameColumn.setRowCellFactory(user -> new MFXTableRowCell<>(User::getFirstname));
         lastNameColumn.setRowCellFactory(user -> new MFXTableRowCell<>(User::getLastName));
@@ -91,8 +104,6 @@ public class AdminHomeController implements Initializable {
         phoneNumberColumn.setRowCellFactory(user -> new MFXTableRowCell<>(User::getPhoneNumber));
         dateOfBirthColumn.setRowCellFactory(user -> new MFXTableRowCell<>(User::getDateOfBirth));
         profilePictureColumn.setRowCellFactory(user -> new MFXTableRowCell<>(User::getProfilePicture));
-        createdAtColumn.setRowCellFactory(user -> new MFXTableRowCell<>(User::getCreatedAt));
-        updatedAtColumn.setRowCellFactory(user -> new MFXTableRowCell<>(User::getUpdatedAt));
 
         // Initialize Organizer-specific columns
         isActiveColumn.setRowCellFactory(user -> {
@@ -102,7 +113,7 @@ public class AdminHomeController implements Initializable {
                 }
                 return "Yes";  // Non-organizers are always active
             });
-            
+
             // Add style based on status
             cell.textProperty().addListener((obs, old, newValue) -> {
                 if ("Yes".equals(newValue)) {
@@ -111,7 +122,7 @@ public class AdminHomeController implements Initializable {
                     cell.setStyle("-fx-text-fill: #F44336;"); // Red for inactive
                 }
             });
-            
+
             return cell;
         });
 
@@ -160,8 +171,27 @@ public class AdminHomeController implements Initializable {
         roleColumn.setComparator(Comparator.comparing(User::getRole));
         phoneNumberColumn.setComparator(Comparator.comparing(User::getPhoneNumber));
         dateOfBirthColumn.setComparator(Comparator.comparing(User::getDateOfBirth));
-        createdAtColumn.setComparator(Comparator.comparing(User::getCreatedAt));
-        updatedAtColumn.setComparator(Comparator.comparing(User::getUpdatedAt));
+
+        // Set a fixed page size
+        usersTable.setRowsPerPage(10);
+
+        // Add a listener to autosize columns when the page changes
+        When.onChanged(usersTable.currentPageProperty())
+                .then((oldValue, newValue) -> usersTable.autosizeColumns())
+                .listen();
+
+        // Add columns to the table
+        usersTable.getTableColumns().addAll(
+                firstNameColumn,
+                lastNameColumn,
+                emailColumn,
+                roleColumn,
+                phoneNumberColumn,
+                dateOfBirthColumn,
+                isActiveColumn,
+                coachingLicenseColumn,
+                actionsColumn
+        );
 
         // Load initial data
         loadUsers();
@@ -177,14 +207,14 @@ public class AdminHomeController implements Initializable {
             if (response == ButtonType.OK) {
                 try {
                     userService.delete(user.getId());
-                    
+
                     // Show success message
                     Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
                     successAlert.setTitle("Success");
                     successAlert.setHeaderText(null);
                     successAlert.setContentText("User successfully deleted");
                     successAlert.showAndWait();
-                    
+
                     // Refresh the table
                     loadUsers();
                 } catch (SQLException e) {
@@ -244,10 +274,8 @@ public class AdminHomeController implements Initializable {
 
     private void loadUsers() {
         List<User> users = userService.getAll();
-        userList.clear(); // Clear the existing items
-        userList.addAll(users); // Add the updated list
-        usersTable.setItems(null); // Force refresh
-        usersTable.setItems(userList); // Set the items in the table
+        userList.setAll(users); // More idiomatic for ObservableList
+        usersTable.setItems(userList); // Do not set to null first
     }
 
     @FXML

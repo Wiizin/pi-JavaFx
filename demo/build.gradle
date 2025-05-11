@@ -15,6 +15,19 @@ repositories {
 
 dependencies {
 
+    implementation 'de.jensd:fontawesomefx-fontawesome:4.7.0-9.1.2'
+
+    // If you also want the core library
+    implementation 'de.jensd:fontawesomefx-commons:8.15'
+
+    implementation 'com.google.api-client:google-api-client:1.32.1'
+    implementation 'com.google.oauth-client:google-oauth-client-jetty:1.32.1'
+    implementation 'com.google.apis:google-api-services-oauth2:v2-rev157-1.25.0'
+    implementation 'com.google.code.gson:gson:2.10.1'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.15.2'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.15.2'
+    implementation 'com.google.http-client:google-http-client-jackson2:1.43.3'
+
 
 
 

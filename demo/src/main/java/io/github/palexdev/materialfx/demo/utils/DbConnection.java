@@ -7,7 +7,7 @@ import java.sql.SQLException;
 public class DbConnection {
     private final String USER = "root";
     private final String PWD = "";
-    private final String URL = "jdbc:mysql://localhost:3306/sportifydb";
+    private final String URL = "jdbc:mysql://localhost:3306/sportifydb3";
     private static DbConnection instance;
     private Connection cnx;
 

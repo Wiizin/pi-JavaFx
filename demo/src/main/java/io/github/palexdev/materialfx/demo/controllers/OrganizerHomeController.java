@@ -326,7 +326,7 @@ public class OrganizerHomeController implements Initializable{
 
                 // Save to database
                 UserService userService = new UserService();
-                userService.update(currentOrganizer);
+                userService.update2(currentOrganizer);
 
                 popupStage.close();
                 showAlert(Alert.AlertType.INFORMATION, "Success", "Profile updated successfully!");

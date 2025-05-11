@@ -7,6 +7,7 @@ import io.github.palexdev.materialfx.controls.*;
 import io.github.palexdev.materialfx.dialogs.*;
 import io.github.palexdev.materialfx.enums.ScrimPriority;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
+import io.github.palexdev.materialfx.demo.services.UltraMsgApi;
 import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -278,7 +279,7 @@ public class AddUserController {
                 profilePicturePreview.setFitHeight(100);
 
                 // Make the preview circular
-                Circle clip = new Circle(50, 50, 50);
+                Circle clip = new Circle(70, 70, 70);
                 profilePicturePreview.setClip(clip);
             } catch (Exception e) {
                 e.printStackTrace();
@@ -306,7 +307,7 @@ public class AddUserController {
                 updatedIconCode = "fas-circle-x";
                 break;
             default:
-                updatedIconCode = "fas-info-circle";
+                updatedIconCode = "fas-circle-info";
         }
 
         MFXFontIcon icon = new MFXFontIcon(updatedIconCode, 32);
@@ -475,14 +476,15 @@ public class AddUserController {
     }
 
     @FXML
+
     private void handleSaveUser() {
         ValidationResult validationResult = validateInputs();
         if (!validationResult.isValid()) {
             showMaterialFXAlert(
-                "Validation Error",
-                validationResult.message(),
-                "fas-circle-xmark",
-                "mfx-error-dialog"
+                    "Validation Error",
+                    validationResult.message(),
+                    "fas-circle-xmark",
+                    "mfx-error-dialog"
             );
             return;
         }
@@ -493,12 +495,37 @@ public class AddUserController {
 
             // Create or update the appropriate user type
             if ("organizer".equals(selectedRole)) {
-                Organizer organizer = (mode == Mode.UPDATE && userToUpdate instanceof Organizer) 
-                    ? (Organizer) userToUpdate 
-                    : new Organizer();
+                boolean wasActive = false;
+
+                // Check if this is an update and the status is changing from inactive to active
+                if (mode == Mode.UPDATE && userToUpdate instanceof Organizer) {
+                    Organizer existingOrganizer = (Organizer) userToUpdate;
+                    wasActive = existingOrganizer.isActive();
+                    user = existingOrganizer;
+                } else {
+                    user = new Organizer();
+                }
+
+                Organizer organizer = (Organizer) user;
                 organizer.setCoachingLicense(coachingLicenseField.getText().trim());
                 organizer.setActive(isActiveCheckBox.isSelected());
-                user = organizer;
+
+                // Check if status changed from inactive to active
+                boolean isNowActive = isActiveCheckBox.isSelected();
+                if (!wasActive && isNowActive && mode == Mode.UPDATE) {
+                    // Status changed from inactive to active - send WhatsApp message
+                    String phoneNumber = phoneField.getText().trim();
+                    if (phoneNumber != null && !phoneNumber.isEmpty()) {
+                        String message = "Congratulations! Your organizer account has been approved. You can now log in and start using all features.";
+                        try {
+                            UltraMsgApi.sendSMS(phoneNumber, message);
+                        } catch (Exception e) {
+                            // Log the error but continue with the save process
+                            System.err.println("Failed to send WhatsApp message: " + e.getMessage());
+                            e.printStackTrace();
+                        }
+                    }
+                }
             } else {
                 user = (mode == Mode.UPDATE) ? userToUpdate : new User();
                 user.setActive(true);
@@ -544,10 +571,10 @@ public class AddUserController {
         } catch (Exception e) {
             e.printStackTrace();
             showMaterialFXAlert(
-                "Error",
-                "Failed to " + (mode == Mode.ADD ? "create" : "update") + " user: " + e.getMessage(),
-                "fas-circle-xmark",
-                "mfx-error-dialog"
+                    "Error",
+                    "Failed to " + (mode == Mode.ADD ? "create" : "update") + " user: " + e.getMessage(),
+                    "fas-circle-xmark",
+                    "mfx-error-dialog"
             );
         }
     }

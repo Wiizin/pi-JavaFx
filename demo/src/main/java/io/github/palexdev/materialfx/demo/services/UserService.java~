@@ -214,20 +214,7 @@ public class UserService implements IService<User> {
                 pstmt.setString(11, ""); // Provide a default value (empty string)
             }
 
-            if (idTeam > 0) {
-                // Check if team exists
-                String teamCheckSql = "SELECT COUNT(*) FROM team WHERE id = ?";
-                try (PreparedStatement teamCheckStmt = connection.prepareStatement(teamCheckSql)) {
-                    teamCheckStmt.setInt(1, idTeam);
-                    ResultSet rs = teamCheckStmt.executeQuery();
-                    if (rs.next() && rs.getInt(1) == 0) {
-                        throw new SQLException("Team with ID " + idTeam + " does not exist.");
-                    }
-                }
-                pstmt.setInt(12, idTeam);  // set team ID
-            } else {
-                pstmt.setNull(12, java.sql.Types.INTEGER);  // set NULL in DB
-            }
+            pstmt.setInt(12, user.getIdteam());
             pstmt.setInt(13, user.getId());
 
             System.out.println("Executing update for user ID: " + user.getId());
@@ -257,6 +244,8 @@ public class UserService implements IService<User> {
         return null;
     }
 
+
+
     public void update2(User user) {
         // Remove id_team from the SQL query
         String sql = "UPDATE user SET firstname=?, lastname=?, email=?, password=?, role=?, phonenumber=?, dateofbirth=?, profilepicture=?, updatedat=?, is_active=?, coachinglicense=? WHERE id=?";
@@ -269,17 +258,12 @@ public class UserService implements IService<User> {
 
             // Handle password hashing
             String currentPassword = user.getPassword();
-            if (currentPassword != null && !currentPassword.isEmpty() && !currentPassword.startsWith("$2a$")) {
-                // Only hash if it's a new password (not already hashed)
+            if (currentPassword != null && !currentPassword.isEmpty()) {
                 String hashedPassword = BCrypt.hashpw(currentPassword, BCrypt.gensalt());
                 pstmt.setString(4, hashedPassword);
-            } else if (currentPassword == null || currentPassword.isEmpty()) {
-                // If password is null or empty, get the current password from database
-                String existingPassword = getCurrentHashedPassword(user.getId());
-                pstmt.setString(4, existingPassword);
             } else {
-                // If password is already hashed, use it as is
-                pstmt.setString(4, currentPassword);
+                // If no new password, keep the existing password
+                pstmt.setString(4, getCurrentHashedPassword(user.getId()));
             }
 
             pstmt.setString(5, user.getRole());

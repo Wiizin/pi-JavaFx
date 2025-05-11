@@ -1,0 +1,121 @@
+/* Dashboard Container */
+.dashboard-header {
+    -fx-padding: 20;
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+}
+
+.welcome-text {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50;
+}
+
+.subtitle-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7F8C8D;
+}
+
+/* Stats Cards */
+.stat-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-min-width: 300;
+}
+
+.stat-icon {
+    -fx-fill: #3498DB;
+}
+
+.stat-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7F8C8D;
+}
+
+.stat-value {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50;
+}
+
+.stat-change {
+    -fx-font-size: 12px;
+    -fx-text-fill: #27AE60;
+}
+
+.stat-progress {
+    -fx-accent: #3498DB;
+    -fx-background-color: #ECF0F1;
+    -fx-background-radius: 5;
+    -fx-pref-height: 6;
+}
+
+/* Distribution Cards */
+.distribution-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0, 0, 2);
+    -fx-min-width: 400;
+}
+
+.card-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2C3E50;
+    -fx-padding: 0 0 15 0;
+}
+
+.distribution-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #7F8C8D;
+}
+
+.distribution-count {
+    -fx-font-size: 14px;
+    -fx-text-fill: #2C3E50;
+    -fx-font-weight: bold;
+}
+
+.distribution-progress {
+    -fx-accent: #3498DB;
+    -fx-background-color: #ECF0F1;
+    -fx-background-radius: 5;
+    -fx-pref-height: 6;
+}
+
+/* Refresh Button */
+.refresh-button {
+    -fx-background-color: #3498DB;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+}
+
+.refresh-button:hover {
+    -fx-background-color: #2980B9;
+}
+
+/* Progress Bars */
+.progress-indicator {
+    -fx-accent: #3498DB;
+    -fx-background-color: #ECF0F1;
+    -fx-background-radius: 5;
+    -fx-pref-height: 6;
+}
+
+/* Trend Icons */
+.stat-change:negative {
+    -fx-text-fill: #E74C3C;
+}
+
+/* Hover Effects */
+.stat-card:hover, .distribution-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 15, 0, 0, 3);
+    -fx-translate-y: -2;
+    -fx-transition: all 0.3s ease;
+}

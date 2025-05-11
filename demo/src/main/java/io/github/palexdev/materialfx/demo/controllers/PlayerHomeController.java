@@ -7,9 +7,7 @@ import io.github.palexdev.materialfx.demo.model.User;
 import io.github.palexdev.materialfx.demo.model.UserSession;
 import io.github.palexdev.materialfx.demo.services.UserService;
 import io.github.palexdev.materialfx.utils.ScrollUtils;
-import io.github.palexdev.materialfx.utils.SwingFXUtils;
 import io.github.palexdev.materialfx.utils.others.loader.MFXLoader;
-import io.github.palexdev.materialfx.utils.others.loader.MFXLoaderBean;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -17,7 +15,6 @@ import javafx.fxml.Initializable;
 import javafx.geometry.Bounds;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -31,27 +28,16 @@ import javafx.stage.FileChooser;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.mindrot.jbcrypt.BCrypt;
 
-import javax.imageio.IIOImage;
-import javax.imageio.ImageIO;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.stream.ImageOutputStream;
-import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
-import java.util.Iterator;
+import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 import java.util.ResourceBundle;
-
-import static io.github.palexdev.materialfx.demo.MFXDemoResourcesLoader.loadURL;
 
 public class PlayerHomeController implements Initializable {
 
@@ -202,167 +188,207 @@ public class PlayerHomeController implements Initializable {
         popupStage.initModality(Modality.APPLICATION_MODAL);
         popupStage.initStyle(StageStyle.UNDECORATED);
 
-        // Main container
-        VBox mainContainer = new VBox(20);
-        mainContainer.setStyle("-fx-background-color: #1B1F3B;");
-        mainContainer.setPadding(new Insets(20));
+        // Main container with rich dark blue background
+        VBox mainContainer = new VBox();
+        mainContainer.setStyle("-fx-background-color: linear-gradient(to bottom right, #1a1f3c, #2d3250); -fx-background-radius: 20;");
+        mainContainer.setPadding(new Insets(0));
+        mainContainer.setMaxWidth(1000);
+        mainContainer.setMaxHeight(700);
 
-        // Header section with close button
+        // Header with subtle gradient
         HBox header = new HBox();
         header.setAlignment(Pos.CENTER_LEFT);
-        header.setSpacing(10);
+        header.setPadding(new Insets(25));
+        header.setStyle("-fx-background-color: linear-gradient(to right, #1a1f3c, #2d3250); -fx-background-radius: 20 20 0 0; -fx-border-color: rgba(255, 152, 0, 0.2); -fx-border-width: 0 0 1 0;");
 
-        Label titleLabel = new Label("Edit Profile");
-        titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;");
+        Label titleLabel = new Label("Profile Settings");
+        titleLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #ff9800;");
 
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
         MFXButton closeButton = new MFXButton("×");
-        closeButton.setStyle("-fx-font-size: 18px; -fx-background-color: transparent; -fx-text-fill: white;");
+        closeButton.setStyle("-fx-font-size: 24px; -fx-background-color: transparent; -fx-text-fill: #ff9800;");
         closeButton.setOnAction(e -> popupStage.close());
 
         header.getChildren().addAll(titleLabel, spacer, closeButton);
 
-        // Profile section
-        VBox profileSection = new VBox(10);
-        profileSection.setAlignment(Pos.CENTER);
+        // Content container with scroll
+        MFXScrollPane scrollPane = new MFXScrollPane();
+        scrollPane.setStyle("-fx-background-color: transparent; -fx-background: transparent; -fx-border-color: transparent;");
+        scrollPane.setFitToWidth(true);
+        scrollPane.setFitToHeight(true);
 
-        // Profile picture setup
-        ImageView profileImageView = new ImageView();
-        profileImageView.setFitWidth(120);
-        profileImageView.setFitHeight(120);
+        VBox contentBox = new VBox(30);
+        contentBox.setPadding(new Insets(30));
+        contentBox.setStyle("-fx-background-color: transparent;");
 
-        // Set proper image preservation settings
-        profileImageView.setPreserveRatio(false);
-        profileImageView.setSmooth(true);
+        // Profile section with modern design
+        HBox profileSection = new HBox(30);
+        profileSection.setAlignment(Pos.CENTER_LEFT);
 
-        // Create a StackPane to center the ImageView
-        StackPane imageContainer = new StackPane(profileImageView);
+        // Profile picture container with subtle glow
+        StackPane imageContainer = new StackPane();
         imageContainer.setMaxSize(120, 120);
         imageContainer.setMinSize(120, 120);
+        imageContainer.setStyle("-fx-background-color: rgba(255, 152, 0, 0.1); -fx-background-radius: 60; " +
+                "-fx-border-color: linear-gradient(to bottom right, #ff9800, #ff5722); -fx-border-width: 2; " +
+                "-fx-border-radius: 60; -fx-effect: dropshadow(gaussian, rgba(255, 152, 0, 0.3), 10, 0, 0, 0);");
 
-        // Create and apply circular clip
-        Circle clip = new Circle(60);
-        clip.setCenterX(60);
-        clip.setCenterY(60);
-        imageContainer.setClip(clip);
+        // Create a container for the image to ensure proper centering
+        StackPane imageWrapper = new StackPane();
+        imageWrapper.setMaxSize(110, 110);
+        imageWrapper.setMinSize(110, 110);
 
-        // Load current profile picture
+        ImageView profileImageView = new ImageView();
+        profileImageView.setFitWidth(110);
+        profileImageView.setFitHeight(110);
+        profileImageView.setPreserveRatio(true);
+        profileImageView.setSmooth(true);
+
+        Circle clip = new Circle(55);
+        clip.setCenterX(55);
+        clip.setCenterY(55);
+        imageWrapper.setClip(clip);
+
         reloadProfileImage(profileImageView);
+        imageWrapper.getChildren().add(profileImageView);
+        imageContainer.getChildren().add(imageWrapper);
 
-        MFXButton uploadImageButton = new MFXButton("Change Picture");
-        uploadImageButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white; -fx-font-size: 14px;");
+        // Profile info section
+        VBox profileInfo = new VBox(10);
+        profileInfo.setAlignment(Pos.CENTER_LEFT);
+
+        Label nameLabel = new Label(UserSession.getInstance().getCurrentUser().getFirstname() + " " + 
+                                  UserSession.getInstance().getCurrentUser().getLastName());
+        nameLabel.setStyle("-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: white;");
+
+        Label emailLabel = new Label(UserSession.getInstance().getCurrentUser().getEmail());
+        emailLabel.setStyle("-fx-font-size: 14px; -fx-text-fill: #ff9800;");
+
+        MFXButton uploadImageButton = new MFXButton("Change Photo");
+        uploadImageButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #ff9800; -fx-font-size: 14px; " +
+                "-fx-padding: 8 16; -fx-border-color: #ff9800; -fx-border-radius: 20; -fx-border-width: 1;");
         uploadImageButton.setOnAction(e -> handleImageUpload(profileImageView));
 
-        profileSection.getChildren().addAll(imageContainer, uploadImageButton);
+        profileInfo.getChildren().addAll(nameLabel, emailLabel, uploadImageButton);
+        profileSection.getChildren().addAll(imageContainer, profileInfo);
 
-        // Form sections
-        VBox formContainer = new VBox(20);
-        formContainer.setStyle("-fx-background-color: #2A2F4F; -fx-padding: 20; -fx-background-radius: 10;");
+        // Form sections with modern card design
+        VBox formContainer = new VBox(25);
+        formContainer.setStyle("-fx-background-color: rgba(255, 152, 0, 0.05); -fx-background-radius: 15; " +
+                "-fx-padding: 25; -fx-border-color: linear-gradient(to bottom right, rgba(255, 152, 0, 0.2), rgba(255, 87, 34, 0.2)); " +
+                "-fx-border-radius: 15; -fx-border-width: 1; -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 0);");
 
         // Personal Information Section
-        VBox personalInfoSection = new VBox(10);
+        VBox personalInfoSection = new VBox(20);
         Label personalInfoLabel = new Label("Personal Information");
-        personalInfoLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;");
+        personalInfoLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ff9800;");
 
-        MFXTextField firstNameField = new MFXTextField();
-        firstNameField.setFloatingText("First Name");
-        firstNameField.setText(UserSession.getInstance().getCurrentUser().getFirstname());
-        firstNameField.setStyle("-fx-text-fill: black;");
+        GridPane grid = new GridPane();
+        grid.setHgap(20);
+        grid.setVgap(15);
 
-        MFXTextField lastNameField = new MFXTextField();
-        lastNameField.setFloatingText("Last Name");
-        lastNameField.setText(UserSession.getInstance().getCurrentUser().getLastName());
-        lastNameField.setStyle("-fx-text-fill: black;");
+        // Create modern text fields with consistent styling
+        MFXTextField firstNameField = createStyledTextField("First Name", UserSession.getInstance().getCurrentUser().getFirstname());
+        MFXTextField lastNameField = createStyledTextField("Last Name", UserSession.getInstance().getCurrentUser().getLastName());
+        MFXTextField emailField = createStyledTextField("Email", UserSession.getInstance().getCurrentUser().getEmail());
+        MFXTextField phoneField = createStyledTextField("Phone Number", UserSession.getInstance().getCurrentUser().getPhoneNumber());
 
-        MFXTextField emailField = new MFXTextField();
-        emailField.setFloatingText("Email");
-        emailField.setText(UserSession.getInstance().getCurrentUser().getEmail());
-        emailField.setStyle("-fx-text-fill: black;");
+        grid.add(firstNameField, 0, 0);
+        grid.add(lastNameField, 1, 0);
+        grid.add(emailField, 0, 1);
+        grid.add(phoneField, 1, 1);
 
-        MFXTextField phoneField = new MFXTextField();
-        phoneField.setFloatingText("Phone Number");
-        phoneField.setText(UserSession.getInstance().getCurrentUser().getPhoneNumber());
-        phoneField.setStyle("-fx-text-fill: black;");
-
-        personalInfoSection.getChildren().addAll(personalInfoLabel, firstNameField, lastNameField, emailField, phoneField);
+        personalInfoSection.getChildren().addAll(personalInfoLabel, grid);
 
         // Password Change Section
-        VBox passwordSection = new VBox(10);
+        VBox passwordSection = new VBox(20);
         Label passwordLabel = new Label("Change Password");
-        passwordLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: white;");
+        passwordLabel.setStyle("-fx-font-size: 18px; -fx-font-weight: bold; -fx-text-fill: #ff9800;");
 
-        MFXPasswordField currentPasswordField = new MFXPasswordField();
-        currentPasswordField.setFloatingText("Current Password");
-        currentPasswordField.setStyle("-fx-text-fill: black;");
-
-        MFXPasswordField newPasswordField = new MFXPasswordField();
-        newPasswordField.setFloatingText("New Password");
-        newPasswordField.setStyle("-fx-text-fill: black;");
-
-        MFXPasswordField confirmPasswordField = new MFXPasswordField();
-        confirmPasswordField.setFloatingText("Confirm New Password");
-        confirmPasswordField.setStyle("-fx-text-fill: black;");
+        MFXPasswordField currentPasswordField = createStyledPasswordField("Current Password");
+        MFXPasswordField newPasswordField = createStyledPasswordField("New Password");
+        MFXPasswordField confirmPasswordField = createStyledPasswordField("Confirm New Password");
 
         passwordSection.getChildren().addAll(passwordLabel, currentPasswordField, newPasswordField, confirmPasswordField);
 
-        // Add sections to form container
         formContainer.getChildren().addAll(personalInfoSection, passwordSection);
 
-        // Create a scroll pane for the form
-        MFXScrollPane scrollPane = new MFXScrollPane(formContainer);
-        scrollPane.setFitToWidth(true);
-        scrollPane.setStyle("-fx-background-color: transparent;");
+        // Add all sections to content box
+        contentBox.getChildren().addAll(profileSection, formContainer);
+        scrollPane.setContent(contentBox);
 
-        // Buttons
-        HBox buttonBox = new HBox(10);
-        buttonBox.setAlignment(Pos.CENTER);
-
-        MFXButton saveButton = new MFXButton("Save Changes");
-        saveButton.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+        // Footer with buttons
+        HBox footer = new HBox(15);
+        footer.setAlignment(Pos.CENTER_RIGHT);
+        footer.setPadding(new Insets(20, 30, 30, 30));
+        footer.setStyle("-fx-background-color: linear-gradient(to right, #2d3250, #1a1f3c); " +
+                "-fx-background-radius: 0 0 20 20; -fx-border-color: rgba(255, 152, 0, 0.2); -fx-border-width: 1 0 0 0;");
 
         MFXButton cancelButton = new MFXButton("Cancel");
-        cancelButton.setStyle("-fx-background-color: #F44336; -fx-text-fill: white;");
+        cancelButton.setStyle("-fx-background-color: transparent; -fx-text-fill: #ff9800; -fx-font-size: 14px; " +
+                "-fx-padding: 10 20; -fx-border-color: #ff9800; -fx-border-radius: 20; -fx-border-width: 1;");
         cancelButton.setOnAction(e -> popupStage.close());
 
-        buttonBox.getChildren().addAll(saveButton, cancelButton);
-
-        // Save button action
+        MFXButton saveButton = new MFXButton("Save Changes");
+        saveButton.setStyle("-fx-background-color: linear-gradient(to right, #ff9800, #ff5722); -fx-text-fill: white; " +
+                "-fx-font-size: 14px; -fx-padding: 10 20; -fx-background-radius: 20; " +
+                "-fx-effect: dropshadow(gaussian, rgba(255, 152, 0, 0.3), 10, 0, 0, 0);");
         saveButton.setOnAction(e -> {
             User currentUser = UserSession.getInstance().getCurrentUser();
             boolean hasChanges = false;
+            User updatedUser = new User(); // Create a new user object for updates
+            updatedUser.setId(currentUser.getId()); // Set the ID to match current user
 
             // Check for changes in text fields
             if (!firstNameField.getText().equals(currentUser.getFirstname())) {
-                currentUser.setFirstname(firstNameField.getText());
+                updatedUser.setFirstname(firstNameField.getText());
                 hasChanges = true;
-            }
-            if (!lastNameField.getText().equals(currentUser.getLastName())) {
-                currentUser.setLastName(lastNameField.getText());
-                hasChanges = true;
-            }
-            if (!emailField.getText().equals(currentUser.getEmail())) {
-                currentUser.setEmail(emailField.getText());
-                hasChanges = true;
-            }
-            if (!phoneField.getText().equals(currentUser.getPhoneNumber())) {
-                currentUser.setPhoneNumber(phoneField.getText());
-                hasChanges = true;
+            } else {
+                updatedUser.setFirstname(currentUser.getFirstname());
             }
 
-            // Handle password change if new password is provided
+            if (!lastNameField.getText().equals(currentUser.getLastName())) {
+                updatedUser.setLastName(lastNameField.getText());
+                hasChanges = true;
+            } else {
+                updatedUser.setLastName(currentUser.getLastName());
+            }
+
+            if (!emailField.getText().equals(currentUser.getEmail())) {
+                updatedUser.setEmail(emailField.getText());
+                hasChanges = true;
+            } else {
+                updatedUser.setEmail(currentUser.getEmail());
+            }
+
+            if (!phoneField.getText().equals(currentUser.getPhoneNumber())) {
+                updatedUser.setPhoneNumber(phoneField.getText());
+                hasChanges = true;
+            } else {
+                updatedUser.setPhoneNumber(currentUser.getPhoneNumber());
+            }
+
+            // Handle password change only if new password is provided
             if (!newPasswordField.getText().isEmpty()) {
-                if (!currentPasswordField.getText().equals(currentUser.getPassword())) {
+                // Verify current password using BCrypt
+                if (!BCrypt.checkpw(currentPasswordField.getText(), currentUser.getPassword())) {
                     showAlert(Alert.AlertType.ERROR, "Error", "Current password is incorrect");
                     return;
                 }
+
                 if (!newPasswordField.getText().equals(confirmPasswordField.getText())) {
                     showAlert(Alert.AlertType.ERROR, "Error", "New passwords do not match");
                     return;
                 }
-                currentUser.setPassword(newPasswordField.getText());
+
+                updatedUser.setPassword(newPasswordField.getText());
                 hasChanges = true;
+            } else {
+                // Set password to null if no new password is provided
+                // This will make the service use the existing password from the database
+                updatedUser.setPassword(null);
             }
 
             // Handle profile picture change if a new image was selected
@@ -385,30 +411,40 @@ public class PlayerHomeController implements Initializable {
                     // Copy the selected file to the destination
                     Files.copy(tempProfileImageFile.toPath(), destinationFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-                    // Update user profile picture in the database with the new filename
-                    currentUser.setProfilePicture(uniqueFileName);
+                    // Update user profile picture with the new filename
+                    updatedUser.setProfilePicture(uniqueFileName);
                     hasChanges = true;
 
                     // Clear the temporary file
                     tempProfileImageFile = null;
                 } catch (Exception ex) {
-
                     showAlert(Alert.AlertType.ERROR, "Error", "Failed to upload profile picture: " + ex.getMessage());
                     return;
                 }
+            } else {
+                // Keep the existing profile picture if no new one was selected
+                updatedUser.setProfilePicture(currentUser.getProfilePicture());
             }
+
+            // Copy other necessary fields from current user
+            updatedUser.setRole(currentUser.getRole());
+            updatedUser.setDateOfBirth(currentUser.getDateOfBirth());
+            updatedUser.setCreatedAt(currentUser.getCreatedAt());
+            updatedUser.setUpdatedAt(LocalDateTime.now());
+            updatedUser.setActive(currentUser.isActive());
+            updatedUser.setIdteam(currentUser.getIdteam());
 
             // Save changes if any
             if (hasChanges) {
                 try {
                     UserService userService = new UserService();
-                    userService.update(currentUser);
+                    userService.update2(updatedUser);
 
                     // Update the session with the modified user
-                    UserSession.getInstance().updateUser(currentUser);
+                    UserSession.getInstance().updateUser(updatedUser);
 
                     // Reload the profile image in the main view if it was changed
-                    if (currentUser.getProfilePicture() != null) {
+                    if (updatedUser.getProfilePicture() != null) {
                         reloadProfileImage(profileImageView);
                     }
 
@@ -422,12 +458,39 @@ public class PlayerHomeController implements Initializable {
             }
         });
 
-        // Add all components to main container
-        mainContainer.getChildren().addAll(header, profileSection, scrollPane, buttonBox);
+        footer.getChildren().addAll(cancelButton, saveButton);
 
-        Scene scene = new Scene(mainContainer, 700, 800);
+        // Add all components to main container
+        mainContainer.getChildren().addAll(header, scrollPane, footer);
+
+        // Create scene with modern styling
+        Scene scene = new Scene(mainContainer);
+        scene.setFill(null);
         popupStage.setScene(scene);
         popupStage.show();
+    }
+
+    private MFXTextField createStyledTextField(String floatingText, String initialValue) {
+        MFXTextField textField = new MFXTextField();
+        textField.setFloatingText(floatingText);
+        textField.setText(initialValue);
+        textField.setStyle("-fx-background-color: rgba(255, 152, 0, 0.05); -fx-text-fill: white; -fx-font-size: 14px; " +
+                "-fx-background-radius: 8; -fx-border-color: linear-gradient(to bottom right, rgba(255, 152, 0, 0.2), rgba(255, 87, 34, 0.2)); " +
+                "-fx-border-radius: 8; -fx-border-width: 1;");
+        textField.setPrefHeight(45);
+        textField.setPrefWidth(300);
+        return textField;
+    }
+
+    private MFXPasswordField createStyledPasswordField(String floatingText) {
+        MFXPasswordField passwordField = new MFXPasswordField();
+        passwordField.setFloatingText(floatingText);
+        passwordField.setStyle("-fx-background-color: rgba(255, 152, 0, 0.05); -fx-text-fill: white; -fx-font-size: 14px; " +
+                "-fx-background-radius: 8; -fx-border-color: linear-gradient(to bottom right, rgba(255, 152, 0, 0.2), rgba(255, 87, 34, 0.2)); " +
+                "-fx-border-radius: 8; -fx-border-width: 1;");
+        passwordField.setPrefHeight(45);
+        passwordField.setPrefWidth(300);
+        return passwordField;
     }
 
     private void reloadProfileImage(ImageView profileImageView) {
@@ -455,15 +518,15 @@ public class PlayerHomeController implements Initializable {
                     fullPath = imageFile.toURI().toString();
                 }
 
-                Image image = new Image(fullPath,
-                        profileImageView.getFitWidth(),
-                        profileImageView.getFitHeight(),
-                        true, true);
-
+                Image image = new Image(fullPath);
+                
+                // Calculate the scaling to ensure the image fills the circle while maintaining aspect ratio
+                double scale = Math.max(110 / image.getWidth(), 110 / image.getHeight());
+                profileImageView.setFitWidth(image.getWidth() * scale);
+                profileImageView.setFitHeight(image.getHeight() * scale);
+                
                 profileImageView.setImage(image);
-
-                // Add the style class for future updates
-                profileImageView.getStyleClass().add("profile-image-view");
+                profileImageView.setPreserveRatio(true);
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -478,11 +541,15 @@ public class PlayerHomeController implements Initializable {
         try {
             String defaultImagePath = "default_profile.jpg";
             String defaultImageUrl = getClass().getResource("/" + defaultImagePath).toExternalForm();
-            Image defaultImage = new Image(defaultImageUrl,
-                    profileImageView.getFitWidth(),
-                    profileImageView.getFitHeight(),
-                    true, true);
+            Image defaultImage = new Image(defaultImageUrl);
+            
+            // Calculate the scaling to ensure the image fills the circle while maintaining aspect ratio
+            double scale = Math.max(110 / defaultImage.getWidth(), 110 / defaultImage.getHeight());
+            profileImageView.setFitWidth(defaultImage.getWidth() * scale);
+            profileImageView.setFitHeight(defaultImage.getHeight() * scale);
+            
             profileImageView.setImage(defaultImage);
+            profileImageView.setPreserveRatio(true);
         } catch (Exception e) {
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Failed to load default profile image");

@@ -122,6 +122,7 @@ public class Team {
                 ", ModeJeu=" + modeJeu +
                 ", nombreJoueurs"+nombreJoueurs+
                 ", logoPath"+logoPath+
+                "idTourment"+idtournoi+
                 '}';
     }
     public boolean equals(Object object) {

@@ -8,13 +8,14 @@ import io.github.palexdev.materialfx.demo.utils.DbConnection;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 public class TournoisService implements CRUD<Tournois> {
 
     private final Connection cnx = DbConnection.getInstance().getCnx();
     private Statement st;
     private PreparedStatement ps;
-
+    private static final Logger logger = LoggerFactory.getLogger(TournoisService.class);
 
 
     @Override
@@ -141,7 +142,7 @@ public class TournoisService implements CRUD<Tournois> {
     }
     public Tournois GetTournoisByName(String name) throws SQLException {
         Tournois tournament = null;
-        String req = "SELECT * FROM Team WHERE nom = ?";
+        String req = "SELECT * FROM tournoi WHERE nom = ?";
 
         try (PreparedStatement pst = cnx.prepareStatement(req)) {
             pst.setString(1, name);
@@ -164,4 +165,35 @@ public class TournoisService implements CRUD<Tournois> {
         return tournament;
     }
 
+
+
+        public Tournois GetTournoisById(int id) throws SQLException {
+            Tournois tournament = null;
+            String req = "SELECT * FROM tournoi WHERE id = ?";
+
+            try (PreparedStatement pst = cnx.prepareStatement(req)) {
+                pst.setInt(1, id);
+
+                try (ResultSet rs = pst.executeQuery()) {
+                    if (rs.next()) {
+                        tournament = new Tournois();
+                        tournament.setId(rs.getInt("id"));
+                        tournament.setNom(rs.getString("nom"));
+                        tournament.setFormat(rs.getString("format"));
+                        tournament.setStatus(rs.getString("status"));
+                        tournament.setStartDate(rs.getDate("start_date").toLocalDate());
+                        tournament.setEndDate(rs.getDate("end_date").toLocalDate());
+                        tournament.setNbEquipe(rs.getInt("nbEquipe"));
+                        tournament.setTournoisLocation(rs.getString("tournoiLocation"));
+                        tournament.setReglements(rs.getString("reglements"));
+                        tournament.setIdorganiser(rs.getInt("id_organizer"));
+                        logger.info("Tournament found with ID: {}", id);
+                    } else {
+                        logger.warn("No tournament found with ID: {}", id);
+                    }
+                }
+            }
+
+            return tournament;
+        }
 }

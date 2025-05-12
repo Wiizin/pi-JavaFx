@@ -69,6 +69,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.function.Predicate;
 
@@ -104,14 +105,21 @@ public class TeamSelection implements Initializable {
     private MFXStepper stepper;
     private final Map<String, Integer> leagueIdMap = new HashMap<>();
     private final Map<String, Integer> teamIdMap = new HashMap<>();
-    private static final String API_KEY = "3ebf3c070722c92bab9ef80d9cac62a8"; // Replace with your API key
-    private static final String API_HOST = "v3.football.api-sports.io";
-    int season = 2023; // Example: Season year
+    private static final String API_KEY = "479f93535e8f7b487ac4d5b41e8783bfcd8312bfc8791783a91c031cdbef96f3"; // Replace with your API key
+    private static final String API_HOST = "apiv3.apifootball.com";
+    int season = 2024; // Example: Season year
     private MFXComboBox<String> TeamComboBox;
     private MFXComboBox<String> LeagueComboBox;
     private boolean constraintsInitialized = false;
     TeamService teamService=new TeamService();
     UserService userService=new UserService();
+    LocalDate currentDate = LocalDate.now();
+    // Define the desired date format
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    LocalDate dateAfter7Days = currentDate.plusDays(7);
+    // Format the current date as a string
+    String date = currentDate.format(formatter);; // Start date
+    String date2 = dateAfter7Days.format(formatter);
     public TeamSelection() {
         loginField = new MFXTextField();
         passwordField = new MFXPasswordField();
@@ -254,14 +262,19 @@ public class TeamSelection implements Initializable {
         selectColumn.setRowCellFactory(player -> {
             // Create a checkbox for each row
             MFXCheckbox checkbox = new MFXCheckbox();
-            checkbox.setSelected(checkedPlayers.contains(player)); // Set initial state
+
+            // Bind the checkbox to the player's selected property
+            checkbox.selectedProperty().bindBidirectional(player.selectedProperty());
+
+            // Add a listener to update the checkedPlayers list
             checkbox.selectedProperty().addListener((obs, oldVal, newVal) -> {
                 if (newVal) {
-                    checkedPlayers.add(player); // Add user to the list if checked
+                    checkedPlayers.add(player); // Add player to the list if checked
                 } else {
-                    checkedPlayers.remove(player); // Remove user from the list if unchecked
+                    checkedPlayers.remove(player); // Remove player from the list if unchecked
                 }
             });
+
 
             // Create a cell that displays only the checkbox
             return new MFXTableRowCell<>(row -> "") {{
@@ -540,201 +553,278 @@ public class TeamSelection implements Initializable {
             int currentStepIndex = stepper.getCurrentIndex();
 
             if (currentStepIndex == 1) {
-                int season = 2023; // Example: Season year
-
-                // Construct the API URL for fetching leagues
-                String apiUrl = "https://" + API_HOST + "/leagues?season=" + season;
-
-                // Make API request
-                try {
-                    HttpResponse<String> response = makeApiRequest(apiUrl);
-
-                    if (response.statusCode() == 200) {
-                        // Parse JSON response
-                        JsonObject jsonResponse = JsonParser.parseString(response.body()).getAsJsonObject();
-                        JsonArray leaguesArray = jsonResponse.getAsJsonArray("response");
-
-                        // Clear the ComboBox and add fetched leagues
-                        LeagueComboBox.getItems().clear();
-                        leagueIdMap.clear(); // Clear the league ID map
-                        for (JsonElement leagueElement : leaguesArray) {
-                            JsonObject leagueObject = leagueElement.getAsJsonObject();
-                            String leagueName = leagueObject.getAsJsonObject("league").get("name").getAsString();
-                            int leagueId = leagueObject.getAsJsonObject("league").get("id").getAsInt();
-
-                            // Add league name to ComboBox and store league ID in the map
-                            LeagueComboBox.getItems().add(leagueName);
-                            leagueIdMap.put(leagueName, leagueId);
-                        }
-
-                        // Log success
-                        System.out.println("Successfully fetched and populated leagues for season: " + season);
-                    } else {
-                        // Log failure with status code and response body
-                        System.err.println("Failed to fetch leagues. Status code: " + response.statusCode() + ", Response: " + response.body());
-                    }
-                } catch (Exception e) {
-                    // Log any exceptions that occur during the API request
-                    System.err.println("Error fetching leagues: " + e.getMessage());
-                    e.printStackTrace();
-                }
-
-            }else if (currentStepIndex == 3) { // Step 3 is index 2
-                    // Proceed to Step 3 logic
-                    System.out.println("Proceeding to Step 3 logic..."); // Debugging
-
-                    String selectedLeague = LeagueComboBox.getValue();
-                    String selectedTeam = TeamComboBox.getValue();
-                    System.out.println("Selected League: " + selectedLeague); // Debugging
-                    System.out.println("Selected Team: " + selectedTeam); // Debugging
-
-                    if (selectedLeague != null && selectedTeam != null) {
-                        // Check if the team already has a manager in the SQL database
-                        Team t = null;
-                        try {
-                            t = teamService.GetTeamByName(selectedTeam);
-                            System.out.println("Team fetched from database: " + (t != null ? t.getNom() : "null")); // Debugging
-                        } catch (SQLException e) {
-                            System.err.println("Error fetching team: " + e.getMessage()); // Debugging
-                            throw new RuntimeException(e);
-                        }
-
-                        if (t != null) {
-                            // Show alert if the team already has a manager
-                            Alert alert = new Alert(Alert.AlertType.WARNING);
-                            alert.setTitle("Team Already Managed");
-                            alert.setHeaderText("This team already has a manager.");
-                            alert.setContentText("Please select another team.");
-                            alert.showAndWait();
-                        } else {
-                            TournoisService tournoisService = new TournoisService();
-                            Tournois tournois = null;
-                            try {
-                                tournois = tournoisService.GetTournoisByName(selectedTeam);
-                                System.out.println("Tournament fetched from database: " + (tournois != null ? tournois.getNom() : "null")); // Debugging
-                            } catch (SQLException e) {
-                                System.err.println("Error fetching tournament: " + e.getMessage()); // Debugging
-                                throw new RuntimeException(e);
-                            }
-                            int idtournoi=0;
-                            if (tournois == null) {
-                                tournois = new Tournois();
-                                // Create tournament and team if they don't exist
-                                tournois.setNom(selectedLeague);
-                                tournois.setStartDate(LocalDate.now()); // Set a valid start date
-                                tournois.setEndDate(LocalDate.now().plusDays(7)); // Set a valid end date
-                                User currentManager = UserSession.getInstance().getCurrentUser();
-                                if (currentManager != null) {
-                                    tournois.setIdorganiser(currentManager.getId());
-                                } else {
-                                    tournois.setIdorganiser(0);
-                                }
-
-                                try {
-                                    idtournoi=tournoisService.insert2(tournois);
-                                    System.out.println("Tournament inserted: " + tournois.getNom()); // Debugging
-                                } catch (SQLException e) {
-                                    System.err.println("Error inserting tournament: " + e.getMessage()); // Debugging
-                                    throw new RuntimeException(e);
-                                }
-                            }else{
-                                try {
-                                    idtournoi=tournoisService.GetTournoisByName(selectedLeague).getId();
-                                } catch (SQLException e) {
-                                    throw new RuntimeException(e);
-                                }
-                            }
-
-                            // Create the team
-                            t = new Team();
-                            t.setNom(selectedTeam);
-                            t.setIdtournoi(idtournoi);
-                            t.setCategorie("Football");
-                            t.setModeJeu(ModeJeu.EN_GROUPE);
-                            int idTeam = 0;
-                            try {
-                                idTeam = teamService.insert2(t);
-                                System.out.println("Team inserted with ID: " + idTeam); // Debugging
-                            } catch (SQLException e) {
-                                System.err.println("Error inserting team: " + e.getMessage()); // Debugging
-                                throw new RuntimeException(e);
-                            }
-                            int idteamapi=teamIdMap.get(selectedTeam);
-                            int idleague=leagueIdMap.get(selectedLeague);
-                            // Fetch players from API and insert into SQL
-                            fetchAndAddPlayersToSQL(selectedTeam,idteamapi ,idTeam);
-                            System.out.println("Players fetched and added to SQL for team: " + selectedTeam); // Debugging
-                            fetchAndAddUpcomingTeamMatchesToSQL(selectedTeam,idleague,idteamapi,idTeam,idtournoi);
-                            System.out.println("Upcoming matches fetched and added to SQL for team: " + selectedTeam);
-                            fetchAndAddUpcomingRestOfLeagueMatchesToSQL(idleague,idteamapi,idtournoi);
-                            System.out.println("the rest of the Upcoming matches fetched and added to SQL : " + selectedTeam);
-                            // Update the id_team of the current user
-                            User currentManager = UserSession.getInstance().getCurrentUser();
-                            if (currentManager != null) {
-                                System.out.println("Current manager: " + currentManager.getFirstname()); // Debugging
-                                currentManager.setIdteam(idTeam);
-                                userService.update(currentManager);
-                                System.out.println("Updated manager: " + currentManager.getFirstname()); // Debugging
-                            } else {
-                                System.err.println("Current manager is null."); // Debugging
-                            }
-
-                            // Reload the page or show success message
-                            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                            successAlert.setTitle("Success");
-                            successAlert.setHeaderText("Team and players added successfully.");
-                            successAlert.setContentText("The page will now reload.");
-                            Optional<ButtonType> result = successAlert.showAndWait();
-
-                            if (result.isPresent() && result.get() == ButtonType.OK) {
-                                // Reload the page or navigate to another view
-                                try {
-                                    URL fxmlLocation = loadURL("fxml/OrganizerHome.fxml");
-                                    if (fxmlLocation == null) {
-                                        System.err.println("FXML file not found!"); // Debugging
-                                        return;
-                                    }
-                                    FXMLLoader loader = new FXMLLoader(fxmlLocation);
-                                    Parent root = loader.load();
-                                    Scene scene = new Scene(root);
-                                    Stage stage = (Stage) stepper.getScene().getWindow(); // Get the current stage
-                                    stage.setScene(scene); // Set the new scene
-                                    stage.show();
-                                    System.out.println("Navigation to OrganizerHome.fxml successful."); // Debugging
-                                } catch (IOException e) {
-                                    System.err.println("Failed to load FXML: " + e.getMessage()); // Debugging
-                                    e.printStackTrace();
-                                }
-                            }
-                        }
-                    } else {
-                        System.err.println("Selected League or Team is null."); // Debugging
-                        // Show error if no league or team is selected
-                        Alert errorAlert = new Alert(Alert.AlertType.ERROR);
-                        errorAlert.setTitle("Selection Error");
-                        errorAlert.setHeaderText("No league or team selected.");
-                        errorAlert.setContentText("Please select a league and team before confirming.");
-                        errorAlert.showAndWait();
-                    }
-                }
+                // Step 1: Fetch and populate top leagues
+                fetchAndPopulateTopLeagues();
+            } else if (currentStepIndex == 3) {
+                // Step 3: Handle team and tournament creation
+                handleTeamAndTournamentCreation();
+            }
         });
 
         return List.of(step1, step2, step3,step4);
     }
+    private void fetchAndPopulateTopLeagues() {
+        Set<Integer> topLeagueIds = Set.of(61, 152, 207, 4, 302, 3, 56);
+        Set<String> uniqueLeagues = new HashSet<>();
+
+        // Construct the API URL for fetching leagues
+        String apiUrl = "https://" + API_HOST + "?action=get_leagues&season=" + season + "&APIkey=" + API_KEY;
+
+        try {
+            HttpResponse<String> response = makeApiRequest(apiUrl);
+
+            if (response.statusCode() == 200) {
+                // Parse JSON response
+                JsonArray leaguesArray = JsonParser.parseString(response.body()).getAsJsonArray();
+
+                // Clear the ComboBox and add fetched leagues
+                LeagueComboBox.getItems().clear();
+                leagueIdMap.clear(); // Clear the league ID map
+                System.out.println("Leagues Array: " + leaguesArray);
+
+                // Iterate through the leagues array
+                for (JsonElement leagueElement : leaguesArray) {
+                    JsonObject leagueObject = leagueElement.getAsJsonObject();
+
+                    // Check if the required keys exist in the JSON object
+                    if (leagueObject.has("league_id") && leagueObject.has("league_name")) {
+                        int leagueId = leagueObject.get("league_id").getAsInt();
+
+                        // Check if the league is one of the top leagues
+                        if (topLeagueIds.contains(leagueId)) {
+                            String leagueName = leagueObject.get("league_name").getAsString();
+                            System.out.println("leagueId: " + leagueId + " league name: " + leagueName);
+
+                            // Add league name to the set if it's not already present
+                            if (uniqueLeagues.add(leagueName)) {
+                                // Add league name to ComboBox and store league ID in the map
+                                LeagueComboBox.getItems().add(leagueName);
+                                leagueIdMap.put(leagueName, leagueId);
+                            }
+                        }
+                    } else {
+                        System.err.println("Missing required keys in JSON object: " + leagueObject);
+                    }
+                }
+
+                // Log success
+                System.out.println("Successfully fetched and populated top leagues for season: " + season);
+            } else {
+                // Log failure with status code and response body
+                System.err.println("Failed to fetch leagues. Status code: " + response.statusCode() + ", Response: " + response.body());
+            }
+        } catch (Exception e) {
+            // Log any exceptions that occur during the API request
+            System.err.println("Error fetching leagues: " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+    // Method to handle team and tournament creation
+    private void handleTeamAndTournamentCreation() {
+        String selectedLeague = LeagueComboBox.getValue();
+        String selectedTeam = TeamComboBox.getValue();
+
+        if (selectedLeague == null || selectedTeam == null) {
+            // Show error if no league or team is selected
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setTitle("Selection Error");
+            errorAlert.setHeaderText("No league or team selected.");
+            errorAlert.setContentText("Please select a league and team before confirming.");
+            errorAlert.showAndWait();
+            return;
+        }
+
+            System.out.println("Selected League: " + selectedLeague); // Debugging
+            System.out.println("Selected Team: " + selectedTeam); // Debugging
+            // Proceed to Step 3 logic
+            System.out.println("Proceeding to Step 3 logic..."); // Debugging
+        if (selectedLeague != null && selectedTeam != null) {
+            // Check if the team already has a manager in the SQL database
+            Team t = null;
+            Organizer o = null;
+            try {
+                t = teamService.GetTeamByName(selectedTeam);
+                System.out.println("Team fetched from database: " + (t != null ? t.getNom() : "null")); // Debugging
+
+                if (t != null) {
+                    o = userService.getManager(t.getId());
+                }
+            } catch (SQLException e) {
+                System.err.println("Error fetching team: " + e.getMessage()); // Debugging
+                throw new RuntimeException(e);
+            }
+
+            if (t != null && o != null) {
+                // Show alert if the team already has a manager
+                Alert alert = new Alert(Alert.AlertType.WARNING);
+                alert.setTitle("Team Already Managed");
+                alert.setHeaderText("This team already has a manager.");
+                alert.setContentText("Please select another team.");
+                alert.showAndWait();
+            } else {
+                // If the team does not exist, create a new team
+                if (t == null) {
+                    t = new Team();
+                    t.setNom(selectedTeam);
+                    t.setCategorie("Football");
+                    t.setModeJeu(ModeJeu.EN_GROUPE);
+                    System.out.println("New team created: " + t.getNom()); // Debugging
+                }
+
+                TournoisService tournoisService = new TournoisService();
+                Tournois tournois = null;
+                try {
+                    tournois = tournoisService.GetTournoisByName(selectedLeague);
+                    System.out.println("Tournament fetched from database: " + (tournois != null ? tournois.getNom() : "null")); // Debugging
+                } catch (SQLException e) {
+                    System.err.println("Error fetching tournament: " + e.getMessage()); // Debugging
+                    throw new RuntimeException(e);
+                }
+
+                int idtournoi = 0;
+                if (tournois == null) {
+                    tournois = new Tournois();
+                    // Create tournament if it doesn't exist
+                    tournois.setNom(selectedLeague);
+                    tournois.setStartDate(LocalDate.now()); // Set a valid start date
+                    tournois.setEndDate(LocalDate.now().plusDays(7)); // Set a valid end date
+                    User currentManager = UserSession.getInstance().getCurrentUser();
+                    if (currentManager != null) {
+                        tournois.setIdorganiser(currentManager.getId());
+                    } else {
+                        tournois.setIdorganiser(0);
+                    }
+
+                    try {
+                        idtournoi = tournoisService.insert2(tournois);
+                        System.out.println("Tournament inserted: " + tournois.getNom()); // Debugging
+                    } catch (SQLException e) {
+                        System.err.println("Error inserting tournament: " + e.getMessage()); // Debugging
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    try {
+                        idtournoi = tournoisService.GetTournoisByName(selectedLeague).getId();
+                    } catch (SQLException e) {
+                        throw new RuntimeException(e);
+                    }
+                }
+
+                // Set the tournament ID for the team
+                t.setIdtournoi(idtournoi);
+
+                // Insert the team into the database if it doesn't already exist
+                int idTeam = 0;
+                if (t.getId() == 0) { // Check if the team is new (ID not set)
+                    try {
+                        idTeam = teamService.insert2(t);
+                        System.out.println("Team inserted with ID: " + idTeam); // Debugging
+                    } catch (SQLException e) {
+                        System.err.println("Error inserting team: " + e.getMessage()); // Debugging
+                        throw new RuntimeException(e);
+                    }
+                } else {
+                    idTeam = t.getId();
+                }
+
+                int idteamapi = teamIdMap.get(selectedTeam);
+                int idleague = leagueIdMap.get(selectedLeague);
+
+                // Fetch players from API and insert into SQL
+                fetchAndAddPlayersToSQL(selectedTeam, idteamapi, idTeam);
+                System.out.println("Players fetched and added to SQL for team: " + selectedTeam); // Debugging
+
+                // Fetch and add upcoming matches
+                fetchAndAddUpcomingTeamMatchesToSQL(selectedTeam, idleague, idteamapi, idTeam, idtournoi);
+                System.out.println("Upcoming matches fetched and added to SQL for team: " + selectedTeam);
+
+                //fetchAndAddUpcomingRestOfLeagueMatchesToSQL(idleague, idteamapi, idtournoi);
+                //System.out.println("The rest of the upcoming matches fetched and added to SQL: " + selectedTeam);
+
+                // Update the id_team of the current user
+                User currentManager = UserSession.getInstance().getCurrentUser();
+                if (currentManager != null) {
+                    System.out.println("Current manager: " + currentManager.getFirstname()); // Debugging
+                    currentManager.setIdteam(idTeam);
+                    userService.update(currentManager);
+                    System.out.println("Updated manager: " + currentManager.getFirstname()); // Debugging
+                } else {
+                    System.err.println("Current manager is null."); // Debugging
+                }
+
+                // Reload the page or show success message
+                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                successAlert.setTitle("Success");
+                successAlert.setHeaderText("Team and players added successfully.");
+                successAlert.setContentText("The page will now reload.");
+                Optional<ButtonType> result = successAlert.showAndWait();
+
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    // Reload the page or navigate to another view
+                    try {
+                        URL fxmlLocation = loadURL("fxml/OrganizerHome.fxml");
+                        if (fxmlLocation == null) {
+                            System.err.println("FXML file not found!"); // Debugging
+                            return;
+                        }
+                        FXMLLoader loader = new FXMLLoader(fxmlLocation);
+                        Parent root = loader.load();
+                        Scene scene = new Scene(root);
+                        Stage stage = (Stage) stepper.getScene().getWindow(); // Get the current stage
+                        stage.setScene(scene); // Set the new scene
+                        stage.show();
+                        System.out.println("Navigation to OrganizerHome.fxml successful."); // Debugging
+                    } catch (IOException e) {
+                        System.err.println("Failed to load FXML: " + e.getMessage()); // Debugging
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } else {
+            System.err.println("Selected League or Team is null."); // Debugging
+            // Show error if no league or team is selected
+            Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+            errorAlert.setTitle("Selection Error");
+            errorAlert.setHeaderText("No league or team selected.");
+            errorAlert.setContentText("Please select a league and team before confirming.");
+            errorAlert.showAndWait();
+        }
+
+    }
+
+    // Method to navigate to OrganizerHome.fxml
+    private void navigateToOrganizerHome() {
+        try {
+            URL fxmlLocation = loadURL("fxml/OrganizerHome.fxml");
+            if (fxmlLocation == null) {
+                System.err.println("FXML file not found!"); // Debugging
+                return;
+            }
+            FXMLLoader loader = new FXMLLoader(fxmlLocation);
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            Stage stage = (Stage) stepper.getScene().getWindow(); // Get the current stage
+            stage.setScene(scene); // Set the new scene
+            stage.show();
+            System.out.println("Navigation to OrganizerHome.fxml successful."); // Debugging
+        } catch (IOException e) {
+            System.err.println("Failed to load FXML: " + e.getMessage()); // Debugging
+            e.printStackTrace();
+        }
+    }
     private void fetchAndAddUpcomingTeamMatchesToSQL(String teamName, int idleague, int idteamapi, int idTeam, int idtournoi) {
         // Construct the API URL for fetching fixtures
-        String apiUrl = "https://" + API_HOST + "/fixtures?league=" + idleague + "&season=" + season + "&team=" + idteamapi;
-        System.out.println("API URL: " + apiUrl); // Debugging: Print the API URL
+        String apiUrl = "https://" + API_HOST + "/?action=get_events&from="+date+"&to="+date2+"&league_id=" + idleague + "&APIkey=" + API_KEY;
+
+        //System.out.println("API URL: " + apiUrl); // Debugging: Print the API URL
 
         try {
             // Make API request
             HttpResponse<String> response = makeApiRequest(apiUrl);
 
-
             if (response.statusCode() == 200) {
                 // Parse JSON response
-                JsonObject jsonResponse = JsonParser.parseString(response.body()).getAsJsonObject();
-                JsonArray matchesArray = jsonResponse.getAsJsonArray("response"); // Get the "response" array
+                JsonArray matchesArray = JsonParser.parseString(response.body()).getAsJsonArray();
 
                 // Initialize the service for creating matches
                 MatchesService matchesService = new MatchesService();
@@ -742,42 +832,32 @@ public class TeamSelection implements Initializable {
                 // Iterate through the matches array
                 for (JsonElement matchElement : matchesArray) {
                     JsonObject matchObject = matchElement.getAsJsonObject();
-                    JsonObject fixtureObject = matchObject.getAsJsonObject("fixture"); // Get the "fixture" object
-                    JsonObject teamsObject = matchObject.getAsJsonObject("teams"); // Get the "teams" object
+
                     // Extract match details
-                    String homeTeamName = teamsObject.getAsJsonObject("home").get("name").getAsString();
-                    int homeTeamId = teamsObject.getAsJsonObject("home").get("id").getAsInt();
-                    String awayTeamName = teamsObject.getAsJsonObject("away").get("name").getAsString();
-                    int awayTeamId = teamsObject.getAsJsonObject("away").get("id").getAsInt();
-                    String status = "Unknown"; // Default status
-                    int homeTeamDbId = ensureTeamExists(homeTeamName, homeTeamId, teamService,idtournoi);
-                    int awayTeamDbId = ensureTeamExists(awayTeamName, awayTeamId, teamService,idtournoi);
-                    if (fixtureObject.has("status") && !fixtureObject.get("status").isJsonNull()) {
-                        JsonObject statusObject = fixtureObject.getAsJsonObject("status");
-                        if (statusObject != null && statusObject.has("long") && !statusObject.get("long").isJsonNull()) {
-                            status = statusObject.get("long").getAsString();
-                        }
-                    }
-                    String location_match = "Unknown"; // Default status
-                    if (fixtureObject.has("venue") && !fixtureObject.get("venue").isJsonNull()) {
-                        JsonObject statusObject = fixtureObject.getAsJsonObject("venue");
-                        if (statusObject != null && statusObject.has("name") && !statusObject.get("name").isJsonNull()) {
-                            location_match = statusObject.get("name").getAsString();
-                        }
-                    }
+                    String homeTeamName = matchObject.get("match_hometeam_name").getAsString();
+                    int homeTeamId = matchObject.get("match_hometeam_id").getAsInt();
+                    String awayTeamName = matchObject.get("match_awayteam_name").getAsString();
+                    int awayTeamId = matchObject.get("match_awayteam_id").getAsInt();
+                    String status = matchObject.get("match_status").getAsString();
+                    String location_match = matchObject.get("match_stadium").getAsString();
+                    String homeTeamlogo=matchObject.get("team_home_badge").getAsString();
+                    String awayTeamlogo=matchObject.get("team_away_badge").getAsString();
+                    // Parse match date and time
                     LocalDateTime date = null;
-                    if (fixtureObject.get("date") != null && !fixtureObject.get("date").isJsonNull()) {
-                        String dateString = fixtureObject.get("date").getAsString();
-                        try {
-                            // Parse the date string into a ZonedDateTime
-                            ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateString);
-                            // Convert to LocalDateTime (if needed)
-                            date = zonedDateTime.toLocalDateTime();
-                        } catch (Exception e) {
-                            System.err.println("Failed to parse date: " + dateString);
-                            e.printStackTrace();
-                        }
+                    String matchDate = matchObject.get("match_date").getAsString();
+                    String matchTime = matchObject.get("match_time").getAsString();
+                    String dateTimeString = matchDate + "T" + matchTime + ":00"; // Combine date and time
+                    try {
+                        date = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+                    } catch (Exception e) {
+                        System.err.println("Failed to parse date: " + dateTimeString);
+                        e.printStackTrace();
                     }
+
+                    // Ensure teams exist in the database
+
+                    int homeTeamDbId = ensureTeamExists(homeTeamName, homeTeamId, teamService, idtournoi,homeTeamlogo);
+                    int awayTeamDbId = ensureTeamExists(awayTeamName, awayTeamId, teamService, idtournoi,awayTeamlogo);
 
                     // Filter out matches involving the included team
                     if (homeTeamId == idteamapi || awayTeamId == idteamapi) {
@@ -805,6 +885,21 @@ public class TeamSelection implements Initializable {
                             System.err.println("Failed to insert match: " + e.getMessage());
                             e.printStackTrace();
                         }
+                    }else{
+
+                        // Create a new Match object
+                        Matches match = new Matches();
+                        match.setTeamAName(homeTeamName);
+                        match.setTeamBName(awayTeamName);
+                        match.setIdTeamA(homeTeamDbId);
+                        match.setIdTeamB(awayTeamDbId);
+                        match.setMatchTime(date);
+                        match.setIdTournoi(idtournoi);
+                        match.setStatus(status);
+                        match.setLocationMatch(location_match);
+
+                        // Insert the match into the database
+                        matchesService.insert2(match);
                     }
                 }
 
@@ -820,9 +915,83 @@ public class TeamSelection implements Initializable {
         }
     }
 
-    private void fetchAndAddUpcomingRestOfLeagueMatchesToSQL(int idleague, int idteamapi, int idtournoi) {
-        // Construct the API URL for fetching fixtures
-        String apiUrl = "https://" + API_HOST + "/fixtures?league=" + idleague + "&season=" + season;
+//    private void fetchAndAddUpcomingRestOfLeagueMatchesToSQL(int idleague, int idteamapi, int idtournoi) {
+//        // Construct the API URL for fetching fixtures
+//        String apiUrl = "https://" + API_HOST + "/?action=get_events&from=" + date + "&to=" + date2 + "&league_id=" + idleague + "&APIkey=" + API_KEY;
+//
+//        try {
+//            // Make API request
+//            HttpResponse<String> response = makeApiRequest(apiUrl);
+//
+//            if (response.statusCode() == 200) {
+//                // Parse JSON response
+//                JsonArray matchesArray = JsonParser.parseString(response.body()).getAsJsonArray();
+//
+//                // Initialize the service for creating matches
+//                MatchesService matchesService = new MatchesService();
+//
+//                // Iterate through the matches array
+//                for (JsonElement matchElement : matchesArray) {
+//                    JsonObject matchObject = matchElement.getAsJsonObject();
+//
+//                    // Extract match details
+//                    String homeTeamName = matchObject.get("match_hometeam_name").getAsString();
+//                    int homeTeamId = matchObject.get("match_hometeam_id").getAsInt();
+//                    String awayTeamName = matchObject.get("match_awayteam_name").getAsString();
+//                    int awayTeamId = matchObject.get("match_awayteam_id").getAsInt();
+//                    String status = matchObject.get("match_status").getAsString();
+//                    String location_match = matchObject.get("match_stadium").getAsString();
+//                    String homeTeamlogo=matchObject.get("team_home_badge").getAsString();
+//                    String awayTeamlogo=matchObject.get("team_away_badge").getAsString();
+//                    // Parse match date and time
+//                    LocalDateTime date = null;
+//                    String matchDate = matchObject.get("match_date").getAsString();
+//                    String matchTime = matchObject.get("match_time").getAsString();
+//                    String dateTimeString = matchDate + "T" + matchTime + ":00"; // Combine date and time
+//                    try {
+//                        date = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+//                    } catch (Exception e) {
+//                        System.err.println("Failed to parse date: " + dateTimeString);
+//                        e.printStackTrace();
+//                    }
+//
+//                    // Ensure teams exist in the database
+//                    int homeTeamDbId = ensureTeamExists(homeTeamName, homeTeamId, teamService, idtournoi,homeTeamlogo);
+//                    int awayTeamDbId = ensureTeamExists(awayTeamName, awayTeamId, teamService, idtournoi,awayTeamlogo);
+//
+//                    // Filter out matches involving the excluded team
+//                    if (homeTeamId != idteamapi && awayTeamId != idteamapi) {
+//                        // Create a new Match object
+//                        Matches match = new Matches();
+//                        match.setTeamAName(homeTeamName);
+//                        match.setTeamBName(awayTeamName);
+//                        match.setIdTeamA(homeTeamDbId);
+//                        match.setIdTeamB(awayTeamDbId);
+//                        match.setMatchTime(date);
+//                        match.setIdTournoi(idtournoi);
+//                        match.setStatus(status);
+//                        match.setLocationMatch(location_match);
+//
+//                        // Insert the match into the database
+//                        matchesService.insert2(match);
+//                    }
+//                }
+//
+//                System.out.println("Matches added to SQL successfully for league: " + idleague);
+//            } else {
+//                // Log failure with status code and response body
+//                System.err.println("Failed to fetch matches. Status code: " + response.statusCode() + ", Response: " + response.body());
+//            }
+//        } catch (Exception e) {
+//            // Log any exceptions that occur during the API request or database operations
+//            System.err.println("Error fetching or adding matches: " + e.getMessage());
+//            e.printStackTrace();
+//        }
+//    }
+
+    private void fetchAndAddPlayersToSQL(String teamName, int idteamapi, int idTeam) {
+        // Construct the API URL for fetching teams using the team ID
+        String apiUrl = "https://" + API_HOST + "/?action=get_teams&team_id=" + idteamapi+"&season"+season+ "&APIkey=" + API_KEY;
 
         try {
             // Make API request
@@ -830,159 +999,103 @@ public class TeamSelection implements Initializable {
 
             if (response.statusCode() == 200) {
                 // Parse JSON response
-                JsonObject jsonResponse = JsonParser.parseString(response.body()).getAsJsonObject();
-                JsonArray matchesArray = jsonResponse.getAsJsonArray("response"); // Get the "response" array
+                JsonElement responseElement = JsonParser.parseString(response.body());
+                System.out.println("API Response: " + responseElement); // Debugging
 
-                // Initialize the service for creating matches
-                MatchesService matchesService = new MatchesService();
-
-                // Iterate through the matches array
-                for (JsonElement matchElement : matchesArray) {
-                    JsonObject matchObject = matchElement.getAsJsonObject();
-                    JsonObject fixtureObject = matchObject.getAsJsonObject("fixture"); // Get the "fixture" object
-                    JsonObject teamsObject = matchObject.getAsJsonObject("teams"); // Get the "teams" object
-
-                    // Extract match details
-                    String homeTeamName = teamsObject.getAsJsonObject("home").get("name").getAsString();
-                    int homeTeamId = teamsObject.getAsJsonObject("home").get("id").getAsInt();
-                    String awayTeamName = teamsObject.getAsJsonObject("away").get("name").getAsString();
-                    int awayTeamId = teamsObject.getAsJsonObject("away").get("id").getAsInt();
-                    String status = "Unknown"; // Default status
-                    int homeTeamDbId = ensureTeamExists(homeTeamName, homeTeamId, teamService,idtournoi);
-                    int awayTeamDbId = ensureTeamExists(awayTeamName, awayTeamId, teamService,idtournoi);
-                    if (fixtureObject.has("status") && !fixtureObject.get("status").isJsonNull()) {
-                        JsonObject statusObject = fixtureObject.getAsJsonObject("status");
-                        if (statusObject != null && statusObject.has("long") && !statusObject.get("long").isJsonNull()) {
-                            status = statusObject.get("long").getAsString();
-                        }
-                    }
-                    String location_match = "Unknown"; // Default status
-                    if (fixtureObject.has("venue") && !fixtureObject.get("venue").isJsonNull()) {
-                        JsonObject statusObject = fixtureObject.getAsJsonObject("venue");
-                        if (statusObject != null && statusObject.has("name") && !statusObject.get("name").isJsonNull()) {
-                            location_match = statusObject.get("name").getAsString();
-                        }
-                    }
-                    LocalDateTime date = null;
-                    if (fixtureObject.get("date") != null && !fixtureObject.get("date").isJsonNull()) {
-                        String dateString = fixtureObject.get("date").getAsString();
-                        try {
-                            // Parse the date string into a ZonedDateTime
-                            ZonedDateTime zonedDateTime = ZonedDateTime.parse(dateString);
-                            // Convert to LocalDateTime (if needed)
-                            date = zonedDateTime.toLocalDateTime();
-                        } catch (Exception e) {
-                            System.err.println("Failed to parse date: " + dateString);
-                            e.printStackTrace();
-                        }
-                    }
-
-                    // Filter out matches involving the excluded team
-                    if (homeTeamId != idteamapi && awayTeamId != idteamapi) {
-                        // Create a new Match object
-                        Matches match = new Matches();
-                        match.setTeamAName(homeTeamName);
-                        match.setTeamBName(awayTeamName);
-                        match.setIdTeamB(awayTeamDbId);
-                        match.setIdTeamA(homeTeamDbId);
-                        match.setMatchTime(date);
-                        match.setIdTournoi(idtournoi);
-                        match.setStatus(status);
-                        match.setLocationMatch(location_match);
-                        // Insert the match into the database
-                        matchesService.insert2(match);
+                // Check if the response is an error object
+                if (responseElement.isJsonObject()) {
+                    JsonObject responseObject = responseElement.getAsJsonObject();
+                    if (responseObject.has("error")) {
+                        int errorCode = responseObject.get("error").getAsInt();
+                        String errorMessage = responseObject.get("message").getAsString();
+                        System.err.println("API Error: " + errorCode + " - " + errorMessage);
+                        return; // Exit the method if there's an error
                     }
                 }
 
-                System.out.println("Matches added to SQL successfully for league: " + idleague);
-            } else {
-                // Log failure with status code and response body
-                System.err.println("Failed to fetch matches. Status code: " + response.statusCode() + ", Response: " + response.body());
-            }
-        } catch (Exception e) {
-            // Log any exceptions that occur during the API request or database operations
-            System.err.println("Error fetching or adding matches: " + e.getMessage());
-            e.printStackTrace();
-        }
-    }
+                // Check if the response is a JSON array
+                if (!responseElement.isJsonArray()) {
+                    System.err.println("Unexpected response format: " + responseElement);
+                    return;
+                }
 
-    private void fetchAndAddPlayersToSQL(String teamName, int idteamapi,int idTeam) {
-        // Construct the API URL for fetching players using the team ID
-        String apiUrl = "https://" + API_HOST + "/players?team=" + idteamapi+"&season="+season;
-
-        try {
-            // Make API request
-            HttpResponse<String> response = makeApiRequest(apiUrl);
-
-            if (response.statusCode() == 200) {
-                // Parse JSON response
-                JsonObject jsonResponse = JsonParser.parseString(response.body()).getAsJsonObject();
-                JsonArray playersArray = jsonResponse.getAsJsonArray("response");
+                // Parse teams response
+                JsonArray teamsArray = responseElement.getAsJsonArray();
 
                 // Initialize the service for creating players
                 UserService userService = new UserService();
 
-                // Iterate through the players array
-                for (JsonElement playerElement : playersArray) {
-                    JsonObject playerObject = playerElement.getAsJsonObject();
-                    JsonObject playerDetails = playerObject.getAsJsonObject("player");
-                    //System.out.println("playerDetails: " + playerDetails);
+                // Iterate through the teams array
+                for (JsonElement teamElement : teamsArray) {
+                    JsonObject teamObject = teamElement.getAsJsonObject();
 
-                    // Extract player details
-                    String playerFirstName = playerDetails.get("firstname").getAsString();
-                    String playerLastName = playerDetails.get("lastname").getAsString();
-                    String photoUrl = playerDetails.get("photo").getAsString(); // Extract the photo URL
-                    // Handle date of birth
-                    LocalDate dateOfBirth = null;
-                    JsonElement birthElement = playerDetails.get("birth");
+                    // Check if the team has players
+                    if (teamObject.has("players")) {
+                        JsonArray playersArray = teamObject.getAsJsonArray("players");
 
-                    if (birthElement != null && !birthElement.isJsonNull()) {
-                        JsonObject birthObject = birthElement.getAsJsonObject(); // birth is a JsonObject
-                        JsonElement dateElement = birthObject.get("date"); // Extract the "date" field
+                        // Iterate through the players array
+                        for (JsonElement playerElement : playersArray) {
+                            JsonObject playerObject = playerElement.getAsJsonObject();
 
-                        if (dateElement != null && !dateElement.isJsonNull()) {
-                            String dateString = dateElement.getAsString(); // Get the date as a string
-                            dateOfBirth = LocalDate.parse(dateString); // Convert to LocalDate
+                            // Extract player details
+                            String playerName = playerObject.get("player_name").getAsString();
+                            String[] nameParts = playerName.split(" ", 2); // Split into first name and last name
+                            String playerFirstName = nameParts.length > 0 ? nameParts[0] : "";
+                            String playerLastName = nameParts.length > 1 ? nameParts[1] : "";
+
+                            String photoUrl = playerObject.get("player_image").getAsString(); // Extract the photo URL
+                            String playerType = playerObject.get("player_type").getAsString(); // Extract the player type
+
+                            // Handle date of birth
+                            LocalDate dateOfBirth = null;
+                            String birthdateString = playerObject.get("player_birthdate").getAsString();
+                            if (birthdateString != null && !birthdateString.isEmpty()) {
+                                dateOfBirth = LocalDate.parse(birthdateString); // Convert to LocalDate
+                            }
+
+                            // Create a new Player object
+                            Player player = new Player();
+                            player.setFirstname(playerFirstName);
+                            player.setLastName(playerLastName);
+                            player.setDateOfBirth(dateOfBirth); // Can be null
+                            player.setRole("player");
+                            player.setIdteam(idTeam);
+                            player.setPosition(playerType);
+
+                            try {
+                                // Download the photo to a temporary file
+                                Path tempFilePath = Files.createTempFile("player_photo_", ".jpg");
+                                downloadPhoto(photoUrl, tempFilePath);
+
+                                // Save the downloaded photo using the saveUploadedFile method
+                                File tempFile = tempFilePath.toFile();
+                                String savedFilePath = saveUploadedFile(tempFile);
+
+                                if (savedFilePath != null) {
+                                    System.out.println("Photo saved: " + savedFilePath);
+                                    player.setProfilePicture(savedFilePath); // Set the photo path in the Player object
+                                } else {
+                                    System.err.println("Failed to save photo for player: " + playerFirstName + " " + playerLastName);
+                                }
+
+                                // Delete the temporary file
+                                Files.deleteIfExists(tempFilePath);
+                            } catch (IOException e) {
+                                System.err.println("Failed to download or save photo: " + e.getMessage());
+                            }
+
+                            // Insert the player into the database
+                            userService.createPlayer(player);
                         }
+                    } else {
+                        System.err.println("No players found for team: " + teamName);
                     }
-
-                    // Create a new Player object
-                    Player player = new Player();
-                    player.setFirstname(playerFirstName);
-                    player.setLastName(playerLastName);
-                    player.setDateOfBirth(dateOfBirth); // Can be null
-                    player.setRole("player");
-                    player.setIdteam(idTeam);
-                    try {
-                        // Download the photo to a temporary file
-                        Path tempFilePath = Files.createTempFile("player_photo_", ".png");
-                        downloadPhoto(photoUrl, tempFilePath);
-
-                        // Save the downloaded photo using the saveUploadedFile method
-                        File tempFile = tempFilePath.toFile();
-                        String savedFilePath = saveUploadedFile(tempFile);
-
-                        if (savedFilePath != null) {
-                            System.out.println("Photo saved: " + savedFilePath);
-                            player.setProfilePicture(savedFilePath); // Set the photo path in the Player object
-                        } else {
-                            System.err.println("Failed to save photo for player: " + playerFirstName + " " + playerLastName);
-                        }
-
-                        // Delete the temporary file
-                        Files.deleteIfExists(tempFilePath);
-                    } catch (IOException e) {
-                        System.err.println("Failed to download or save photo: " + e.getMessage());
-                    }
-
-                    // Insert the player into the database
-                    userService.create(player);
                 }
 
                 System.out.println("Players added to SQL successfully for team: " + teamName);
             } else {
                 // Log failure with status code and response body
-                System.err.println("Failed to fetch players. Status code: " + response.statusCode() + ", Response: " + response.body());
+                System.err.println("Failed to fetch teams. Status code: " + response.statusCode() + ", Response: " + response.body());
             }
         } catch (Exception e) {
             // Log any exceptions that occur during the API request or database operations
@@ -996,7 +1109,7 @@ public class TeamSelection implements Initializable {
             Files.copy(in, destinationPath, StandardCopyOption.REPLACE_EXISTING); // Save the file
         }
     }
-    private int ensureTeamExists(String teamName, int teamApiId, TeamService teamService,int idtournoi) {
+    private int ensureTeamExists(String teamName, int teamApiId, TeamService teamService,int idtournoi,String TeamNamelogo) {
         try {
             // Check if the team exists in the database
             Team team = teamService.GetTeamByName(teamName);
@@ -1009,6 +1122,27 @@ public class TeamSelection implements Initializable {
                 newTeam.setCategorie("Football"); // Default category
                 newTeam.setModeJeu(ModeJeu.EN_GROUPE); // Default game mode
                 newTeam.setIdtournoi(idtournoi); // Default tournament ID (update as needed)
+                try {
+                    // Download the photo to a temporary file
+                    Path tempFilePath = Files.createTempFile("player_photo_", ".jpg");
+                    downloadPhoto(TeamNamelogo, tempFilePath);
+
+                    // Save the downloaded photo using the saveUploadedFile method
+                    File tempFile = tempFilePath.toFile();
+                    String savedFilePath = saveUploadedFile(tempFile);
+
+                    if (savedFilePath != null) {
+                        System.out.println("Photo saved: " + savedFilePath);
+                        newTeam.setLogoPath(savedFilePath); // Set the photo path in the Player object
+                    } else {
+                        System.err.println("Failed to save photo for team: " + teamName);
+                    }
+
+                    // Delete the temporary file
+                    Files.deleteIfExists(tempFilePath);
+                } catch (IOException e) {
+                    System.err.println("Failed to download or save photo: " + e.getMessage());
+                }
 
                 // Insert the new team into the database
                 int teamId = teamService.insert2(newTeam);
@@ -1023,47 +1157,91 @@ public class TeamSelection implements Initializable {
     }
     private void fetchTeamsForLeague(int leagueId) {
         try {
-            int season = 2023; // Example: Season year
+            // Construct the API URL for fetching fixtures in the selected league and date range
+            String fixturesUrl = "https://" + API_HOST + "/?action=get_events&from="+date+"&to="+date2+"&league_id=" + leagueId + "&APIkey=" + API_KEY;
 
-            // Construct the API URL for fetching teams in the selected league
-            String apiUrl = "https://" + API_HOST + "/teams?league=" + leagueId + "&season=" + season;
-            // Make API request
-            HttpResponse<String> response = makeApiRequest(apiUrl);
-
-            if (response.statusCode() == 200) {
-                // Parse JSON response
-                JsonObject jsonResponse = JsonParser.parseString(response.body()).getAsJsonObject();
-                JsonArray teamsArray = jsonResponse.getAsJsonArray("response");
-
-                // Clear the ComboBox and add fetched teams
-                TeamComboBox.getItems().clear();
-                for (JsonElement teamElement : teamsArray) {
-                    JsonObject teamObject = teamElement.getAsJsonObject();
-                    String teamName = teamObject.getAsJsonObject("team").get("name").getAsString();
-                    int teamId = teamObject.getAsJsonObject("team").get("id").getAsInt();
-                    TeamComboBox.getItems().add(teamName);
-                    teamIdMap.put(teamName,teamId);
-                }
-
-                // Log success
-                System.out.println("Successfully fetched and populated teams for league ID: " + leagueId);
-            } else {
-                // Log failure with status code and response body
-                System.err.println("Failed to fetch teams. Status code: " + response.statusCode() + ", Response: " + response.body());
+            // Fetch fixtures
+            HttpResponse<String> fixturesResponse = makeApiRequest(fixturesUrl);
+            if (fixturesResponse.statusCode() != 200) {
+                System.err.println("Failed to fetch fixtures. Status code: " + fixturesResponse.statusCode() + ", Response: " + fixturesResponse.body());
+                return;
             }
+
+            // Print the API response for debugging
+            System.out.println("API Response: " + fixturesResponse.body());
+
+            // Parse the response
+            JsonElement responseElement = JsonParser.parseString(fixturesResponse.body());
+
+            // Check if the response is an error object
+            if (responseElement.isJsonObject()) {
+                JsonObject responseObject = responseElement.getAsJsonObject();
+                if (responseObject.has("error")) {
+                    int errorCode = responseObject.get("error").getAsInt();
+                    String errorMessage = responseObject.get("message").getAsString();
+                    System.err.println("API Error: " + errorCode + " - " + errorMessage);
+                    return; // Exit the method if there's an error
+                }
+            }
+
+            // Check if the response is a JSON array
+            if (!responseElement.isJsonArray()) {
+                System.err.println("Unexpected response format: " + responseElement);
+                return;
+            }
+
+            // Parse fixtures response and extract unique team IDs with fixtures
+            JsonArray fixturesArray = responseElement.getAsJsonArray();
+            Map<Integer, String> teamsMap = new HashMap<>(); // Store team ID and team name
+
+            for (JsonElement fixtureElement : fixturesArray) {
+                JsonObject fixtureObject = fixtureElement.getAsJsonObject();
+
+                // Debug: Print the fixture object
+                System.out.println("Fixture Object: " + fixtureObject);
+
+                // Check if required fields exist in the fixture object
+                if (fixtureObject.has("match_hometeam_id") && fixtureObject.has("match_hometeam_name") &&
+                        fixtureObject.has("match_awayteam_id") && fixtureObject.has("match_awayteam_name")) {
+
+                    int homeTeamId = fixtureObject.get("match_hometeam_id").getAsInt(); // Correct field name
+                    String homeTeamName = fixtureObject.get("match_hometeam_name").getAsString();
+                    int awayTeamId = fixtureObject.get("match_awayteam_id").getAsInt(); // Correct field name
+                    String awayTeamName = fixtureObject.get("match_awayteam_name").getAsString();
+
+                    // Add teams to the map
+                    teamsMap.put(homeTeamId, homeTeamName);
+                    teamsMap.put(awayTeamId, awayTeamName);
+                } else {
+                    System.err.println("Fixture object is missing required fields: match_hometeam_id, match_hometeam_name, match_awayteam_id, or match_awayteam_name");
+                }
+            }
+
+            // If no teams are found, log and return
+            if (teamsMap.isEmpty()) {
+                System.out.println("No teams with fixtures found for the given date range and league.");
+                return;
+            }
+
+            // Clear the ComboBox and add teams
+            TeamComboBox.getItems().clear();
+            for (Map.Entry<Integer, String> entry : teamsMap.entrySet()) {
+                TeamComboBox.getItems().add(entry.getValue()); // Add team name to ComboBox
+                teamIdMap.put(entry.getValue(), entry.getKey()); // Store team name and ID in the map
+            }
+
+            // Log success
+            System.out.println("Successfully fetched and populated teams with fixtures for league ID: " + leagueId);
         } catch (Exception e) {
             // Log any exceptions that occur during the API request
             System.err.println("Error fetching teams: " + e.getMessage());
             e.printStackTrace();
         }
     }
-
     private static HttpResponse<String> makeApiRequest(String apiUrl) throws IOException, InterruptedException {
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(apiUrl))
-                .header("x-rapidapi-key", API_KEY)
-                .header("x-rapidapi-host", API_HOST)
                 .GET()
                 .build();
         return client.send(request, HttpResponse.BodyHandlers.ofString());

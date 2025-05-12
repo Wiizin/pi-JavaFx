@@ -1,14 +1,76 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+<?import io.github.palexdev.materialfx.controls.*?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.image.Image?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="$CONTROLLER_NAME$"
-            prefHeight="400.0" prefWidth="600.0" >
+<GridPane fx:id="grid" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308"
+          styleClass="grid-pane" stylesheets="@../css/TeamFrontOffice.css"
+          xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="io.github.palexdev.materialfx.demo.controllers.TeamPlayerFrontOffice">
 
-</AnchorPane>
+    <columnConstraints>
+        <ColumnConstraints percentWidth="75"/>
+        <ColumnConstraints percentWidth="25"/>
+    </columnConstraints>
+
+    <rowConstraints>
+        <RowConstraints percentHeight="100"/>
+    </rowConstraints>
+
+    <!-- Featured Match and Live Matches -->
+    <VBox spacing="10" GridPane.columnIndex="0">
+        <Label text="Featured" styleClass="featured-label"/>
+
+        <!-- Featured Match -->
+        <StackPane styleClass="featured-match">
+            <VBox alignment="CENTER" spacing="10">
+                <Label fx:id="featuredLeagueLabel" text="Premier League" styleClass="league-label"/>
+                <HBox spacing="20" alignment="CENTER">
+                    <ImageView fx:id="featuredTeamALogo" fitWidth="40" fitHeight="40" styleClass="team-logo">
+                        <Image url="@../sportify.png"/>
+                    </ImageView>
+                    <Label text="VS" styleClass="vs-label"/>
+                    <ImageView fx:id="featuredTeamBLogo" fitWidth="40" fitHeight="40" styleClass="team-logo">
+                        <Image url="@../sportify.png"/>
+                    </ImageView>
+                </HBox>
+                <HBox fx:id="featuredMatchTime"  styleClass="time-label"/>
+                <MFXButton text="Match details" styleClass="details-button" onAction="#handleMatchDetails"/>
+            </VBox>
+        </StackPane>
+
+        <!-- Live Matches -->
+        <HBox fx:id="liveMatchesContainer" spacing="10" styleClass="live-matches">
+            <!-- Match cards will be dynamically added here -->
+        </HBox>
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <MFXButton text="← Previous" styleClass="nav-button" onAction="#handlePreviousLiveMatches"/>
+            <MFXButton text="Next →" styleClass="nav-button" onAction="#handleNextLiveMatches"/>
+        </HBox>
+    </VBox>
+
+    <!-- Upcoming Matches -->
+    <VBox spacing="10" GridPane.columnIndex="1" styleClass="upcoming-matches">
+        <Label text="Upcoming matches" styleClass="section-title"/>
+        <HBox spacing="20" alignment="CENTER_LEFT" styleClass="date-filter-container">
+            <MFXButton text="Today" styleClass="date-filter-button, active"/>
+            <MFXButton text="Tomorrow" styleClass="date-filter-button"/>
+            <MFXButton text="This week" styleClass="date-filter-button"/>
+        </HBox>
+
+        <VBox fx:id="upcomingMatchesContainer" styleClass="matches-container" spacing="10">
+            <!-- Match cards will be dynamically added here -->
+        </VBox>
+        <HBox spacing="10" alignment="CENTER_RIGHT">
+            <MFXButton text="← Previous" styleClass="nav-button" onAction="#handlePreviousMatches"/>
+            <MFXButton text="Next →" styleClass="nav-button" onAction="#handleNextMatches"/>
+        </HBox>
+        <MFXButton text="Full Schedule" styleClass="full-schedule-button" onAction="#handleFullSchedule"/>
+    </VBox>
+
+</GridPane>

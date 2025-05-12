@@ -99,5 +99,18 @@ public class Matches {
         this.locationMatch = locationMatch;
         this.idTournoi = idTournoi;
     }
+    public Matches(int id, String teamAName, String teamBName, int scoreTeamA, int scoreTeamB, String status, LocalDateTime matchTime, String locationMatch, int idTournoi,int idTeamA,int idTeamB) {
+        this.id = id;
+        this.teamAName = teamAName;
+        this.teamBName = teamBName;
+        this.scoreTeamA = scoreTeamA;
+        this.scoreTeamB = scoreTeamB;
+        this.status = status;
+        this.matchTime = matchTime;
+        this.locationMatch = locationMatch;
+        this.idTournoi = idTournoi;
+        this.idTeamA = idTeamA;
+        this.idTeamB=idTeamB;
+    }
 
 }

@@ -122,7 +122,8 @@ public class TeamService implements TeamCRUD<Team> {
                             rs.getString("categorie"),
                             ModeJeu.valueOf(rs.getString("modeJeu")),
                             rs.getInt("nombreJoueurs"),
-                            rs.getString("logoPath")
+                            rs.getString("logoPath"),
+                            rs.getInt("idtournoi")
                     );
                 }
             }

@@ -118,7 +118,19 @@ public class PlayerHomeController implements Initializable {
 //        loader.addView(MFXLoaderBean.of("Profile", loadURL("fxml/PlayerProfile.fxml"))
 //                .setBeanToNodeMapper(() -> createToggle("fas-user", "Profile"))
 //                .get());
+        User currentUser = UserSession.getInstance().getCurrentUser();
+        if (currentUser.getIdteam() == 0) {
+            loader.addView(MFXLoaderBean.of("Teams", loadURL("fxml/TeamSelectionForPlayer.fxml"))
+                    .setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Teams"))
+                    .setDefaultRoot(false)
+                    .get());
+        } else {
+            loader.addView(MFXLoaderBean.of("Teams", loadURL("fxml/TeamPlayerFrontOffice.fxml"))
+                    .setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Teams"))
+                    .setDefaultRoot(false)
+                    .get());
 
+        }
         loader.setOnLoadedAction(beans -> {
             List<ToggleButton> nodes = beans.stream().map(bean -> {
                 ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();

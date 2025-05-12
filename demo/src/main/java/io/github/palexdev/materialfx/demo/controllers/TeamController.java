@@ -788,6 +788,7 @@ public class TeamController implements Initializable {
         try {
 
             teamsRanking.clear(); // Clear the list before adding new data
+            teamRankingService.updateRankingTableByTeam(team.getId());
             teamsRanking.setAll(teamRankingService.showTeamRanking(team.getId())); // Refresh the table
 
             // Check if the team has joined any tournaments

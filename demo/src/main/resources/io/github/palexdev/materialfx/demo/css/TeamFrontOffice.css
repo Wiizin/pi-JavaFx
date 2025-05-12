@@ -45,13 +45,23 @@
 }
 
 /* Live Matches */
+
+.match-card2{
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-background-radius: 8;
+    -fx-padding: 10 15;
+    -fx-spacing: 5;
+    -fx-pref-width: 150px;
+    -fx-pref-height: 180px;
+}
 .match-card {
     -fx-background-color: rgba(255, 255, 255, 0.15);
     -fx-background-radius: 8;
     -fx-padding: 10 15;
     -fx-spacing: 15;
+    -fx-pref-width: 450px;
+    -fx-pref-height: 180px;
 }
-
 .live-indicator {
     -fx-text-fill: #ff4757;
     -fx-font-weight: bold;
@@ -59,9 +69,9 @@
 }
 
 .match-time {
-    -fx-font-size: 12px;
+    -fx-font-size: 14px;
     -fx-text-fill: white;
-    -fx-opacity: 0.9;
+    -fx-opacity:1;
 }
 
 .score-label {
@@ -346,15 +356,23 @@
     -fx-font-size: 13px;
     -fx-text-fill: white;
 }
-
 .vs-label {
-    -fx-font-size: 13px;
+    -fx-font-size: 15px;
     -fx-text-fill: white;
-    -fx-opacity: 0.8;
+    -fx-opacity: 1;
+    -fx-translate-x: -5;
+}
+.vs-label2 {
+    -fx-font-size: 15px;
+    -fx-text-fill: white;
+    -fx-opacity: 1;
+    -fx-translate-x: 0;
 }
 
 .league-name {
-    -fx-font-size: 12px;
+    -fx-font-size: 15px;
     -fx-text-fill: white;
-    -fx-opacity: 0.7;
+    -fx-opacity: 1;
+    -fx-translate-x: -25;
+    -fx-font-weight: bold;
 }

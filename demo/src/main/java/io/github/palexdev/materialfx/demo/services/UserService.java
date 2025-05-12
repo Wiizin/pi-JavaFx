@@ -25,7 +25,7 @@ public class UserService implements IService<User> {
 
     public void create(User user) {
         Connection conn = DbConnection.getInstance().getCnx();
-        String sql = "INSERT INTO user (firstname, lastname, email, password, role, phonenumber, dateofbirth, profilepicture, createdat, updatedat, isactive, coachinglicense) " +
+        String sql = "INSERT INTO user (firstname, lastname, email, password, role, phonenumber, dateofbirth, profilepicture, createdat, updatedat, is_active, coachinglicense) " +
                 "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -68,6 +68,52 @@ public class UserService implements IService<User> {
             throw new RuntimeException("Failed to create user: " + e.getMessage());
         }
     }
+    public void createPlayer(User user) {
+        Connection conn = DbConnection.getInstance().getCnx();
+        String sql = "INSERT INTO user (firstname, lastname, email, password, role, phonenumber, dateofbirth, profilepicture, createdat, updatedat, is_active, coachinglicense,id_team) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
+
+        try (PreparedStatement pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            pstmt.setString(1, user.getFirstname());
+            pstmt.setString(2, user.getLastName());
+            pstmt.setString(3, user.getEmail());
+            pstmt.setString(4, user.getPassword());
+            pstmt.setString(5, user.getRole());
+            pstmt.setString(6, user.getPhoneNumber());
+            pstmt.setDate(7, Date.valueOf(user.getDateOfBirth()));
+            pstmt.setString(8, user.getProfilePicture());
+
+            LocalDateTime now = LocalDateTime.now();
+            pstmt.setTimestamp(9, Timestamp.valueOf(now));
+            pstmt.setTimestamp(10, Timestamp.valueOf(now));
+
+            // Set active status based on role
+            if ("organizer".equalsIgnoreCase(user.getRole())) {
+                pstmt.setBoolean(11, false); // Organizers start as inactive, needing admin approval
+                Organizer organizer = (Organizer) user;
+                pstmt.setString(12, organizer.getCoachingLicense());
+            } else {
+                pstmt.setBoolean(11, true); // Admin and players start as active
+                pstmt.setString(12, null); // No coaching license for non-organizers
+            }
+            pstmt.setInt(13,user.getIdteam());
+
+            int affectedRows = pstmt.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating user failed, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    user.setId(generatedKeys.getInt(1));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to create user: " + e.getMessage());
+        }
+    }
 
     public List<User> getAll() {
         List<User> users = new ArrayList<>();
@@ -79,7 +125,7 @@ public class UserService implements IService<User> {
             while (rs.next()) {
                 User user;
                 String role = rs.getString("role");
-                boolean isActive = rs.getBoolean("isactive");
+                boolean isActive = rs.getBoolean("is_active");
 
                 // Create appropriate user type based on role
                 if ("organizer".equalsIgnoreCase(role)) {
@@ -112,13 +158,62 @@ public class UserService implements IService<User> {
         }
         return users;
     }
+    public List<Player> getAllPlayers(int id) {
+        List<Player> players = new ArrayList<>();
+        String sql = "SELECT * FROM user WHERE id_team = ? AND role = ?"; // Filter by team ID and role
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id); // Set the team ID parameter
+            pstmt.setString(2, "player"); // Set the role parameter to "player"
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Player player = new Player();
+                    // Set common fields
+                    player.setId(rs.getInt("id"));
+                    player.setFirstname(rs.getString("firstname"));
+                    player.setLastName(rs.getString("lastname"));
+                    player.setEmail(rs.getString("email"));
+                    player.setPassword(rs.getString("password"));
+                    player.setRole(rs.getString("role"));
+                    player.setPhoneNumber(rs.getString("phonenumber"));
+                    // Handle nullable fields
+                    Date dateOfBirth = rs.getDate("dateofbirth");
+                    if (dateOfBirth != null) {
+                        player.setDateOfBirth(dateOfBirth.toLocalDate());
+                    }
+
+                    player.setProfilePicture(rs.getString("profilepicture"));
+
+                    Timestamp createdAt = rs.getTimestamp("createdat");
+                    if (createdAt != null) {
+                        player.setCreatedAt(createdAt.toLocalDateTime());
+                    }
+
+                    Timestamp updatedAt = rs.getTimestamp("updatedat");
+                    if (updatedAt != null) {
+                        player.setUpdatedAt(updatedAt.toLocalDateTime());
+                    }
+
+                    player.setIdteam(rs.getInt("id_team"));
+                    player.setFavourite(rs.getBoolean("Favourite"));
+                    // Add the player to the list
+                    players.add(player);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return players;
+    }
     public List<Player> getAvailablePlayers() {
         List<Player> players = new ArrayList<>();
         String sql = "SELECT * \n" +
                 "FROM user \n" +
                 "WHERE (id_team = 0 OR id_team IS NULL) \n" +
                 "  AND role = 'player' \n" +
-                "  AND isActive = 1;";
+                "  AND is_active = 1;";
 
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -152,9 +247,46 @@ public class UserService implements IService<User> {
     public User getOneById() throws SQLException {
         return null;
     }
+    public Organizer getManager(int id_team) {
+        String sql = "SELECT * FROM user WHERE role=? AND id_team=?";
+        Organizer manager = null;
 
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            // Verify that the team exists
+            String teamCheckSql = "SELECT COUNT(*) FROM team WHERE id = ?";
+            try (PreparedStatement teamCheckStmt = connection.prepareStatement(teamCheckSql)) {
+                teamCheckStmt.setInt(1, id_team);
+                ResultSet rs = teamCheckStmt.executeQuery();
+                if (rs.next() && rs.getInt(1) == 0) {
+                    throw new SQLException("Team with ID " + id_team + " does not exist.");
+                }
+            }
+
+            // Fetch the manager for the team
+            pstmt.setString(1, "organizer"); // Role is "manager"
+            pstmt.setInt(2, id_team); // Team ID
+            ResultSet resultSet = pstmt.executeQuery();
+
+            if (resultSet.next()) {
+                // Create a User object from the result set
+                manager = new Organizer();
+                manager.setId(resultSet.getInt("id"));
+                manager.setFirstname(resultSet.getString("firstname"));
+                manager.setLastName(resultSet.getString("lastname"));
+                manager.setRole(resultSet.getString("role"));
+                manager.setIdteam(resultSet.getInt("id_team"));
+                // Set other fields as needed
+            }
+        } catch (SQLException e) {
+            // Log the exception
+            System.err.println("Error fetching manager: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return manager;
+    }
     public void update(User user) {
-        String sql = "UPDATE user SET firstname=?, lastname=?, email=?, password=?, role=?, phonenumber=?, dateofbirth=?, profilepicture=?, updatedat=?, isactive=?, coachinglicense=?, id_team=? WHERE id=?";
+        String sql = "UPDATE user SET firstname=?, lastname=?, email=?, password=?, role=?, phonenumber=?, dateofbirth=?, profilepicture=?, updatedat=?, is_active=?, coachinglicense=?, id_team=? WHERE id=?";
 
         try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             // Verify that the team exists
@@ -198,11 +330,65 @@ public class UserService implements IService<User> {
             } else {
                 pstmt.setString(11, ""); // Provide a default value (empty string)
             }
-
             pstmt.setInt(12, user.getIdteam());
             pstmt.setInt(13, user.getId());
 
             System.out.println("Executing update for user ID: " + user.getId());
+            int rowsAffected = pstmt.executeUpdate();
+            System.out.println("Rows affected by update: " + rowsAffected);
+
+            if (rowsAffected == 0) {
+                throw new SQLException("Updating user failed, no rows affected.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new RuntimeException("Failed to update user: " + e.getMessage());
+        }
+    }
+    public void addFavouritePlayer(Player player) {
+        String sql = "UPDATE user SET firstname=?, lastname=?, email=?, password=?, role=?, phonenumber=?, dateofbirth=?, profilepicture=?, updatedat=?, is_active=?,Favourite=?, id_team=? WHERE id=?";
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            // Verify that the team exists
+            int idTeam =player.getIdteam();
+            if (idTeam > 0) {
+                String teamCheckSql = "SELECT COUNT(*) FROM team WHERE id = ?";
+                try (PreparedStatement teamCheckStmt = connection.prepareStatement(teamCheckSql)) {
+                    teamCheckStmt.setInt(1, idTeam);
+                    ResultSet rs = teamCheckStmt.executeQuery();
+                    if (rs.next() && rs.getInt(1) == 0) {
+                        throw new SQLException("Team with ID " + idTeam + " does not exist.");
+                    }
+                }
+            }
+
+            // Set user fields
+            pstmt.setString(1, player.getFirstname());
+            pstmt.setString(2, player.getLastName());
+            pstmt.setString(3, player.getEmail());
+            pstmt.setString(4, player.getPassword());
+            pstmt.setString(5, player.getRole());
+            pstmt.setString(6, player.getPhoneNumber());
+            pstmt.setDate(7, Date.valueOf(player.getDateOfBirth()));
+            pstmt.setString(8, player.getProfilePicture());
+            pstmt.setTimestamp(9, Timestamp.valueOf(LocalDateTime.now()));
+
+            // Handle active status based on role
+            if ("organizer".equalsIgnoreCase(player.getRole())) {
+                boolean isActive = player.isActive();
+                System.out.println("Updating organizer active status to: " + isActive);
+                pstmt.setBoolean(10, isActive);
+            } else {
+                pstmt.setBoolean(10, true);
+            }
+
+
+            pstmt.setBoolean(11,player.isFavourite());
+            pstmt.setInt(12, player.getIdteam());
+            pstmt.setInt(13, player.getId());
+
+
+            System.out.println("Executing update for user ID: " + player.getId());
             int rowsAffected = pstmt.executeUpdate();
             System.out.println("Rows affected by update: " + rowsAffected);
 
@@ -250,7 +436,7 @@ public class UserService implements IService<User> {
                 if (rs.next()) {
                     User user;
                     String role = rs.getString("role");
-                    int isActiveIn = rs.getInt("isActive");
+                    int isActiveIn = rs.getInt("is_active");
                     boolean isActive;
                     if(isActiveIn==1) {
                          isActive = true;
@@ -292,7 +478,7 @@ public class UserService implements IService<User> {
                                         User member = new User(
                                             rs3.getInt("id"),
                                             rs3.getString("firstname"),
-                                            rs3.getString("lastname"), 
+                                            rs3.getString("lastname"),
                                             rs3.getString("email"),
                                             rs3.getString("password"),
                                             rs3.getString("role"),
@@ -303,7 +489,7 @@ public class UserService implements IService<User> {
                                             rs3.getTimestamp("updatedat").toLocalDateTime(),
                                             rs3.getInt("id_team")
                                         );
-                                        member.setActive(rs3.getBoolean("isActive"));
+                                        member.setActive(rs3.getBoolean("is_active"));
                                         members.add(member);
                                     }
                                 }
@@ -461,5 +647,55 @@ public class UserService implements IService<User> {
             }
         }
         return false;
+    }
+    public List<Player> getFavouritePlayers(User user) {
+        List<Player> favouritePlayers = new ArrayList<>();
+        String sql = "SELECT * FROM user WHERE id_team = ? AND role = ? AND Favourite=?"; // Filter by team ID and role
+
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, user.getIdteam()); // Set the team ID parameter
+            pstmt.setString(2, "player"); // Set the role parameter to "player"
+            pstmt.setInt(3, 1);
+
+            try (ResultSet rs = pstmt.executeQuery()) {
+                while (rs.next()) {
+                    Player player = new Player();
+                    // Set common fields
+                    player.setId(rs.getInt("id"));
+                    player.setFirstname(rs.getString("firstname"));
+                    player.setLastName(rs.getString("lastname"));
+                    player.setEmail(rs.getString("email"));
+                    player.setPassword(rs.getString("password"));
+                    player.setRole(rs.getString("role"));
+                    player.setPhoneNumber(rs.getString("phonenumber"));
+                    // Handle nullable fields
+                    Date dateOfBirth = rs.getDate("dateofbirth");
+                    if (dateOfBirth != null) {
+                        player.setDateOfBirth(dateOfBirth.toLocalDate());
+                    }
+
+                    player.setProfilePicture(rs.getString("profilepicture"));
+
+                    Timestamp createdAt = rs.getTimestamp("createdat");
+                    if (createdAt != null) {
+                        player.setCreatedAt(createdAt.toLocalDateTime());
+                    }
+
+                    Timestamp updatedAt = rs.getTimestamp("updatedat");
+                    if (updatedAt != null) {
+                        player.setUpdatedAt(updatedAt.toLocalDateTime());
+                    }
+
+                    player.setIdteam(rs.getInt("id_team"));
+                    player.setFavourite(rs.getBoolean("Favourite"));
+                    // Add the player to the list
+                    favouritePlayers.add(player);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return favouritePlayers;
     }
 }

@@ -8,6 +8,7 @@ import io.github.palexdev.materialfx.demo.model.UserSession;
 import io.github.palexdev.materialfx.demo.services.UserService;
 import io.github.palexdev.materialfx.utils.ScrollUtils;
 import io.github.palexdev.materialfx.utils.others.loader.MFXLoader;
+import io.github.palexdev.materialfx.utils.others.loader.MFXLoaderBean;
 import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -38,6 +39,8 @@ import java.nio.file.StandardCopyOption;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.ResourceBundle;
+
+import static io.github.palexdev.materialfx.demo.MFXDemoResourcesLoader.loadURL;
 
 public class PlayerHomeController implements Initializable {
 

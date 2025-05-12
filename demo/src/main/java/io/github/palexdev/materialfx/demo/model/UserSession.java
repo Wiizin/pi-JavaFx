@@ -1,5 +1,6 @@
 package io.github.palexdev.materialfx.demo.model;
 
+import io.github.palexdev.materialfx.demo.services.GoogleAuthService;
 import javafx.application.Platform;
 import java.time.Duration;
 import java.time.Instant;
@@ -7,6 +8,7 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public final class UserSession {
+    private GoogleAuthService.UserInfo tempUserInfo;
     private static volatile UserSession instance;
     private static final Object LOCK = new Object();
 
@@ -148,4 +150,17 @@ public final class UserSession {
             updateLastActivityTime();
         }
     }
+    public void setTempUserInfo(GoogleAuthService.UserInfo userInfo) {
+        this.tempUserInfo = userInfo;
+    }
+
+    public GoogleAuthService.UserInfo getTempUserInfo() {
+        return tempUserInfo;
+    }
+
+    public void clearTempUserInfo() {
+        this.tempUserInfo = null;
+    }
+
+
 }

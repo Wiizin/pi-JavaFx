@@ -19,8 +19,12 @@ module MaterialFX.Demo {
     requires org.slf4j;
     requires com.google.gson;
 	requires java.sql;
+    requires com.google.api.client.auth;
+    requires google.api.client;
+    requires com.google.api.client;
+    requires com.google.api.client.json.gson;
 
 
-	opens io.github.palexdev.materialfx.demo;
+    opens io.github.palexdev.materialfx.demo;
 	opens io.github.palexdev.materialfx.demo.controllers;
 }

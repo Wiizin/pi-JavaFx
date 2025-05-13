@@ -264,7 +264,7 @@ public class TeamFrontOfficeController implements Initializable {
 
                     // Save the downloaded photo using the saveUploadedFile method
                     File tempFile = tempFilePath.toFile();
-                    String savedFilePath = saveUploadedFile(tempFile);
+                    String savedFilePath = saveUploadedFile(tempFile,"team");
 
                     if (savedFilePath != null) {
                         System.out.println("Photo saved: " + savedFilePath);
@@ -304,18 +304,30 @@ public class TeamFrontOfficeController implements Initializable {
                 .build();
         return client.send(request, HttpResponse.BodyHandlers.ofString());
     }
-    private String saveUploadedFile(File file) {
-        String uploadDir = "src/main/resources/io/github/palexdev/materialfx/demo/uploads/"; // Directory to save uploaded files
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs(); // Create the directory if it doesn't exist
+    private String saveUploadedFile(File file, String type) {
+        String subDirectory;
+        if ("player".equals(type)) {
+            subDirectory = "players/";
+        } else if ("team".equals(type)) {
+            subDirectory = "teams/";  // Fixed the directory name from "players" to "teams"
+        } else {
+            throw new IllegalArgumentException("Invalid type specified");
         }
-        String fileName = System.currentTimeMillis() + "_" + file.getName(); // Unique file name
+
+        // Local file system path
+        String uploadDir = "C:/xampp/htdocs/img/" + subDirectory;
+        File dir = new File(uploadDir);
+
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        String fileName = System.currentTimeMillis() + "_" + file.getName();
         File destFile = new File(uploadDir + fileName);
 
         try {
             Files.copy(file.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            return "src/main/resources/io/github/palexdev/materialfx/demo/uploads/"+fileName; // Return the file path
+            return subDirectory + fileName;  // Returns "players/filename.jpg" or "teams/filename.jpg"
         } catch (IOException e) {
             e.printStackTrace();
             return null;
@@ -353,65 +365,63 @@ public class TeamFrontOfficeController implements Initializable {
 
             // Set team logos with null checks
             if (teamA != null && teamA.getLogoPath() != null) {
-                // Check if the team has a valid logo path
-                String logoPath = teamA.getLogoPath();
-                if (logoPath != null && !logoPath.trim().isEmpty()) {
-                    File logoFile = new File(logoPath);
+                String logoPath = teamA.getLogoPath().trim();
+                if (!logoPath.isEmpty()) {
+                    // Extract filename from path and construct absolute path
+                    String fileName = logoPath.replace("\\", "/").substring(logoPath.lastIndexOf("/") + 1);
+                    String absolutePath = "C:/xampp/htdocs/img/teams/" + fileName;
+                    File logoFile = new File(absolutePath);
+
                     if (logoFile.exists() && logoFile.isFile()) {
                         try {
                             Image logoImage = new Image(logoFile.toURI().toString());
-                            featuredTeamALogo.setImage(logoImage); // Set the Image directly
+                            featuredTeamALogo.setImage(logoImage);
                         } catch (Exception e) {
-                            System.err.println("Failed to load logo: " + e.getMessage());
-                            // Fallback to default logo
+                            System.err.println("Failed to load logo for " + teamA.getNom() + ": " + e.getMessage());
                             featuredTeamALogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                         }
                     } else {
-                        System.err.println("Logo file does not exist or is not a valid file: " + logoFile.getAbsolutePath());
-                        // Fallback to default logo
+                        System.err.println("Logo file not found: " + absolutePath);
                         featuredTeamALogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                     }
                 } else {
-                    System.err.println("Invalid logo path: " + logoPath);
-                    // Fallback to default logo
+                    System.err.println("Empty logo path for team: " + teamA.getNom());
                     featuredTeamALogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                 }
             } else {
-                // Fallback to default logo
                 featuredTeamALogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
             }
 
+            // Team B
             if (teamB != null && teamB.getLogoPath() != null) {
-                // Check if the team has a valid logo path
-                String logoPath = teamB.getLogoPath();
-                if (logoPath != null && !logoPath.trim().isEmpty()) {
-                    File logoFile = new File(logoPath);
+                String logoPath = teamB.getLogoPath().trim();
+                if (!logoPath.isEmpty()) {
+                    // Extract filename from path and construct absolute path
+                    String fileName = logoPath.replace("\\", "/").substring(logoPath.lastIndexOf("/") + 1);
+                    String absolutePath = "C:/xampp/htdocs/img/teams/" + fileName;
+                    File logoFile = new File(absolutePath);
+
                     if (logoFile.exists() && logoFile.isFile()) {
                         try {
                             Image logoImage = new Image(logoFile.toURI().toString());
-                            featuredTeamBLogo.setImage(logoImage); // Set the Image directly
+                            featuredTeamBLogo.setImage(logoImage);
                         } catch (Exception e) {
-                            System.err.println("Failed to load logo: " + e.getMessage());
-                            // Fallback to default logo
+                            System.err.println("Failed to load logo for " + teamB.getNom() + ": " + e.getMessage());
                             featuredTeamBLogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                         }
                     } else {
-                        System.err.println("Logo file does not exist or is not a valid file: " + logoFile.getAbsolutePath());
-                        // Fallback to default logo
+                        System.err.println("Logo file not found: " + absolutePath);
                         featuredTeamBLogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                     }
                 } else {
-                    System.err.println("Invalid logo path: " + logoPath);
-                    // Fallback to default logo
+                    System.err.println("Empty logo path for team: " + teamB.getNom());
                     featuredTeamBLogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                 }
             } else {
-                // Fallback to default logo
                 featuredTeamBLogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
             }
         } catch (SQLException e) {
             System.err.println("Error fetching team details: " + e.getMessage());
-            // Fallback to default logos
             featuredTeamALogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
             featuredTeamBLogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
         }
@@ -827,9 +837,16 @@ public class TeamFrontOfficeController implements Initializable {
 
     private Image loadTeamLogo(Team team) {
         if (team != null && team.getLogoPath() != null) {
-            String logoPath = team.getLogoPath();
-            if (logoPath != null && !logoPath.trim().isEmpty()) {
-                File logoFile = new File(logoPath);
+            String logoPath = team.getLogoPath().trim();
+            if (!logoPath.isEmpty()) {
+                // Normalize path separators and extract filename
+                String normalizedPath = logoPath.replace("\\", "/");
+                String fileName = normalizedPath.substring(normalizedPath.lastIndexOf("/") + 1);
+
+                // Construct absolute path for team logos
+                String absolutePath = "C:/xampp/htdocs/img/teams/" + fileName;
+                File logoFile = new File(absolutePath);
+
                 if (logoFile.exists() && logoFile.isFile()) {
                     try {
                         return new Image(logoFile.toURI().toString());
@@ -837,35 +854,48 @@ public class TeamFrontOfficeController implements Initializable {
                         System.err.println("Failed to load logo: " + e.getMessage());
                     }
                 } else {
-                    System.err.println("Logo file does not exist or is not a valid file: " + logoFile.getAbsolutePath());
+                    System.err.println("Logo file not found at: " + absolutePath);
                 }
-            } else {
-                System.err.println("Invalid logo path: " + logoPath);
             }
         }
-        // Fallback to default logo
-        return new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true);
+        // Fallback to default logo with proper error handling
+        try {
+            return new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true);
+        } catch (Exception e) {
+            System.err.println("Failed to load default logo: " + e.getMessage());
+            return null; // Or throw exception based on your requirements
+        }
     }
     private Image loadPlayerLogo(Player player) {
         if (player != null && player.getProfilePicture() != null) {
-            String logoPath = player.getProfilePicture();
-            if (logoPath != null && !logoPath.trim().isEmpty()) {
-                File logoFile = new File(logoPath);
+            String logoPath = player.getProfilePicture().trim();
+            if (!logoPath.isEmpty()) {
+                // Normalize path and extract filename
+                String normalizedPath = logoPath.replace("\\", "/");
+                String fileName = normalizedPath.substring(normalizedPath.lastIndexOf("/") + 1);
+
+                // Construct absolute path for player images
+                String absolutePath = "C:/xampp/htdocs/img/players/" + fileName;
+                File logoFile = new File(absolutePath);
+
                 if (logoFile.exists() && logoFile.isFile()) {
                     try {
                         return new Image(logoFile.toURI().toString());
                     } catch (Exception e) {
-                        System.err.println("Failed to load logo: " + e.getMessage());
+                        System.err.println("Failed to load player image: " + e.getMessage());
                     }
                 } else {
-                    System.err.println("Logo file does not exist or is not a valid file: " + logoFile.getAbsolutePath());
+                    System.err.println("Player image not found at: " + absolutePath);
                 }
-            } else {
-                System.err.println("Invalid logo path: " + logoPath);
             }
         }
-        // Fallback to default logo
-        return new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true);
+        // Fallback to default with improved error handling
+        try {
+            return new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true);
+        } catch (Exception e) {
+            System.err.println("Failed to load default player image: " + e.getMessage());
+            return null;
+        }
     }
     private VBox createPlayerCircle(Player player) {
         VBox playerCircle = new VBox();

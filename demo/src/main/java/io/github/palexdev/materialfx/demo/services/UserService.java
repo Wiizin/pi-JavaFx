@@ -543,6 +543,12 @@ public class UserService implements IService<User> {
                 if (rs.next()) {
                     // Verify the password using BCrypt
                     String storedPassword = rs.getString("password");
+
+// Symfony uses $2y$ but jBCrypt (Java) expects $2a$
+                    if (storedPassword.startsWith("$2y$")) {
+                        storedPassword = storedPassword.replace("$2y$", "$2a$");
+                    }
+
                     if (!BCrypt.checkpw(password, storedPassword)) {
                         return null; // Password doesn't match
                     }

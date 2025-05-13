@@ -10,10 +10,7 @@ import io.github.palexdev.materialfx.controls.base.MFXLabeled;
 import io.github.palexdev.materialfx.controls.cell.MFXCheckListCell;
 import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
 import io.github.palexdev.materialfx.demo.model.*;
-import io.github.palexdev.materialfx.demo.services.MatchesService;
-import io.github.palexdev.materialfx.demo.services.TeamService;
-import io.github.palexdev.materialfx.demo.services.TournoisService;
-import io.github.palexdev.materialfx.demo.services.UserService;
+import io.github.palexdev.materialfx.demo.services.*;
 import io.github.palexdev.materialfx.filter.EnumFilter;
 import io.github.palexdev.materialfx.filter.IntegerFilter;
 import io.github.palexdev.materialfx.filter.StringFilter;
@@ -435,7 +432,7 @@ public class TeamSelection implements Initializable {
                 if (fileLabel.getText() != null && !fileLabel.getText().equals("No file selected")) {
                     File selectedFile = new File(fileLabel.getText());
                     if (selectedFile.exists()) {
-                        logoPath = saveUploadedFile(selectedFile); // Save the file and get its relative path
+                        logoPath = saveUploadedFile(selectedFile,"team"); // Save the file and get its relative path
                     } else {
                         System.err.println("Selected file does not exist: " + selectedFile);
                     }
@@ -729,6 +726,9 @@ public class TeamSelection implements Initializable {
 
                 int idteamapi = teamIdMap.get(selectedTeam);
                 int idleague = leagueIdMap.get(selectedLeague);
+                //Fetch standing From Api and insert into SQl
+                fetchAndProcessStandings(tournois,selectedLeague,idleague);
+                System.out.println("Standing fetched and added to SQL for teams: " + selectedTeam); // Debugging
 
                 // Fetch players from API and insert into SQL
                 fetchAndAddPlayersToSQL(selectedTeam, idteamapi, idTeam);
@@ -915,80 +915,85 @@ public class TeamSelection implements Initializable {
         }
     }
 
-//    private void fetchAndAddUpcomingRestOfLeagueMatchesToSQL(int idleague, int idteamapi, int idtournoi) {
-//        // Construct the API URL for fetching fixtures
-//        String apiUrl = "https://" + API_HOST + "/?action=get_events&from=" + date + "&to=" + date2 + "&league_id=" + idleague + "&APIkey=" + API_KEY;
-//
-//        try {
-//            // Make API request
-//            HttpResponse<String> response = makeApiRequest(apiUrl);
-//
-//            if (response.statusCode() == 200) {
-//                // Parse JSON response
-//                JsonArray matchesArray = JsonParser.parseString(response.body()).getAsJsonArray();
-//
-//                // Initialize the service for creating matches
-//                MatchesService matchesService = new MatchesService();
-//
-//                // Iterate through the matches array
-//                for (JsonElement matchElement : matchesArray) {
-//                    JsonObject matchObject = matchElement.getAsJsonObject();
-//
-//                    // Extract match details
-//                    String homeTeamName = matchObject.get("match_hometeam_name").getAsString();
-//                    int homeTeamId = matchObject.get("match_hometeam_id").getAsInt();
-//                    String awayTeamName = matchObject.get("match_awayteam_name").getAsString();
-//                    int awayTeamId = matchObject.get("match_awayteam_id").getAsInt();
-//                    String status = matchObject.get("match_status").getAsString();
-//                    String location_match = matchObject.get("match_stadium").getAsString();
-//                    String homeTeamlogo=matchObject.get("team_home_badge").getAsString();
-//                    String awayTeamlogo=matchObject.get("team_away_badge").getAsString();
-//                    // Parse match date and time
-//                    LocalDateTime date = null;
-//                    String matchDate = matchObject.get("match_date").getAsString();
-//                    String matchTime = matchObject.get("match_time").getAsString();
-//                    String dateTimeString = matchDate + "T" + matchTime + ":00"; // Combine date and time
-//                    try {
-//                        date = LocalDateTime.parse(dateTimeString, DateTimeFormatter.ISO_LOCAL_DATE_TIME);
-//                    } catch (Exception e) {
-//                        System.err.println("Failed to parse date: " + dateTimeString);
-//                        e.printStackTrace();
-//                    }
-//
-//                    // Ensure teams exist in the database
-//                    int homeTeamDbId = ensureTeamExists(homeTeamName, homeTeamId, teamService, idtournoi,homeTeamlogo);
-//                    int awayTeamDbId = ensureTeamExists(awayTeamName, awayTeamId, teamService, idtournoi,awayTeamlogo);
-//
-//                    // Filter out matches involving the excluded team
-//                    if (homeTeamId != idteamapi && awayTeamId != idteamapi) {
-//                        // Create a new Match object
-//                        Matches match = new Matches();
-//                        match.setTeamAName(homeTeamName);
-//                        match.setTeamBName(awayTeamName);
-//                        match.setIdTeamA(homeTeamDbId);
-//                        match.setIdTeamB(awayTeamDbId);
-//                        match.setMatchTime(date);
-//                        match.setIdTournoi(idtournoi);
-//                        match.setStatus(status);
-//                        match.setLocationMatch(location_match);
-//
-//                        // Insert the match into the database
-//                        matchesService.insert2(match);
-//                    }
-//                }
-//
-//                System.out.println("Matches added to SQL successfully for league: " + idleague);
-//            } else {
-//                // Log failure with status code and response body
-//                System.err.println("Failed to fetch matches. Status code: " + response.statusCode() + ", Response: " + response.body());
-//            }
-//        } catch (Exception e) {
-//            // Log any exceptions that occur during the API request or database operations
-//            System.err.println("Error fetching or adding matches: " + e.getMessage());
-//            e.printStackTrace();
-//        }
-//    }
+    private void fetchAndProcessStandings(Tournois tournament, String leagueName,int leagueid) {
+        String apiUrl = "https://" + API_HOST + "/?action=get_standings&league_id=" +leagueid+ "&APIkey=" + API_KEY;
 
+        try {
+            HttpResponse<String> response = makeApiRequest(apiUrl);
+
+            if (response.statusCode() == 200) {
+                JsonArray standingsArray = JsonParser.parseString(response.body()).getAsJsonArray();
+                TeamRankingService rankingService = new TeamRankingService();
+
+                for (JsonElement standingElement : standingsArray) {
+                    JsonObject standingData = standingElement.getAsJsonObject();
+
+                    // Extract team information
+                    String teamName = standingData.get("team_name").getAsString();
+                    int teamApiId = standingData.get("team_id").getAsInt();
+
+                    // Ensure team exists in database
+                    int teamDbId = ensureTeamExists(
+                            teamName,
+                            teamApiId,
+                            teamService,
+                            tournament.getId(),
+                            standingData.get("team_badge").getAsString()
+                    );
+
+                    // Check if ranking exists for this specific team and tournament
+                    TeamRanking existingRanking = rankingService.getRankingByTeamAndTournament(
+                            teamDbId,
+                            tournament.getId()
+                    );
+
+                    if (existingRanking == null) {
+                        processNewRanking(standingData, teamDbId, tournament, rankingService);
+                    } else {
+                        updateExistingRanking(existingRanking, standingData, rankingService);
+                    }
+                }
+                System.out.println("Standings processed successfully for league: " + leagueName);
+            }
+        } catch (Exception e) {
+            System.err.println("Error processing standings for " + leagueName + ": " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    private void processNewRanking(JsonObject standingData, int teamId, Tournois tournament, TeamRankingService service) {
+        try {
+            TeamRanking ranking = new TeamRanking();
+            ranking.setIdTeam(teamId);
+            ranking.setIdTournoi(tournament.getId());
+            updateRankingFromJson(ranking, standingData);
+            service.insert(ranking);
+        } catch (SQLException e) {
+            System.err.println("Error creating new ranking: " + e.getMessage());
+        }
+    }
+
+    private void updateExistingRanking(TeamRanking existingRanking, JsonObject standingData, TeamRankingService service) {
+        try {
+            updateRankingFromJson(existingRanking, standingData);
+            service.update(existingRanking);
+        } catch (SQLException e) {
+            System.err.println("Error updating ranking: " + e.getMessage());
+        }
+    }
+    private void updateRankingFromJson(TeamRanking ranking, JsonObject data) {
+        ranking.setPosition(data.get("overall_league_position").getAsInt());
+        ranking.setWins(data.get("overall_league_W").getAsInt());
+        ranking.setDraws(data.get("overall_league_D").getAsInt());
+        ranking.setLosses(data.get("overall_league_L").getAsInt());
+        ranking.setPoints(data.get("overall_league_PTS").getAsInt());
+
+        int goalsFor = data.get("overall_league_GF").getAsInt();
+        int goalsAgainst = data.get("overall_league_GA").getAsInt();
+        ranking.setGoalsScored(goalsFor);
+        ranking.setGoalsConceded(goalsAgainst);
+        ranking.setGoalDifference(goalsFor - goalsAgainst);
+    }
     private void fetchAndAddPlayersToSQL(String teamName, int idteamapi, int idTeam) {
         // Construct the API URL for fetching teams using the team ID
         String apiUrl = "https://" + API_HOST + "/?action=get_teams&team_id=" + idteamapi+"&season"+season+ "&APIkey=" + API_KEY;
@@ -1069,7 +1074,7 @@ public class TeamSelection implements Initializable {
 
                                 // Save the downloaded photo using the saveUploadedFile method
                                 File tempFile = tempFilePath.toFile();
-                                String savedFilePath = saveUploadedFile(tempFile);
+                                String savedFilePath = saveUploadedFile(tempFile,"player");
 
                                 if (savedFilePath != null) {
                                     System.out.println("Photo saved: " + savedFilePath);
@@ -1124,12 +1129,12 @@ public class TeamSelection implements Initializable {
                 newTeam.setIdtournoi(idtournoi); // Default tournament ID (update as needed)
                 try {
                     // Download the photo to a temporary file
-                    Path tempFilePath = Files.createTempFile("player_photo_", ".jpg");
+                    Path tempFilePath = Files.createTempFile("team_photo_", ".jpg");
                     downloadPhoto(TeamNamelogo, tempFilePath);
 
                     // Save the downloaded photo using the saveUploadedFile method
                     File tempFile = tempFilePath.toFile();
-                    String savedFilePath = saveUploadedFile(tempFile);
+                    String savedFilePath = saveUploadedFile(tempFile,"team");
 
                     if (savedFilePath != null) {
                         System.out.println("Photo saved: " + savedFilePath);
@@ -1266,18 +1271,30 @@ public class TeamSelection implements Initializable {
         wrap.setAlignment(Pos.CENTER);
         return wrap;
     }
-    private String saveUploadedFile(File file) {
-        String uploadDir = "src/main/resources/io/github/palexdev/materialfx/demo/uploads/"; // Directory to save uploaded files
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs(); // Create the directory if it doesn't exist
+    private String saveUploadedFile(File file, String type) {
+        String subDirectory;
+        if ("player".equals(type)) {
+            subDirectory = "players/";
+        } else if ("team".equals(type)) {
+            subDirectory = "teams/";  // Fixed the directory name from "players" to "teams"
+        } else {
+            throw new IllegalArgumentException("Invalid type specified");
         }
-        String fileName = System.currentTimeMillis() + "_" + file.getName(); // Unique file name
+
+        // Local file system path
+        String uploadDir = "C:/xampp/htdocs/img/" + subDirectory;
+        File dir = new File(uploadDir);
+
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        String fileName = System.currentTimeMillis() + "_" + file.getName();
         File destFile = new File(uploadDir + fileName);
 
         try {
             Files.copy(file.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            return "src/main/resources/io/github/palexdev/materialfx/demo/uploads/"+fileName; // Return the file path
+            return subDirectory + fileName;  // Returns "players/filename.jpg" or "teams/filename.jpg"
         } catch (IOException e) {
             e.printStackTrace();
             return null;

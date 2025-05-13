@@ -543,7 +543,7 @@ public class TeamController implements Initializable {
             if (fileLabel.getText() != null && !fileLabel.getText().equals("No file selected")) {
                 File selectedFile = new File(fileLabel.getText());
                 if (selectedFile.exists()) {
-                    logoPath = saveUploadedFile(selectedFile); // Save the file and get its path
+                    logoPath = saveUploadedFile(selectedFile,"team"); // Save the file and get its path
                 } else {
                     System.err.println("Selected file does not exist: " + selectedFile);
                 }
@@ -586,19 +586,30 @@ public class TeamController implements Initializable {
         stage.setHeight(400); // Set the height of the dialog
         dialog.showDialog();
     }
-    private String saveUploadedFile(File file) {
-        String uploadDir = "src/main/resources/io/github/palexdev/materialfx/demo/uploads/"; // Directory to save uploaded files
-        File dir = new File(uploadDir);
-        if (!dir.exists()) {
-            dir.mkdirs(); // Create the directory if it doesn't exist
+    private String saveUploadedFile(File file, String type) {
+        String subDirectory;
+        if ("player".equals(type)) {
+            subDirectory = "players/";
+        } else if ("team".equals(type)) {
+            subDirectory = "teams/";  // Fixed the directory name from "players" to "teams"
+        } else {
+            throw new IllegalArgumentException("Invalid type specified");
         }
 
-        String fileName = System.currentTimeMillis() + "_" + file.getName(); // Unique file name
+        // Local file system path
+        String uploadDir = "C:/xampp/htdocs/img/" + subDirectory;
+        File dir = new File(uploadDir);
+
+        if (!dir.exists()) {
+            dir.mkdirs();
+        }
+
+        String fileName = System.currentTimeMillis() + "_" + file.getName();
         File destFile = new File(uploadDir + fileName);
 
         try {
             Files.copy(file.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            return "src/main/resources/io/github/palexdev/materialfx/demo/uploads/"+fileName; // Return the file path
+            return subDirectory + fileName;  // Returns "players/filename.jpg" or "teams/filename.jpg"
         } catch (IOException e) {
             e.printStackTrace();
             return null;

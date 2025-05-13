@@ -17,16 +17,89 @@ public class TeamRankingService implements TeamCRUD<TeamRanking> {
     private final Connection cnx = DbConnection.getInstance().getCnx();
     private final TeamService teamS = new TeamService();
 
+    public TeamRanking getRankingByTeamAndTournament(int teamId, int tournamentId) {
+        String query = "SELECT * FROM ranking WHERE id_team = ? AND id_tournoi = ?";
+        try (PreparedStatement pstmt = cnx.prepareStatement(query)) {
+            pstmt.setInt(1, teamId);
+            pstmt.setInt(2, tournamentId);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return mapRankingFromResultSet(rs);
+            }
+        } catch (SQLException e) {
+            System.err.println("Error fetching ranking for team " + teamId + ": " + e.getMessage());
+        }
+        return null;
+    }
+
+    private TeamRanking mapRankingFromResultSet(ResultSet rs) throws SQLException {
+        Team team = teamS.GetTeamById(rs.getInt("id_team"));
+        return new TeamRanking(
+                rs.getInt("id"),
+                rs.getInt("id_team"),
+                rs.getInt("points"),
+                rs.getInt("position"),
+                rs.getInt("id_tournoi"),
+                rs.getInt("wins"),
+                rs.getInt("draws"),
+                rs.getInt("losses"),
+                rs.getInt("goals_scored"),
+                rs.getInt("goals_conceded"),
+                rs.getInt("goal_difference"),
+                team
+        );
+    }
+
     @Override
     public int insert(TeamRanking teamRanking) throws SQLException {
-        // Implement insertion logic here
-        return 0;
+        String sql = "INSERT INTO ranking (id_team, points, position, id_tournoi, wins, draws, losses, goals_scored, goals_conceded, goal_difference) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try (PreparedStatement pstmt = cnx.prepareStatement(sql, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            pstmt.setInt(1, teamRanking.getIdTeam());
+            pstmt.setInt(2, teamRanking.getPoints());
+            pstmt.setInt(3, teamRanking.getPosition());
+            pstmt.setInt(4, teamRanking.getIdTournoi());
+            pstmt.setInt(5, teamRanking.getWins());
+            pstmt.setInt(6, teamRanking.getDraws());
+            pstmt.setInt(7, teamRanking.getLosses());
+            pstmt.setInt(8, teamRanking.getGoalsScored());
+            pstmt.setInt(9, teamRanking.getGoalsConceded());
+            pstmt.setInt(10, teamRanking.getGoalDifference());
+
+            int affectedRows = pstmt.executeUpdate();
+
+            // Retrieve and set the generated ID
+            try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    teamRanking.setId(generatedKeys.getInt(1));
+                }
+            }
+            return affectedRows;
+        }
     }
 
     @Override
     public int update(TeamRanking teamRanking) throws SQLException {
-        // Implement update logic here
-        return 0;
+        String sql = "UPDATE ranking SET " +
+                "points = ?, position = ?, wins = ?, draws = ?, losses = ?, " +
+                "goals_scored = ?, goals_conceded = ?, goal_difference = ? " +
+                "WHERE id_team = ? AND id_tournoi = ?";
+
+        try (PreparedStatement pstmt = cnx.prepareStatement(sql)) {
+            pstmt.setInt(1, teamRanking.getPoints());
+            pstmt.setInt(2, teamRanking.getPosition());
+            pstmt.setInt(3, teamRanking.getWins());
+            pstmt.setInt(4, teamRanking.getDraws());
+            pstmt.setInt(5, teamRanking.getLosses());
+            pstmt.setInt(6, teamRanking.getGoalsScored());
+            pstmt.setInt(7, teamRanking.getGoalsConceded());
+            pstmt.setInt(8, teamRanking.getGoalDifference());
+            pstmt.setInt(9, teamRanking.getIdTeam());
+            pstmt.setInt(10, teamRanking.getIdTournoi());
+
+            return pstmt.executeUpdate();
+        }
     }
 
     @Override

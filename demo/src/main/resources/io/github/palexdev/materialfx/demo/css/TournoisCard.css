@@ -1,0 +1,53 @@
+@import '../fonts/Fonts.css';
+@import 'MFXColors.css';
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .content {
+    -fx-background-color: transparent;
+}
+.tournament-card {
+    -fx-background-color: #1B1F3B;
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 5);
+    -fx-padding: 15;
+    -fx-border-radius: 8;
+    -fx-border-color: BLACK;
+    -fx-border-width: 1;
+    -fx-pref-width: 300;
+}
+
+.tournament-details {
+    -fx-padding: 10 5 10 5;
+}
+
+.header-label {
+    -fx-font-size: 25;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-padding: 0 50 15 0;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+.info-label {
+    -fx-font-weight: bold;
+}
+
+.status-label {
+    -fx-padding: 3 8;
+    -fx-background-radius: 12;
+    -fx-background-color: white;
+    -fx-text-fill: white;
+}
+
+.button-container {
+    -fx-padding: 10 0 0 0;
+}

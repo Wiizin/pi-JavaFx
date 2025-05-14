@@ -1,0 +1,24 @@
+plugins {
+    id 'java-library'
+    id 'org.openjfx.javafxplugin' version "$jfxPlugin" apply false
+}
+
+group 'io.github.palexdev'
+version "$materialfx"
+
+ext {
+    scriptsDir = "$rootDir/scripts"
+}
+
+repositories {
+    mavenCentral()
+}
+
+subprojects {
+    apply plugin: 'org.openjfx.javafxplugin'
+
+    javafx {
+        version = "$jfx"
+        modules = ['javafx.controls', 'javafx.fxml', 'javafx.media', 'javafx.swing', 'javafx.web']
+    }
+}

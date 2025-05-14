@@ -726,9 +726,6 @@ public class TeamSelection implements Initializable {
 
                 int idteamapi = teamIdMap.get(selectedTeam);
                 int idleague = leagueIdMap.get(selectedLeague);
-                //Fetch standing From Api and insert into SQl
-                fetchAndProcessStandings(tournois,selectedLeague,idleague);
-                System.out.println("Standing fetched and added to SQL for teams: " + selectedTeam); // Debugging
 
                 // Fetch players from API and insert into SQL
                 fetchAndAddPlayersToSQL(selectedTeam, idteamapi, idTeam);
@@ -740,6 +737,9 @@ public class TeamSelection implements Initializable {
 
                 //fetchAndAddUpcomingRestOfLeagueMatchesToSQL(idleague, idteamapi, idtournoi);
                 //System.out.println("The rest of the upcoming matches fetched and added to SQL: " + selectedTeam);
+                //Fetch standing From Api and insert into SQl
+                fetchAndProcessStandings(idtournoi,selectedLeague,idleague);
+                System.out.println("Standing fetched and added to SQL for teams: " + selectedTeam); // Debugging
 
                 // Update the id_team of the current user
                 User currentManager = UserSession.getInstance().getCurrentUser();
@@ -915,7 +915,7 @@ public class TeamSelection implements Initializable {
         }
     }
 
-    private void fetchAndProcessStandings(Tournois tournament, String leagueName,int leagueid) {
+    private void fetchAndProcessStandings(int idtournoi, String leagueName,int leagueid) {
         String apiUrl = "https://" + API_HOST + "/?action=get_standings&league_id=" +leagueid+ "&APIkey=" + API_KEY;
 
         try {
@@ -927,7 +927,7 @@ public class TeamSelection implements Initializable {
 
                 for (JsonElement standingElement : standingsArray) {
                     JsonObject standingData = standingElement.getAsJsonObject();
-
+                    System.out.println("Standing data:"+standingData);
                     // Extract team information
                     String teamName = standingData.get("team_name").getAsString();
                     int teamApiId = standingData.get("team_id").getAsInt();
@@ -937,18 +937,18 @@ public class TeamSelection implements Initializable {
                             teamName,
                             teamApiId,
                             teamService,
-                            tournament.getId(),
+                            idtournoi,
                             standingData.get("team_badge").getAsString()
                     );
 
                     // Check if ranking exists for this specific team and tournament
                     TeamRanking existingRanking = rankingService.getRankingByTeamAndTournament(
                             teamDbId,
-                            tournament.getId()
+                            idtournoi
                     );
 
                     if (existingRanking == null) {
-                        processNewRanking(standingData, teamDbId, tournament, rankingService);
+                        processNewRanking(standingData, teamDbId, idtournoi, rankingService);
                     } else {
                         updateExistingRanking(existingRanking, standingData, rankingService);
                     }
@@ -961,11 +961,11 @@ public class TeamSelection implements Initializable {
         }
     }
 
-    private void processNewRanking(JsonObject standingData, int teamId, Tournois tournament, TeamRankingService service) {
+    private void processNewRanking(JsonObject standingData, int teamId, int idtournoi, TeamRankingService service) {
         try {
             TeamRanking ranking = new TeamRanking();
             ranking.setIdTeam(teamId);
-            ranking.setIdTournoi(tournament.getId());
+            ranking.setIdTournoi(idtournoi);
             updateRankingFromJson(ranking, standingData);
             service.insert(ranking);
         } catch (SQLException e) {

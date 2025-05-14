@@ -144,14 +144,18 @@ public class TeamController implements Initializable {
 
             // Create an ImageView to display the logo
             ImageView logoView = new ImageView();
-            logoView.setFitWidth(50); // Set appropriate width
-            logoView.setFitHeight(50); // Set appropriate height
+            logoView.setFitWidth(25); // Set appropriate width
+            logoView.setFitHeight(25); // Set appropriate height
             logoView.setPreserveRatio(true);
 
             // Check if the team has a valid logo path
             String logoPath = team.getLogoPath();
             if (logoPath != null && !logoPath.trim().isEmpty()) {
-                File logoFile = new File(logoPath);
+                String normalizedPath = logoPath.replace("\\", "/");
+                if (normalizedPath.startsWith("teams/")) {
+                    normalizedPath = normalizedPath.substring(6);
+                }
+                File logoFile = new File( "C:/xampp/htdocs/img/teams/" + normalizedPath);
                 //System.out.println("Loading logo from: " + logoFile.getAbsolutePath());
 
                 if (logoFile.exists() && logoFile.isFile()) {
@@ -190,7 +194,6 @@ public class TeamController implements Initializable {
         //set row cell factory for the ranking column
         Ranking.setRowCellFactory(team -> {
             MFXTableRowCell<Team, Void> cell = new MFXTableRowCell<>(null);
-
             // Create Modify button
             MFXButton rankingButton = new MFXButton("Consult");
             rankingButton.setStyle("-fx-background-color: royalblue; -fx-text-fill: white;");
@@ -332,7 +335,13 @@ public class TeamController implements Initializable {
             // Check if the team has a valid logo path
             String logoPath = teamRank.getTeam().getLogoPath();
             if (logoPath != null && !logoPath.trim().isEmpty()) {
-                File logoFile = new File(logoPath);
+                String normalizedPath = logoPath.replace("\\", "/");
+                if (normalizedPath.startsWith("teams/")) {
+                    normalizedPath = normalizedPath.substring(6);
+                }
+                File logoFile = new File( "C:/xampp/htdocs/img/teams/" + normalizedPath);
+                //System.out.println("Loading logo from: " + logoFile.getAbsolutePath());
+
                 if (logoFile.exists() && logoFile.isFile()) {
                     try {
                         Image logoImage = new Image(logoFile.toURI().toString());

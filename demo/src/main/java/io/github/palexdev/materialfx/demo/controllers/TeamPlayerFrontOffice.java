@@ -129,65 +129,63 @@ public class TeamPlayerFrontOffice implements Initializable{
 
                 // Set team logos with null checks
                 if (teamA != null && teamA.getLogoPath() != null) {
-                    // Check if the team has a valid logo path
-                    String logoPath = teamA.getLogoPath();
-                    if (logoPath != null && !logoPath.trim().isEmpty()) {
-                        File logoFile = new File(logoPath);
+                    String logoPath = teamA.getLogoPath().trim();
+                    if (!logoPath.isEmpty()) {
+                        // Extract filename from path and construct absolute path
+                        String fileName = logoPath.replace("\\", "/").substring(logoPath.lastIndexOf("/") + 1);
+                        String absolutePath = "C:/xampp/htdocs/img/teams/" + fileName;
+                        File logoFile = new File(absolutePath);
+
                         if (logoFile.exists() && logoFile.isFile()) {
                             try {
                                 Image logoImage = new Image(logoFile.toURI().toString());
-                                featuredTeamALogo.setImage(logoImage); // Set the Image directly
+                                featuredTeamALogo.setImage(logoImage);
                             } catch (Exception e) {
-                                System.err.println("Failed to load logo: " + e.getMessage());
-                                // Fallback to default logo
+                                System.err.println("Failed to load logo for " + teamA.getNom() + ": " + e.getMessage());
                                 featuredTeamALogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                             }
                         } else {
-                            System.err.println("Logo file does not exist or is not a valid file: " + logoFile.getAbsolutePath());
-                            // Fallback to default logo
+                            System.err.println("Logo file not found: " + absolutePath);
                             featuredTeamALogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                         }
                     } else {
-                        System.err.println("Invalid logo path: " + logoPath);
-                        // Fallback to default logo
+                        System.err.println("Empty logo path for team: " + teamA.getNom());
                         featuredTeamALogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                     }
                 } else {
-                    // Fallback to default logo
                     featuredTeamALogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                 }
 
+                // Team B
                 if (teamB != null && teamB.getLogoPath() != null) {
-                    // Check if the team has a valid logo path
-                    String logoPath = teamB.getLogoPath();
-                    if (logoPath != null && !logoPath.trim().isEmpty()) {
-                        File logoFile = new File(logoPath);
+                    String logoPath = teamB.getLogoPath().trim();
+                    if (!logoPath.isEmpty()) {
+                        // Extract filename from path and construct absolute path
+                        String fileName = logoPath.replace("\\", "/").substring(logoPath.lastIndexOf("/") + 1);
+                        String absolutePath = "C:/xampp/htdocs/img/teams/" + fileName;
+                        File logoFile = new File(absolutePath);
+
                         if (logoFile.exists() && logoFile.isFile()) {
                             try {
                                 Image logoImage = new Image(logoFile.toURI().toString());
-                                featuredTeamBLogo.setImage(logoImage); // Set the Image directly
+                                featuredTeamBLogo.setImage(logoImage);
                             } catch (Exception e) {
-                                System.err.println("Failed to load logo: " + e.getMessage());
-                                // Fallback to default logo
+                                System.err.println("Failed to load logo for " + teamB.getNom() + ": " + e.getMessage());
                                 featuredTeamBLogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                             }
                         } else {
-                            System.err.println("Logo file does not exist or is not a valid file: " + logoFile.getAbsolutePath());
-                            // Fallback to default logo
+                            System.err.println("Logo file not found: " + absolutePath);
                             featuredTeamBLogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                         }
                     } else {
-                        System.err.println("Invalid logo path: " + logoPath);
-                        // Fallback to default logo
+                        System.err.println("Empty logo path for team: " + teamB.getNom());
                         featuredTeamBLogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                     }
                 } else {
-                    // Fallback to default logo
                     featuredTeamBLogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                 }
             } catch (SQLException e) {
                 System.err.println("Error fetching team details: " + e.getMessage());
-                // Fallback to default logos
                 featuredTeamALogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
                 featuredTeamBLogo.setImage(new Image(MFXDemoResourcesLoader.load("sportify.png"), 24, 24, true, true));
             }

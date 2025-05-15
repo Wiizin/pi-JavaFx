@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox fx:id="rootPane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
+      stylesheets="@../css/Buttons.css" 
+      fx:controller="io.github.palexdev.materialfx.demo.controllers.AdminDashboardController" 
+      spacing="20" style="-fx-padding: 20; -fx-background-color: #1B1F3B;">
+    
+    <!-- Header Section -->
+    <HBox alignment="CENTER_LEFT" spacing="20">
+        <Label text="Dashboard Overview" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: white;" />
+        <Region HBox.hgrow="ALWAYS" />
+        <MFXButton fx:id="refreshButton" text="Refresh Stats" onAction="#handleRefresh" 
+                   style="-fx-background-color: #ff9800; -fx-text-fill: white;" />
+    </HBox>
+
+    <!-- Statistics Cards Section -->
+    <HBox spacing="20">
+        <!-- Total Users Card -->
+        <VBox styleClass="stat-card" style="-fx-background-color: #2A2F4F; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);">
+            <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+            <Label text="Total Users" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #ff9800;" />
+            <Label fx:id="totalUsersLabel" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;" />
+            <Label fx:id="totalUsersChangeLabel" text="+0% this month" style="-fx-font-size: 12px; -fx-text-fill: #4CAF50;" />
+            <MFXProgressBar fx:id="totalUsersProgress" progress="0.0" style="-fx-accent: #ff9800;" />
+        </VBox>
+
+        <!-- Active Users Card -->
+        <VBox styleClass="stat-card" style="-fx-background-color: #2A2F4F; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);">
+            <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+            <Label text="Active Users" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #4CAF50;" />
+            <Label fx:id="activeUsersLabel" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;" />
+            <Label fx:id="activeUsersChangeLabel" text="+0% this month" style="-fx-font-size: 12px; -fx-text-fill: #4CAF50;" />
+            <MFXProgressBar fx:id="activeUsersProgress" progress="0.0" style="-fx-accent: #4CAF50;" />
+        </VBox>
+
+        <!-- Organizers Card -->
+        <VBox styleClass="stat-card" style="-fx-background-color: #2A2F4F; -fx-padding: 20; -fx-background-radius: 10; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 10, 0, 0, 0);">
+            <padding><Insets top="15" right="15" bottom="15" left="15"/></padding>
+            <Label text="Organizers" style="-fx-font-size: 16px; -fx-font-weight: bold; -fx-text-fill: #2196F3;" />
+            <Label fx:id="organizersLabel" text="0" style="-fx-font-size: 36px; -fx-font-weight: bold; -fx-text-fill: white;" />
+            <Label fx:id="organizersChangeLabel" text="+0% this month" style="-fx-font-size: 12px; -fx-text-fill: #4CAF50;" />
+            <MFXProgressBar fx:id="organizersProgress" progress="0.0" style="-fx-accent: #2196F3;" />
+        </VBox>
+    </HBox>
+
+    <!-- User Distribution Section -->
+    <GridPane style="-fx-background-color: #2A2F4F; -fx-background-radius: 10;" hgap="20" vgap="20">
+        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+        
+        <Label text="User Distribution" 
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"
+               GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" />
+
+        <!-- Players Distribution -->
+        <VBox spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <Label text="Players" style="-fx-font-size: 14px; -fx-text-fill: #ff9800;" />
+            <MFXProgressBar fx:id="playersBar" progress="0.0" 
+                           style="-fx-accent: #ff9800;" prefWidth="300" />
+            <Label fx:id="playersCountLabel" text="0 Players" 
+                   style="-fx-font-size: 14px; -fx-text-fill: white;" />
+        </VBox>
+
+        <!-- Organizers Distribution -->
+        <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Label text="Organizers" style="-fx-font-size: 14px; -fx-text-fill: #2196F3;" />
+            <MFXProgressBar fx:id="organizersBar" progress="0.0" 
+                           style="-fx-accent: #2196F3;" prefWidth="300" />
+            <Label fx:id="organizersCountLabel" text="0 Organizers" 
+                   style="-fx-font-size: 14px; -fx-text-fill: white;" />
+        </VBox>
+    </GridPane>
+
+    <!-- Activity Status Section -->
+    <GridPane style="-fx-background-color: #2A2F4F; -fx-background-radius: 10;" hgap="20" vgap="20">
+        <padding><Insets top="20" right="20" bottom="20" left="20"/></padding>
+        
+        <Label text="Activity Status" 
+               style="-fx-font-size: 20px; -fx-font-weight: bold; -fx-text-fill: white;"
+               GridPane.columnIndex="0" GridPane.rowIndex="0" GridPane.columnSpan="2" />
+
+        <!-- Active Users -->
+        <VBox spacing="10" GridPane.columnIndex="0" GridPane.rowIndex="1">
+            <Label text="Active Users" style="-fx-font-size: 14px; -fx-text-fill: #4CAF50;" />
+            <MFXProgressBar fx:id="activeBar" progress="0.0" 
+                           style="-fx-accent: #4CAF50;" prefWidth="300" />
+            <Label fx:id="activeCountLabel" text="0 Active" 
+                   style="-fx-font-size: 14px; -fx-text-fill: white;" />
+        </VBox>
+
+        <!-- Inactive Users -->
+        <VBox spacing="10" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Label text="Inactive Users" style="-fx-font-size: 14px; -fx-text-fill: #F44336;" />
+            <MFXProgressBar fx:id="inactiveBar" progress="0.0" 
+                           style="-fx-accent: #F44336;" prefWidth="300" />
+            <Label fx:id="inactiveCountLabel" text="0 Inactive" 
+                   style="-fx-font-size: 14px; -fx-text-fill: white;" />
+        </VBox>
+    </GridPane>
+</VBox>

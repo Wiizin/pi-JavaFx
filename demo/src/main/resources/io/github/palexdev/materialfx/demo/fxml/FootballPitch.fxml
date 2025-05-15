@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.canvas.Canvas?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane fx:id="rootPane" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="io.github.palexdev.materialfx.demo.controllers.FootballPitchController">
+    <children>
+        <Canvas fx:id="pitchCanvas" width="600" height="800" layoutX="0" layoutY="0"/>
+    </children>
+</AnchorPane>
+
+        <!--
+        <?xml version="1.0" encoding="UTF-8"?>
+        <?import javafx.scene.layout.AnchorPane?>
+        <?import javafx.scene.control.Label?>
+        <?import javafx.scene.layout.VBox?>
+
+        <?import javafx.scene.canvas.Canvas?>
+        <AnchorPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.FootballPitchController">
+            <children>
+                <Label text="Match Preview" layoutX="250" layoutY="10" style="-fx-font-size: 24px; -fx-text-fill: white;"/>
+                &lt;!&ndash; Include the reusable FootballPitch component &ndash;&gt;
+                <Canvas fx:id="lineupCanvas" width="600" height="800" layoutX="0" layoutY="50"/>
+               &lt;!&ndash; <fx:include source="FootballPitch.fxml" layoutX="0" layoutY="50"/>&ndash;&gt;
+            </children>
+        </AnchorPane>
+        -->

@@ -1,0 +1,68 @@
+
+.match-card {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 2);
+}
+
+.match-card.featured {
+    -fx-background-color: linear-gradient(to right, #2c3e50, #3498db);
+}
+
+.match-card.live {
+    -fx-border-color: #e74c3c;
+    -fx-border-width: 2px;
+    -fx-border-radius: 8px;
+}
+
+.match-status {
+    -fx-text-fill: #e74c3c;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+.match-time {
+    -fx-text-fill: #7f8c8d;
+    -fx-font-size: 14px;
+}
+
+.team-code {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.featured-team-code {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.league-label {
+    -fx-text-fill: #95a5a6;
+    -fx-font-size: 12px;
+}
+
+.section-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 10 0;
+}
+
+.favorite-avatar {
+    -fx-fill: #3498db;
+}
+
+.favorite-name {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+
+.upcoming-item {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 4px;
+    -fx-padding: 10px;
+}
+
+.upcoming-item:hover {
+    -fx-background-color: #e9ecef;
+}

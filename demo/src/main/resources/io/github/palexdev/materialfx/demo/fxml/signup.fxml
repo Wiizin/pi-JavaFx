@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import io.github.palexdev.materialfx.controls.MFXComboBox?>
+<?import io.github.palexdev.materialfx.controls.MFXDatePicker?>
+<?import io.github.palexdev.materialfx.controls.MFXPasswordField?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Hyperlink?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane style="-fx-background-color: #1B1F3B;" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="io.github.palexdev.materialfx.demo.controllers.SignUpController">
+
+    <!-- Logo Image -->
+    <ImageView fitHeight="131.0" fitWidth="156.0" layoutX="481.0" layoutY="14.0">
+        <Image url="@../sportify.png" />
+    </ImageView>
+
+    <!-- PLAY Text -->
+    <Text fill="WHITE" layoutX="679.0" layoutY="100.0" strokeType="OUTSIDE" strokeWidth="0.0" text="JOIN US" wrappingWidth="404.4984130859375">
+        <font>
+            <Font name="System Bold Italic" size="72.0" />
+        </font>
+    </Text>
+
+    <!-- Left Side Image -->
+    <ImageView fitHeight="360.0" fitWidth="360.0" layoutX="24.0" layoutY="287.0">
+        <Image url="@../pic.png" />
+    </ImageView>
+
+    <!-- Main Form Container -->
+    <VBox layoutX="489.0" layoutY="139.0" maxWidth="600.0" prefWidth="600.0" spacing="20" style="-fx-background-color: white; -fx-background-radius: 10; -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 10, 0, 0, 0);" styleClass="custom-vbox">
+        <padding>
+            <Insets bottom="30" left="40" right="40" top="30" />
+        </padding>
+
+        <!-- Header -->
+        <Text styleClass="header-text" text="Create Your Player Account">
+            <font>
+                <Font name="System Bold" size="44.0" />
+            </font>
+        </Text>
+
+        <!-- Name Fields -->
+        <HBox spacing="20">
+            <MFXTextField fx:id="firstNameField" floatingText="First Name" prefWidth="250.0" style="-fx-border-color: #F8891A;" styleClass="mfx-text-field" />
+            <MFXTextField fx:id="lastNameField" floatingText="Last Name" prefWidth="250.0" style="-fx-border-color: #F8891A;" styleClass="mfx-text-field" />
+        </HBox>
+
+        <!-- Email -->
+        <MFXTextField fx:id="emailField" floatingText="Email" prefWidth="520.0" style="-fx-border-color: #F8891A;" styleClass="mfx-text-field" />
+
+        <!-- Password Fields -->
+        <HBox spacing="20">
+            <MFXPasswordField fx:id="passwordField" floatingText="Password" prefWidth="250.0" style="-fx-border-color: #F8891A;" styleClass="mfx-password-field" />
+            <MFXPasswordField fx:id="confirmPasswordField" floatingText="Confirm Password" prefWidth="250.0" style="-fx-border-color: #F8891A;" styleClass="mfx-password-field" />
+        </HBox>
+
+        <!-- Phone Number -->
+        <MFXTextField fx:id="phoneNumberField" floatingText="Phone Number" prefWidth="520.0" style="-fx-border-color: #F8891A;" styleClass="mfx-text-field" />
+
+        <HBox spacing="20">
+        <MFXComboBox fx:id="roleComboBox" floatingText="Role" prefWidth="250.0" style="-fx-border-color: #F8891A;" styleClass="mfx-combo-box" />
+            <MFXTextField fx:id="coachingLicenseField" floatingText="License" prefWidth="250.0" style="-fx-border-color: #F8891A;" styleClass="mfx-text-field" visible="false" />
+        </HBox>
+
+
+        <!-- Date of Birth -->
+        <MFXDatePicker fx:id="dateOfBirthPicker" floatingText="Date of Birth" prefWidth="520.0" style="-fx-border-color: #F8891A;" styleClass="mfx-date-picker" />
+
+        <!-- Sign Up Button -->
+        <MFXButton fx:id="signUpButton" prefHeight="50.0" prefWidth="520.0" rippleColor="WHITE" style="-fx-background-color: #F8891A; -fx-text-fill: white;" text="SIGN UP">
+            <font>
+                <Font size="20.0" />
+            </font>
+        </MFXButton>
+        <!-- Already have an account? Hyperlink -->
+        <Hyperlink fx:id="loginHyperlink" style="-fx-text-fill: #F8891A; -fx-font-size: 16;" text="Already have an account?" underline="true" />
+        <VBox.margin>
+            <Insets top="-10" />
+        </VBox.margin>
+
+    </VBox>
+
+
+    <!-- Right Side Image -->
+    <ImageView fitHeight="300.0" fitWidth="511.0" layoutX="1084.0" layoutY="287.0">
+        <Image url="@../sports.png" />
+    </ImageView>
+</AnchorPane>

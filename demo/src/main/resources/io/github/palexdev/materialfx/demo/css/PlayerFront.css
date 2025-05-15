@@ -1,0 +1,195 @@
+/* Base Styles */
+.root {
+    -fx-background-color: #e3f2fd; /* Light blue background */
+    -fx-font-family: 'Segoe UI', sans-serif;
+    -fx-text-fill: #212529;
+}
+
+/* Right Sidebar Adjustments */
+#rightSidebar {
+    -fx-background-color: rgba(255, 255, 255, 0.8); /* Semi-transparent white */
+    -fx-background-radius: 15px; /* More rounded corners for elegance */
+    -fx-border-radius: 15px;
+    -fx-border-color: #1B1B3B;
+    -fx-border-width: 1px;
+    -fx-padding: 20px;
+    -fx-effect: dropshadow(three-pass-box, rgba(33, 150, 243, 0.1), 0, 4, 12, 0);
+}
+
+/* Featured Card Update */
+.featured-card {
+    -fx-background-color: linear-gradient(to right, #e3f2fd, #bbdefb);
+    -fx-border-color: #1B1B3B;
+    -fx-border-width: 1px;
+    -fx-background-radius: 15px; /* Refined rounded corners */
+    -fx-border-radius: 15px;
+    -fx-padding: 20px;
+    /* Uniform spacing between internal elements can be achieved by proper layout containers in code */
+}
+
+/* Match Card Adjustments */
+.match-card {
+    -fx-background-color: rgba(255, 255, 255, 0.95);
+    -fx-border-color: #1B1B3B;
+    -fx-border-width: 1px;
+    -fx-background-radius: 12px; /* Increase roundness for a more elegant look */
+    -fx-border-radius: 12px;
+    -fx-padding: 15px;
+}
+
+/* Team Badges Update */
+.team-logo {
+    -fx-fill: #e3f2fd;
+    -fx-stroke: #bbdefb;
+    -fx-stroke-width: 2px;
+}
+
+/* Favorites Section Update */
+.favorite-avatar {
+    -fx-fill: #e3f2fd;
+    -fx-stroke: #bbdefb;
+    -fx-stroke-width: 2px;
+}
+
+/* Upcoming Items */
+.upcoming-item {
+    -fx-background-color: rgba(255, 255, 255, 0.9);
+    -fx-border-color: #1B1B3B;
+    -fx-border-width: 1px;
+    -fx-background-radius: 10px;
+    -fx-border-radius: 10px;
+    -fx-padding: 10px;
+}
+
+/* Section Titles & Key Texts Using Orange (#ff9800) */
+.section-title {
+    -fx-text-fill: #ff9800;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 0;
+}
+
+.match-status {
+    -fx-text-fill: #ff9800;
+    -fx-font-weight: bold;
+}
+
+.league-label {
+    -fx-text-fill: #ff9800;
+    -fx-font-size: 14px;
+}
+
+/* Team Codes & Favorite Names */
+.team-code, .favorite-name {
+    -fx-text-fill: #ff9800;
+    -fx-font-size: 14px;
+}
+
+/* Buttons (if using MFXButton or similar) */
+.mfx-button, .primary-button {
+    -fx-background-color: #ff9800;
+    -fx-text-fill: white;
+    -fx-background-radius: 15px;
+    -fx-padding: 10px 20px;
+}
+
+/* Additional spacing for layout containers */
+/* (Note: For HBox/VBox, consider setting spacing in code if needed) */
+.vbox-spacing > * {
+    -fx-spacing: 100px;
+
+    /* Scrollable Grid Container */
+    .scroll-pane {
+        -fx-background-color: transparent;
+        -fx-padding: 0;
+    }
+
+    .scroll-pane .viewport {
+        -fx-background-color: transparent;
+    }
+
+    /* Grid Layout */
+    .grid-pane {
+        -fx-background-color: transparent;
+        -fx-padding: 0 15px 15px 15px;
+    }
+
+    /* Adjust regular cards to maintain proportion */
+    .match-card {
+        -fx-min-width: 280px;
+        -fx-min-height: 180px;
+        -fx-background-radius: 12px;
+    }
+    /* Scrollbar Styling */
+    .scroll-bar:horizontal {
+        -fx-background-color: transparent;
+    }
+
+    .scroll-bar .thumb {
+        -fx-background-color: #b3e5fc;
+        -fx-background-radius: 4px;
+    }
+
+    .scroll-bar .track {
+        -fx-background-color: #e3f2fd;
+        -fx-background-radius: 4px;
+    }}
+/* Featured Card Specific Styles */
+.featured-card {
+    -fx-background-color: linear-gradient(to right, #1B1B3B, #1976d2);
+    -fx-min-width: 600px;
+    -fx-min-height: 300px;
+    -fx-border-radius: 15px;
+    -fx-background-radius: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 0, 8, 12, 0);
+}
+
+.featured-card .match-status {
+    -fx-font-size: 1.4em;
+    -fx-text-fill: #e3f2fd;
+}
+
+.featured-card .match-time {
+    -fx-font-size: 1.8em;
+    -fx-font-weight: 800;
+    -fx-text-fill: white;
+}
+
+.featured-card .team-logo {
+    -fx-stroke-width: 2px;
+    -fx-stroke: #ffffff55;
+    -fx-fill: #ffffff22;
+}
+
+.featured-card .featured-team-code {
+    -fx-font-size: 1.4em;
+    -fx-font-weight: 800;
+    -fx-text-fill: white;
+}
+
+.featured-card .league-label {
+    -fx-font-size: 1.2em;
+    -fx-text-fill: #e3f2fd;
+    -fx-font-weight: 600;
+}
+
+.team-card {
+    -fx-background-color: white;
+    -fx-background-radius: 8px;
+    -fx-padding: 15px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 0, 2, 4, 0);
+}
+
+.fixture-card {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-width: 1px;
+    -fx-border-radius: 8px;
+}
+
+.standing-row {
+    -fx-background-color: white;
+    -fx-border-color: #e9ecef;
+    -fx-border-width: 1px;
+    -fx-border-radius: 4px;
+}

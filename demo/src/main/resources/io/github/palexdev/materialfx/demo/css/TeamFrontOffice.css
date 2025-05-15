@@ -1,0 +1,360 @@
+/* styles.css */
+
+/* GridPane Styles */
+.grid-pane {
+    -fx-background-color: linear-gradient(to bottom, #c0d3e8, #a5b8d0);
+    -fx-padding: 20;
+    -fx-translate-x: 5px;
+}
+
+/* Featured Match */
+.featured-match {
+    -fx-background-color: linear-gradient(to bottom, #1e3c72, #2a5298);
+    -fx-background-radius: 15;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.3), 10, 0, 0, 5);
+}
+
+.league-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.vs-label {
+    -fx-font-size: 24px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.time-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: rgba(255,255,255,0.8);
+}
+
+.details-button {
+    -fx-background-color: #ff6b6b;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 8 16;
+    -fx-background-radius: 20;
+}
+
+.details-button:hover {
+    -fx-background-color: derive(#ff6b6b, -10%);
+}
+
+/* Live Matches */
+.match-card {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-background-radius: 8;
+    -fx-padding: 10 15;
+    -fx-spacing: 15;
+}
+
+.live-indicator {
+    -fx-text-fill: #ff4757;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+.match-time {
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-opacity: 0.9;
+}
+
+.score-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2f3542;
+}
+
+/* Upcoming Matches */
+.upcoming-matches {
+    -fx-padding: 15;
+    -fx-background-color: transparent;
+}
+
+.section-title {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.date-filter-container {
+    -fx-padding: 0 0 10 0;
+}
+
+.date-filter-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 12px;
+    -fx-padding: 5 0;
+}
+
+.date-filter-button.active {
+    -fx-border-color: #2196f3;
+    -fx-border-width: 0 0 2 0;
+}
+
+.matches-container {
+    -fx-spacing: 8;
+}
+
+.full-schedule-button {
+    -fx-background-color: #1e90ff;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 20;
+}
+
+.full-schedule-button:hover {
+    -fx-background-color: derive(#1e90ff, -10%);
+}
+
+.team-logo {
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+}
+
+/* Featured Match Section */
+.stack-pane {
+    -fx-background-color: linear-gradient(to bottom, #1e3c72, #2a5298);
+    -fx-background-radius: 10;
+    -fx-padding: 20;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.3), 10, 0, 0, 0);
+}
+
+.featured-label {
+    -fx-font-size: 24px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.match-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* Live Matches Section */
+.live-section {
+    -fx-background-color: transparent;
+    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 0);
+}
+
+.live-score {
+    -fx-font-size: 14px;
+    -fx-text-fill: #555555;
+}
+
+/* Upcoming Matches Section */
+.upcoming-section {
+    -fx-background-color: transparent;
+    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.1), 5, 0, 0, 0);
+    -fx-pref-height: 100%; /* Ensure it takes full height */
+}
+/* Upcoming Matches Container */
+.UpCommingMatchesContainer {
+    -fx-padding: 10 0; /* Add some padding */
+}
+
+/* Today Label with Blue Underline */
+.Today-label {
+    -fx-font-size: 14.5px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    /*-fx-underline: true;*/ /* Underline the text */
+    -fx-border-color: blue; /* Blue underline */
+    -fx-border-width: 0 0 2 0; /* Only bottom border */
+    /*-fx-padding: 0 0 5 0;*/ /* Add padding to separate the underline */
+}
+
+/* Tomorrow Label */
+.Tommorrow-label {
+    -fx-font-size: 14.5px;
+    -fx-text-fill: #FFFFFF;
+}
+
+/* This Week Label */
+.Thisweek-label {
+    -fx-font-size: 14.5px;
+    -fx-text-fill: #FFFFFF;
+}
+.upcoming-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+}
+.Featured-label {
+    -fx-font-size: 18px;
+    -fx-text-fill: #FFFFFF;
+    -fx-font-weight: bold;
+    -fx-padding: 15;
+}
+
+.match-teams {
+    -fx-font-size: 14px;
+    -fx-text-fill: #333333;
+}
+
+/* Favourites Section */
+.favourites-section {
+    -fx-padding: 15;
+    -fx-background-color: transparent;
+}
+
+.favourites-title {
+    -fx-font-size: 18px;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.view-all-link {
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-opacity: 0.8;
+}
+
+.players-container {
+    -fx-padding: 10 0;
+}
+
+.player-circle {
+    -fx-alignment: center;
+}
+
+.player-image {
+    -fx-background-radius: 25;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.2), 5, 0, 0, 2);
+}
+
+.player-name {
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-padding: 5 0 0 0;
+}
+
+.add-player-circle {
+    -fx-background-color: rgba(255,255,255,0.1);
+    -fx-background-radius: 25;
+    -fx-min-width: 50;
+    -fx-min-height: 50;
+    -fx-cursor: hand;
+}
+
+.add-player-icon {
+    -fx-font-size: 24px;
+    -fx-text-fill: white;
+}
+
+.add-player-text {
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-opacity: 0.8;
+}
+
+.nav-button {
+    -fx-background-color: rgba(255,255,255,0.1);
+    -fx-text-fill: white;
+    -fx-min-width: 30;
+    -fx-min-height: 30;
+    -fx-background-radius: 15;
+}
+
+.nav-button:hover {
+    -fx-background-color: rgba(255,255,255,0.2);
+}
+
+.LiveMatch_card{
+    -fx-pref-width: 250px;
+    -fx-pref-height: 150px;
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0);
+}
+/* Style for the main card */
+.UpCommingMatchesContainer_card {
+    -fx-pref-width: 250px;
+    -fx-pref-height: 100px;
+    -fx-background-color: rgba(192, 211, 232, 0.9); /* Semi-transparent background */
+    -fx-background-radius: 10; /* Rounded corners */
+    -fx-border-radius: 10; /* Rounded corners for the border */
+    -fx-border-color: rgba(150, 180, 200, 0.7); /* Slightly darker border for better contrast */
+    -fx-border-width: 1px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0.12, -1.0, 2.0); /* Drop shadow */
+    -fx-padding: 10px; /* Add padding inside the card */
+    -fx-alignment: center; /* Center content horizontally and vertically */
+
+}
+
+/* Style for the match time (team names and "VS" label) */
+.teamA {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50; /* Dark text color */
+    -fx-start-margin:150;
+    -fx-text-fill: white;
+    -fx-translate-x: 0px;
+}
+.imgTeamA{
+    -fx-translate-x: 5px;
+}
+.Vs {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50; /* Dark text color */
+    -fx-start-margin:150;
+    -fx-text-fill: white;
+    -fx-translate-x: 20px;
+    -fx-translate-y:-25px;
+}
+.teamB {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50; /* Dark text color */
+    -fx-start-margin:150;
+    -fx-text-fill: white;
+    -fx-translate-x: 25px;
+}
+.imgTeamB
+{
+    -fx-translate-x: 25px;
+}
+/* Style for the tournament name */
+.UpCommingMatchesContainer_tourmentName {
+    -fx-font-size: 16px;
+    -fx-font-weight: normal;
+    -fx-text-fill: #34495e; /* Slightly lighter text color */
+    -fx-padding: 5px 0px 0 0; /* Add padding above the label */
+    -fx-text-fill: white;
+    -fx-translate-x: 30px;
+}
+.Container{
+    -fx-underline: true;
+    -fx-border-color: rgba(255, 255, 255, 0.4); /* Blue underline (optional, if you want a border instead) */
+    -fx-border-width: 0 0 2 0;
+    -fx-translate-x: 5;
+}
+
+.team-name {
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+}
+
+.vs-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: white;
+    -fx-opacity: 0.8;
+}
+
+.league-name {
+    -fx-font-size: 12px;
+    -fx-text-fill: white;
+    -fx-opacity: 0.7;
+}

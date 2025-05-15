@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.TextArea?>
+<VBox xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
+      fx:controller="io.github.palexdev.materialfx.demo.controllers.FootballAPI" spacing="10" alignment="CENTER">
+
+    <Button text="Fetch Matches" onAction="#handleFetchData"/>
+    <TextArea fx:id="apiOutput" prefHeight="400" prefWidth="600"/>
+
+</VBox>

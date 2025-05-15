@@ -1,0 +1,93 @@
+/*
+ * Copyright (C) 2022 Parisi Alessandro
+ * This file is part of MaterialFX (https://github.com/palexdev/MaterialFX).
+ *
+ * MaterialFX is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MaterialFX is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with MaterialFX.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@import '../fonts/Fonts.css';
+@import 'Common.css';
+@import 'MFXColors.css';
+
+.mfx-stepper .mfx-text-field {
+    -mfx-float-mode: disabled;
+    -fx-font-family: 'Open Sans SemiBold';
+    -fx-pref-width: 200;
+}
+
+.mfx-stepper .mfx-stepper-toggle .mfx-text-field {
+    -fx-border-color: transparent;
+    -fx-font-family: 'Visby Round CF Bold';
+    -fx-pref-width: 1;
+}
+
+.mfx-stepper .error-label {
+    -fx-font-family: 'Open Sans SemiBold';
+    -fx-text-fill: -mfx-red;
+}
+
+.mfx-stepper .header-label {
+    -fx-border-color: transparent;
+    -fx-font-family: 'Open Sans SemiBold';
+}
+.header-label-team{
+    -fx-translate-x: -15px;
+}
+.mfx-stepper .completed-label {
+    -fx-border-color: transparent;
+    -fx-font-family: 'Open Sans Bold';
+    -fx-font-size: 24;
+    -fx-alignment: center;
+    -fx-text-fill: -mfx-green;
+}
+
+.outline-button {
+    -fx-background-color: transparent;
+    -fx-border-color: -mfx-purple;
+    -fx-border-radius: 3;
+
+    -fx-text-fill: -mfx-purple;
+}
+
+.outline-button:hover,
+.outline-button:focused {
+    -fx-background-color: -mfx-purple;
+    -fx-text-fill: white;
+}
+/* Remove scrollbars from MFXListView and MFXCheckListView */
+.mfx-list-view .scroll-bar:horizontal,
+.mfx-list-view .scroll-bar:vertical,
+.mfx-check-list-view .scroll-bar:horizontal,
+.mfx-check-list-view .scroll-bar:vertical {
+    -fx-pref-width: 0;
+    -fx-pref-height: 0;
+    -fx-opacity: 0;
+}
+
+/* Style the lists */
+.mfx-list-view, .mfx-check-list-view {
+    -fx-background-color: transparent;
+    -fx-border-color: #ccc;
+    -fx-border-radius: 5;
+    -fx-padding: 10;
+}
+
+.mfx-list-view .list-cell, .mfx-check-list-view .list-cell {
+    -fx-background-color: transparent;
+    -fx-padding: 5;
+}
+
+.mfx-list-view .list-cell:selected, .mfx-check-list-view .list-cell:selected {
+    -fx-background-color: #e0e0e0;
+}

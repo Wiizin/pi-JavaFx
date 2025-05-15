@@ -107,7 +107,6 @@ public class FrontEventController implements Initializable {
             List<Event> allEvents = eventService.getAll();
             // Filter to only include active events
             List<Event> activeEvents = allEvents.stream()
-                .filter(this::isEventActive)
                 .toList();
             
             // Debug logging

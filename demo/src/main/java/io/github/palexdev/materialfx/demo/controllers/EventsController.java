@@ -195,7 +195,7 @@ public class EventsController implements Initializable {
         // Load the event image
         if (event.getImage() != null && !event.getImage().isEmpty()) {
             try {
-                File imageFile = new File("C:/xampp/htdocs/events/" + event.getImage());
+                File imageFile = new File("C:/xampp/htdocs/img/events/" + event.getImage());
                 if (imageFile.exists()) {
                     Image image = new Image(imageFile.toURI().toString());
                     eventImage.setImage(image);
@@ -434,7 +434,7 @@ public class EventsController implements Initializable {
                     String uniqueFileName = System.currentTimeMillis() + "_" + (int)(Math.random() * 1000) + extension;
 
                     // Create events directory in XAMPP htdocs if it doesn't exist
-                    File uploadsDir = new File("C:/xampp/htdocs/events");
+                    File uploadsDir = new File("C:/xampp/htdocs/img/events");
                     if (!uploadsDir.exists()) {
                         uploadsDir.mkdirs();
                     }

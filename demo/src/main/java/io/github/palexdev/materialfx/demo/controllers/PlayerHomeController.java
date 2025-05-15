@@ -454,7 +454,7 @@ public class PlayerHomeController implements Initializable {
                     String uniqueFileName = System.currentTimeMillis() + "_" + (int)(Math.random() * 1000) + extension;
 
                     // Create an "uploads" directory in the user's home directory if it doesn't exist
-                    String xamppPath = "C:/xampp/htdocs/profile_pictures";
+                    String xamppPath = "C:/xampp/htdocs/img/profile_pictures";
                     File uploadsDir = new File(xamppPath);
                     if (!uploadsDir.exists()) {
                         uploadsDir.mkdirs();
@@ -566,7 +566,7 @@ public class PlayerHomeController implements Initializable {
                 } else {
                     // Load from uploads directory
                     String userHome = System.getProperty("user.home");
-                    File imageFile = new File("C:/xampp/htdocs/profile_pictures/" + fileName);
+                    File imageFile = new File("C:/xampp/htdocs/img/profile_pictures/" + fileName);
                     if (!imageFile.exists()) {
                         throw new IOException("Profile image not found: " + imageFile.getAbsolutePath());
                     }

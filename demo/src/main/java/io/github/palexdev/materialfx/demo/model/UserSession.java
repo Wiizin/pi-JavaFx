@@ -141,7 +141,7 @@ public final class UserSession {
     }
 
     public User getCurrentUser() {
-        return currentUser;
+        return this.currentUser;
     }
 
     public void updateUser(User user) {

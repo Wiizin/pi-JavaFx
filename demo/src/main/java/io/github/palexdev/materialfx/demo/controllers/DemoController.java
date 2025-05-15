@@ -123,29 +123,97 @@ public class DemoController implements Initializable {
 
     private void initializeLoader() {
         MFXLoader loader = new MFXLoader();
-        loader.addView(MFXLoaderBean.of("Dashboard", loadURL("fxml/admin_dashboard.fxml")).setBeanToNodeMapper(() -> createToggle("fas-chart-column", "Dashboard")).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("Users", loadURL("fxml/admin_home.fxml")).setBeanToNodeMapper(() -> createToggle("fas-users", "Users")).setDefaultRoot(true).get());
-        loader.addView(MFXLoaderBean.of("Tournaments", loadURL("fxml/Tournois.fxml")).setBeanToNodeMapper(() -> createToggle("fas-trophy", "Tournaments")).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("Products", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-box-open", "Products")).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("Events", loadURL("fxml/Buttons.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Events")).setDefaultRoot(false).get());
-        loader.addView(MFXLoaderBean.of("Teams", loadURL("fxml/Team.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Teams")).setDefaultRoot(false).get());
+        try {
+            // Add views with proper error handling
+            URL dashboardUrl = loadURL("fxml/admin_dashboard.fxml");
+            URL usersUrl = loadURL("fxml/admin_home.fxml");
+            URL tournamentsUrl = loadURL("fxml/Tournois.fxml");
+            URL productsUrl = loadURL("fxml/Buttons.fxml");
+            URL eventsUrl = loadURL("fxml/Events.fxml");
+            URL teamsUrl = loadURL("fxml/Team.fxml");
+            URL reclamationsUrl = loadURL("fxml/Reclamation.fxml");
 
+            if (dashboardUrl != null) {
+                loader.addView(MFXLoaderBean.of("Dashboard", dashboardUrl)
+                        .setBeanToNodeMapper(() -> createToggle("fas-chart-column", "Dashboard"))
+                        .setDefaultRoot(false)
+                        .get());
+            }
 
-        loader.setOnLoadedAction(beans -> {
-            List<ToggleButton> nodes = beans.stream()
+            if (usersUrl != null) {
+                loader.addView(MFXLoaderBean.of("Users", usersUrl)
+                        .setBeanToNodeMapper(() -> createToggle("fas-users", "Users"))
+                        .setDefaultRoot(true)  // Set Users as default view
+                        .get());
+            }
+
+            if (tournamentsUrl != null) {
+                loader.addView(MFXLoaderBean.of("Tournaments", tournamentsUrl)
+                        .setBeanToNodeMapper(() -> createToggle("fas-trophy", "Tournaments"))
+                        .setDefaultRoot(false)
+                        .get());
+            }
+
+            if (productsUrl != null) {
+                loader.addView(MFXLoaderBean.of("Products", productsUrl)
+                        .setBeanToNodeMapper(() -> createToggle("fas-box-open", "Products"))
+                        .setDefaultRoot(false)
+                        .get());
+            }
+
+            if (eventsUrl != null) {
+                loader.addView(MFXLoaderBean.of("Events", eventsUrl)
+                        .setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Events"))
+                        .setDefaultRoot(false)
+                        .get());
+            }
+
+            if (teamsUrl != null) {
+                loader.addView(MFXLoaderBean.of("Teams", teamsUrl)
+                        .setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Teams"))
+                        .setDefaultRoot(false)
+                        .get());
+            }
+
+            if (reclamationsUrl != null) {
+                loader.addView(MFXLoaderBean.of("Reclamations", reclamationsUrl)
+                        .setBeanToNodeMapper(() -> createToggle("fas-comment-dots", "Reclamations"))
+                        .setDefaultRoot(false)
+                        .get());
+            }
+
+            // Set up loader action with proper error handling
+            loader.setOnLoadedAction(beans -> {
+                List<ToggleButton> nodes = beans.stream()
                     .map(bean -> {
                         ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
-                        toggle.setOnAction(event -> contentPane.getChildren().setAll(bean.getRoot()));
+                        toggle.setOnAction(event -> {
+                            Parent root = bean.getRoot();
+                            if (root != null) {
+                                contentPane.getChildren().setAll(root);
+                            } else {
+                                System.err.println("Failed to load view: " + bean.getViewName());
+                            }
+                        });
                         if (bean.isDefaultView()) {
-                            contentPane.getChildren().setAll(bean.getRoot());
-                            toggle.setSelected(true);
+                            Parent root = bean.getRoot();
+                            if (root != null) {
+                                contentPane.getChildren().setAll(root);
+                                toggle.setSelected(true);
+                            }
                         }
                         return toggle;
                     })
                     .toList();
-            navBar.getChildren().setAll(nodes);
-        });
-        loader.start();
+                navBar.getChildren().setAll(nodes);
+            });
+
+            // Start the loader
+            loader.start();
+        } catch (Exception e) {
+            System.err.println("Error initializing loader: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
 
 

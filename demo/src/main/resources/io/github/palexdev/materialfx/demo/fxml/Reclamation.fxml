@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.*?>
+
+<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+
+<?import io.github.palexdev.materialfx.dialogs.MFXGenericDialog?>
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="io.github.palexdev.materialfx.demo.controllers.ReclamationController">
+
+    <!-- Main Content -->
+    <VBox fx:id="mainContainer" 
+          styleClass="main-container"
+          stylesheets="@../css/Reclamation.css,@../css/Common.css"
+          spacing="20">
+
+        <!-- Header Section -->
+        <HBox styleClass="header-section" alignment="CENTER_LEFT" spacing="15">
+            <padding>
+                <Insets top="20" right="25" bottom="20" left="25"/>
+            </padding>
+            
+            <MFXFontIcon description="fas-comments" size="30" styleClass="header-icon"/>
+            <Text styleClass="header-title" text="Reclamations Management"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <!-- Filter Section -->
+            <HBox spacing="15" alignment="CENTER">
+                <MFXComboBox fx:id="statusFilter" 
+                            floatingText="Filter by Status"
+                            styleClass="filter-combo"
+                            prefWidth="180"/>
+                <MFXButton text="Refresh" 
+                          onAction="#handleRefresh"
+                          styleClass="refresh-button"
+                          graphicTextGap="8">
+                    <graphic>
+                        <MFXFontIcon description="fas-sync-alt" size="14"/>
+                    </graphic>
+                </MFXButton>
+            </HBox>
+        </HBox>
+
+        <!-- Main Content -->
+        <MFXScrollPane styleClass="custom-scroll-pane" fitToWidth="true" VBox.vgrow="ALWAYS">
+            <VBox>
+                <padding>
+                    <Insets top="5" right="20" bottom="20" left="20"/>
+                </padding>
+                
+                <FlowPane fx:id="reclamationsContainer" 
+                          hgap="20" 
+                          vgap="20" 
+                          styleClass="reclamations-container">
+                    <padding>
+                        <Insets top="10" right="10" bottom="10" left="10"/>
+                    </padding>
+                </FlowPane>
+            </VBox>
+        </MFXScrollPane>
+    </VBox>
+
+    <!-- Response Dialog -->
+    <MFXGenericDialog fx:id="responseDialog"
+                      styleClass="response-dialog"
+                      headerText="Respond to Reclamation"
+                      showClose="true"
+                      showMinimize="false"
+                      showAlwaysOnTop="false"
+                      visible="false">
+        <content>
+            <VBox spacing="20">
+                <padding>
+                    <Insets top="25" right="25" bottom="25" left="25"/>
+                </padding>
+                <MFXTextField fx:id="responseField"
+                             floatingText="Your Response"
+                             styleClass="response-field"
+                             prefWidth="450"
+                             prefHeight="120"/>
+                <HBox spacing="15" alignment="CENTER_RIGHT">
+                    <MFXButton text="Cancel"
+                              onAction="#handleCancelResponse"
+                              styleClass="cancel-button"/>
+                    <MFXButton text="Send Response"
+                              onAction="#handleSendResponse"
+                              styleClass="send-button">
+                        <graphic>
+                            <MFXFontIcon description="fas-paper-plane" size="14"/>
+                        </graphic>
+                    </MFXButton>
+                </HBox>
+            </VBox>
+        </content>
+    </MFXGenericDialog>
+</StackPane>

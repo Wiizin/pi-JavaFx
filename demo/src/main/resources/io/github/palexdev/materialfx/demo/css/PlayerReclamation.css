@@ -1,0 +1,194 @@
+.main-container {
+    -fx-background-color: #f5f7fa; /* Light background to contrast with dark sidebar */
+}
+
+.content-container {
+    -fx-background-color: transparent;
+}
+
+.header-section {
+    -fx-padding: 0 0 20 0;
+    -fx-border-color: #2b3990;
+    -fx-border-width: 0 0 2 0;
+}
+
+.page-title {
+    -fx-fill: #2b3990;
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+}
+
+.new-reclamation-card {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-padding: 25;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 8, 0, 0, 3);
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 15;
+    -fx-border-width: 1;
+}
+
+.card-icon, .section-icon {
+    -fx-fill: #ff7825;
+}
+
+.card-title, .section-title {
+    -fx-text-fill: #2b3990;
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+}
+
+.modern-text-field {
+    -fx-background-color: #f5f7fa;
+    -fx-text-fill: #3d4a5c;
+    -fx-prompt-text-fill: #8a94a6;
+    -fx-font-size: 14px;
+    -fx-background-radius: 8;
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.modern-text-field:focused {
+    -fx-border-color: #ff7825;
+    -fx-border-width: 2;
+}
+
+.clear-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2b3990;
+    -fx-border-color: #2b3990;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 12 24;
+    -fx-font-size: 14px;
+}
+
+.clear-button:hover {
+    -fx-background-color: rgba(43, 57, 144, 0.05);
+    -fx-cursor: hand;
+}
+
+.submit-button {
+    -fx-background-color: #ff7825;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 12 24;
+    -fx-background-radius: 8;
+}
+
+.submit-button:hover {
+    -fx-background-color: #ff8f47;
+    -fx-effect: dropshadow(gaussian, rgba(255, 120, 37, 0.3), 5, 0, 0, 0);
+    -fx-cursor: hand;
+}
+
+.filter-combo {
+    -fx-background-color: white;
+    -fx-text-fill: #2b3990;
+    -fx-prompt-text-fill: #8a94a6;
+    -fx-background-radius: 8;
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.filter-combo:focused {
+    -fx-border-color: #ff7825;
+    -fx-border-width: 2;
+}
+
+.custom-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.custom-scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.reclamations-container {
+    -fx-background-color: transparent;
+}
+
+.reclamation-card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 6, 0, 0, 2);
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 20;
+}
+
+.reclamation-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(43, 57, 144, 0.15), 10, 0, 0, 4);
+    -fx-border-color: #2b3990;
+    -fx-cursor: hand;
+}
+
+.card-message {
+    -fx-font-size: 14px;
+    -fx-text-fill: #3d4a5c;
+    -fx-wrap-text: true;
+}
+
+.card-date {
+    -fx-font-size: 12px;
+    -fx-text-fill: #8a94a6;
+}
+
+.status-label {
+    -fx-padding: 5 15;
+    -fx-background-radius: 20;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.status-pending {
+    -fx-background-color: rgba(255, 120, 37, 0.1);
+    -fx-text-fill: #ff7825;
+}
+
+.status-resolved {
+    -fx-background-color: rgba(76, 175, 80, 0.1);
+    -fx-text-fill: #4CAF50;
+}
+
+.answers-box {
+    -fx-background-color: #f5f7fa;
+    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 10;
+    -fx-border-width: 1;
+}
+
+.answers-header {
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-text-fill: #2b3990;
+}
+
+.answer-box {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-padding: 12;
+    -fx-spacing: 6;
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.admin-name {
+    -fx-font-weight: bold;
+    -fx-text-fill: #2b3990;
+}
+
+.answer-message {
+    -fx-font-size: 13px;
+    -fx-text-fill: #3d4a5c;
+    -fx-wrap-text: true;
+}

@@ -102,37 +102,77 @@ public class PlayerHomeController implements Initializable {
 
     private void initializeLoader() {
         MFXLoader loader = new MFXLoader();
-        //loader.addView(MFXLoaderBean.of("Dashboard", loadURL("fxml/addUser.fxml")).setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Dashboard")).setDefaultRoot(true).get());
-        //loader.addView(MFXLoaderBean.of("Tournaments", loadURL("fxml/login.fxml")).setBeanToNodeMapper(() -> createToggle("fas-trophy", "Tournaments")).get());
-//        loader.addView(MFXLoaderBean.of("Profile", loadURL("fxml/PlayerProfile.fxml"))
-//                .setBeanToNodeMapper(() -> createToggle("fas-user", "Profile"))
-//                .get());
         User currentUser = UserSession.getInstance().getCurrentUser();
-        if (currentUser.getIdteam() == 0) {
-            loader.addView(MFXLoaderBean.of("Teams", loadURL("fxml/TeamSelectionForPlayer.fxml"))
-                    .setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Teams"))
-                    .setDefaultRoot(false)
-                    .get());
-        } else {
-            loader.addView(MFXLoaderBean.of("Teams", loadURL("fxml/TeamPlayerFrontOffice.fxml"))
-                    .setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Teams"))
-                    .setDefaultRoot(false)
-                    .get());
+        
+        try {
+            // Add Events tab
+            URL eventsUrl = loadURL("fxml/FrontEvent.fxml");
+            if (eventsUrl != null) {
+                loader.addView(MFXLoaderBean.of("Events", eventsUrl)
+                        .setBeanToNodeMapper(() -> createToggle("fas-calendar-alt", "Events"))
+                        .setDefaultRoot(true)  // Set this as default view
+                        .get());
+            } else {
+                System.err.println("Failed to load FrontEvent.fxml");
+            }
 
+            // Add Reclamations tab with proper error handling
+            URL reclamationsUrl = loadURL("fxml/PlayerReclamation.fxml");
+            if (reclamationsUrl != null) {
+                loader.addView(MFXLoaderBean.of("Reclamations", reclamationsUrl)
+                        .setBeanToNodeMapper(() -> createToggle("fas-comment-dots", "Reclamations"))
+                        .setDefaultRoot(false)
+                        .get());
+            } else {
+                System.err.println("Failed to load PlayerReclamation.fxml");
+            }
+
+            // Add Teams tab with proper error handling
+            String teamsFile = currentUser.getIdteam() == 0 ? 
+                             "fxml/TeamSelectionForPlayer.fxml" : 
+                             "fxml/TeamPlayerFrontOffice.fxml";
+            URL teamsUrl = loadURL(teamsFile);
+            if (teamsUrl != null) {
+                loader.addView(MFXLoaderBean.of("Teams", teamsUrl)
+                    .setBeanToNodeMapper(() -> createToggle("fas-circle-dot", "Teams"))
+                    .setDefaultRoot(false)
+                    .get());
+            } else {
+                System.err.println("Failed to load " + teamsFile);
+            }
+
+            // Set up loader action with proper error handling
+            loader.setOnLoadedAction(beans -> {
+                List<ToggleButton> nodes = beans.stream()
+                    .map(bean -> {
+                        ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
+                        toggle.setOnAction(event -> {
+                            Parent root = bean.getRoot();
+                            if (root != null) {
+                                contentPane.getChildren().setAll(root);
+                            } else {
+                                System.err.println("Failed to load view: " + bean.getViewName());
+                            }
+                        });
+                        if (bean.isDefaultView()) {
+                            Parent root = bean.getRoot();
+                            if (root != null) {
+                                contentPane.getChildren().setAll(root);
+                                toggle.setSelected(true);
+                            }
+                        }
+                        return toggle;
+                    })
+                    .toList();
+                navBar.getChildren().setAll(nodes);
+            });
+
+            // Start the loader
+            loader.start();
+        } catch (Exception e) {
+            System.err.println("Error initializing loader: " + e.getMessage());
+            e.printStackTrace();
         }
-        loader.setOnLoadedAction(beans -> {
-            List<ToggleButton> nodes = beans.stream().map(bean -> {
-                ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
-                toggle.setOnAction(event -> contentPane.getChildren().setAll(bean.getRoot()));
-                if (bean.isDefaultView()) {
-                    contentPane.getChildren().setAll(bean.getRoot());
-                    toggle.setSelected(true);
-                }
-                return toggle;
-            }).toList();
-            navBar.getChildren().setAll(nodes);
-        });
-        loader.start();
     }
 
     private ToggleButton createToggle(String icon, String text) {
@@ -414,8 +454,8 @@ public class PlayerHomeController implements Initializable {
                     String uniqueFileName = System.currentTimeMillis() + "_" + (int)(Math.random() * 1000) + extension;
 
                     // Create an "uploads" directory in the user's home directory if it doesn't exist
-                    String userHome = System.getProperty("user.home");
-                    File uploadsDir = new File(userHome + "/sportify/uploads/images");
+                    String xamppPath = "C:/xampp/htdocs/profile_pictures";
+                    File uploadsDir = new File(xamppPath);
                     if (!uploadsDir.exists()) {
                         uploadsDir.mkdirs();
                     }
@@ -526,7 +566,7 @@ public class PlayerHomeController implements Initializable {
                 } else {
                     // Load from uploads directory
                     String userHome = System.getProperty("user.home");
-                    File imageFile = new File(userHome + "/sportify/uploads/images/" + fileName);
+                    File imageFile = new File("C:/xampp/htdocs/profile_pictures/" + fileName);
                     if (!imageFile.exists()) {
                         throw new IOException("Profile image not found: " + imageFile.getAbsolutePath());
                     }

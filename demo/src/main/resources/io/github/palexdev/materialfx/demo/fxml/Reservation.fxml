@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.*?>
+<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+<?import io.github.palexdev.materialfx.dialogs.MFXGenericDialog?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="io.github.palexdev.materialfx.demo.controllers.ReservationController"
+           styleClass="reservation-view">
+
+    <VBox fx:id="mainContainer" 
+          styleClass="main-container"
+          stylesheets="@../css/Reservation.css,@../css/Common.css"
+          spacing="20">
+
+        <!-- Header Section -->
+        <HBox styleClass="header-section" alignment="CENTER_LEFT" spacing="15">
+            <padding>
+                <Insets top="20" right="25" bottom="20" left="25"/>
+            </padding>
+            
+            <MFXButton fx:id="backButton"
+                      text="Back"
+                      onAction="#handleBack"
+                      styleClass="back-button">
+                <graphic>
+                    <MFXFontIcon description="fas-arrow-left" size="14"/>
+                </graphic>
+            </MFXButton>
+            
+            <MFXFontIcon description="fas-ticket" size="30" styleClass="header-icon"/>
+            <Text styleClass="header-title" text="Reservations Management"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <!-- Filter Section -->
+            <HBox spacing="15" alignment="CENTER">
+                <MFXTextField fx:id="searchField" 
+                            floatingText="Search reservations..."
+                            styleClass="search-field"
+                            prefWidth="200"/>
+                            
+                <MFXComboBox fx:id="statusFilter" 
+                            floatingText="Filter by Status"
+                            styleClass="filter-combo"
+                            prefWidth="150"/>
+                            
+                <MFXDatePicker fx:id="dateFilter"
+                              floatingText="Filter by Date"
+                              styleClass="date-filter"/>
+                              
+                <MFXButton fx:id="clearFiltersButton"
+                          text="Clear Filters"
+                          styleClass="clear-filters-button"/>
+                          
+                <MFXButton fx:id="refreshButton"
+                          text="Refresh"
+                          onAction="#handleRefresh"
+                          styleClass="refresh-button">
+                    <graphic>
+                        <MFXFontIcon description="fas-sync-alt" size="14"/>
+                    </graphic>
+                </MFXButton>
+            </HBox>
+        </HBox>
+
+        <!-- Reservations List -->
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="custom-scroll-pane">
+            <VBox fx:id="reservationsContainer" spacing="20" styleClass="reservations-container">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+            </VBox>
+        </ScrollPane>
+    </VBox>
+
+    <!-- Reservation Dialog -->
+    <MFXGenericDialog fx:id="reservationDialog"
+                      styleClass="reservation-dialog"
+                      headerText="Reservation Details"
+                      showClose="true"
+                      showMinimize="false"
+                      showAlwaysOnTop="false"
+                      visible="false"
+                      managed="true"
+                      alwaysOnTop="true"
+                      translateY="-50"
+                      maxWidth="500"
+                      maxHeight="600">
+        
+        <VBox spacing="20" styleClass="dialog-content">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- Event Info Section -->
+            <VBox spacing="15" styleClass="dialog-section">
+                <Label text="Event Information" styleClass="section-header"/>
+                <Label fx:id="eventNameLabel" styleClass="event-name-label"/>
+                <Label fx:id="eventDateLabel" styleClass="event-date-label"/>
+                <Label fx:id="eventLocationLabel" styleClass="event-location-label"/>
+            </VBox>
+
+            <!-- User Info Section -->
+            <VBox spacing="15" styleClass="dialog-section">
+                <Label text="Player Information" styleClass="section-header"/>
+                <Label fx:id="playerNameLabel" styleClass="player-name-label"/>
+                <Label fx:id="playerEmailLabel" styleClass="player-email-label"/>
+            </VBox>
+
+            <!-- Status Section -->
+            <VBox spacing="15" styleClass="dialog-section">
+                <Label text="Reservation Status" styleClass="section-header"/>
+                <HBox spacing="10" alignment="CENTER_LEFT">
+                    <MFXComboBox fx:id="reservationStatus"
+                                floatingText="Status"
+                                styleClass="status-combo"
+                                prefWidth="150"/>
+                    <MFXButton fx:id="acceptButton"
+                              text="Accept"
+                              onAction="#handleAcceptReservation"
+                              styleClass="accept-button">
+                        <graphic>
+                            <MFXFontIcon description="fas-check" size="14"/>
+                        </graphic>
+                    </MFXButton>
+                    
+                    <MFXButton fx:id="rejectButton"
+                              text="Reject"
+                              onAction="#handleRejectReservation"
+                              styleClass="reject-button">
+                        <graphic>
+                            <MFXFontIcon description="fas-times" size="14"/>
+                        </graphic>
+                    </MFXButton>
+                </HBox>
+            </VBox>
+
+            <!-- Comment Section -->
+            <VBox spacing="15" styleClass="dialog-section">
+                <Label text="Player's Comment" styleClass="section-header"/>
+                <Label fx:id="commentLabel" styleClass="comment-label" wrapText="true"/>
+            </VBox>
+
+            <!-- Admin Comment Section -->
+            <VBox spacing="15" styleClass="dialog-section">
+                <Label text="Admin Response" styleClass="section-header"/>
+                <MFXTextField fx:id="adminCommentField"
+                             floatingText="Add a response (optional)"
+                             styleClass="dialog-field"
+                             prefHeight="60"/>
+            </VBox>
+
+            <!-- Actions Section -->
+            <HBox spacing="15" alignment="CENTER_RIGHT" styleClass="dialog-actions">
+                <MFXButton fx:id="closeButton"
+                          text="Close"
+                          onAction="#handleCloseDialog"
+                          styleClass="close-dialog-button"/>
+            </HBox>
+        </VBox>
+    </MFXGenericDialog>
+</StackPane> 

@@ -69,4 +69,8 @@ public class DbConnection {
             return null;
         }
     }
+
+    public Connection getConnection() {
+        return getCnx();
+    }
 }

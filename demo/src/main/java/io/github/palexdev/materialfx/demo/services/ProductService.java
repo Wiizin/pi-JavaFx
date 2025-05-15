@@ -22,7 +22,7 @@ public class ProductService {
 
     public ProductService() {
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sportifydb4", "root", "");
+            connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/sportifydb3", "root", "");
             System.out.println("Database connection successful");
         } catch (SQLException e) {
             System.out.println("Database connection failed: " + e.getMessage() + ". Using mock data instead.");

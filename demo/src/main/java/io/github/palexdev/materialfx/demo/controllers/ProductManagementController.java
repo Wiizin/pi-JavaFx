@@ -73,11 +73,11 @@ public class ProductManagementController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         // Ensure the default image exists in all image directories
         ImageUtils.ensureDefaultImageExists();
-        
+
         // Initialize the table and form
         initializeTable();
         initializeForm();
-        
+
         // Load products after initialization
         javafx.application.Platform.runLater(() -> {
             loadProducts();
@@ -94,21 +94,21 @@ public class ProductManagementController implements Initializable {
         stockColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getStock()));
         categoryColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getCategory()));
         descriptionColumn.setCellValueFactory(cellData -> new javafx.beans.property.SimpleStringProperty(cellData.getValue().getProductdescription()));
-        
+
         // Set up image column to display images
         imageColumn.setCellFactory(column -> new TableCell<Product, String>() {
             private final ImageView imageView = new ImageView();
-            
+
             {
                 imageView.setFitHeight(50);
                 imageView.setFitWidth(50);
                 imageView.setPreserveRatio(true);
             }
-            
+
             @Override
             protected void updateItem(String imagePath, boolean empty) {
                 super.updateItem(imagePath, empty);
-                
+
                 if (empty || imagePath == null) {
                     setGraphic(null);
                 } else {
@@ -117,12 +117,12 @@ public class ProductManagementController implements Initializable {
                         String imageName = imagePath;
                         String resourcePath = "/io/github/palexdev/materialfx/demo/images/" + imageName;
                         Image image = new Image(getClass().getResourceAsStream(resourcePath));
-                        
+
                         if (image.isError()) {
                             // If image can't be loaded, use a default image
                             image = new Image(getClass().getResourceAsStream("/io/github/palexdev/materialfx/demo/images/default_product.png"));
                         }
-                        
+
                         imageView.setImage(image);
                         setGraphic(imageView);
                     } catch (Exception e) {
@@ -133,10 +133,10 @@ public class ProductManagementController implements Initializable {
                 }
             }
         });
-        
+
         // Debug column setup
         System.out.println("Table columns initialized with explicit cell value factories");
-        
+
         // Set default cell factories with explicit text color
         idColumn.setCellFactory(column -> new TableCell<Product, Integer>() {
             @Override
@@ -150,7 +150,7 @@ public class ProductManagementController implements Initializable {
                 }
             }
         });
-        
+
         nameColumn.setCellFactory(column -> new TableCell<Product, String>() {
             @Override
             protected void updateItem(String name, boolean empty) {
@@ -163,7 +163,7 @@ public class ProductManagementController implements Initializable {
                 }
             }
         });
-        
+
         categoryColumn.setCellFactory(column -> new TableCell<Product, String>() {
             @Override
             protected void updateItem(String category, boolean empty) {
@@ -176,7 +176,7 @@ public class ProductManagementController implements Initializable {
                 }
             }
         });
-        
+
         descriptionColumn.setCellFactory(column -> new TableCell<Product, String>() {
             @Override
             protected void updateItem(String description, boolean empty) {
@@ -238,28 +238,28 @@ public class ProductManagementController implements Initializable {
                 editButton.getStyleClass().add("edit-button");
                 deleteButton.getStyleClass().add("delete-button");
                 buttonsBox.setAlignment(Pos.CENTER);
-                
+
                 // Use icons instead of text for buttons
                 editButton.setStyle("-fx-background-color: #ffc107; -fx-min-width: 30px; -fx-min-height: 30px; -fx-background-radius: 15px;");
                 deleteButton.setStyle("-fx-background-color: #dc3545; -fx-min-width: 30px; -fx-min-height: 30px; -fx-background-radius: 15px;");
-                
+
                 // Set text to 'E' and 'D' as simple icons
                 editButton.setText("E");
                 deleteButton.setText("D");
                 editButton.setTextFill(javafx.scene.paint.Color.WHITE);
                 deleteButton.setTextFill(javafx.scene.paint.Color.WHITE);
-                
+
                 editButton.setOnAction(event -> {
                     Product product = getTableView().getItems().get(getIndex());
                     handleEditProduct(product);
                 });
-                
+
                 deleteButton.setOnAction(event -> {
                     Product product = getTableView().getItems().get(getIndex());
                     handleDeleteProduct(product);
                 });
             }
-            
+
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
@@ -271,10 +271,10 @@ public class ProductManagementController implements Initializable {
     private void initializeForm() {
         // Initialize stock options
         stockComboBox.getItems().addAll(STOCK_OPTIONS);
-        
+
         // Initialize category options
         categoryComboBox.getItems().addAll(CATEGORIES);
-        
+
         // Initialize filter options
         categoryFilterComboBox.getItems().addAll(CATEGORIES);
         stockFilterComboBox.getItems().addAll(STOCK_OPTIONS);
@@ -297,7 +297,7 @@ public class ProductManagementController implements Initializable {
     private void handleEditProduct(Product product) {
         isEditMode = true;
         currentProduct = product;
-        
+
         // Fill form with product data
         nameField.setText(product.getNameproduct());
         priceField.setText(String.valueOf(product.getPriceproduct()));
@@ -349,14 +349,14 @@ public class ProductManagementController implements Initializable {
                 currentProduct = new Product();
                 System.out.println("Created new Product object");
             }
-            
+
             // Set product properties from form
             currentProduct.setNameproduct(nameField.getText().trim());
             currentProduct.setPriceproduct(Double.parseDouble(priceField.getText().trim()));
             currentProduct.setStock(stockComboBox.getValue());
             currentProduct.setCategory(categoryComboBox.getValue());
             currentProduct.setProductdescription(descriptionField.getText().trim());
-            
+
             // Set default image if none is provided
             if (selectedImageFile != null) {
                 String fileName = processImageUpload(selectedImageFile);
@@ -366,7 +366,7 @@ public class ProductManagementController implements Initializable {
                 currentProduct.setImage(DEFAULT_IMAGE);
                 System.out.println("Set default image: " + DEFAULT_IMAGE);
             }
-            
+
             // Set deleted flag to false for new products
             if (!isEditMode) {
                 currentProduct.setDeleted(false);
@@ -399,7 +399,7 @@ public class ProductManagementController implements Initializable {
                         isEditMode ? "Product updated successfully" : "Product added successfully");
                 clearForm();
                 loadProducts(); // Refresh the table
-                
+
                 // Reset current product and edit mode
                 currentProduct = null;
                 isEditMode = false;
@@ -430,7 +430,7 @@ public class ProductManagementController implements Initializable {
     private void handleCancel() {
         clearForm();
     }
-    
+
     private void clearForm() {
         // Clear form fields
         nameField.clear();
@@ -447,7 +447,12 @@ public class ProductManagementController implements Initializable {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Select Product Image");
         fileChooser.getExtensionFilters().addAll(
-                new FileChooser.ExtensionFilter("Image Files", "*.png", "*.jpg", "*.jpeg", "*.gif")
+                new FileChooser.ExtensionFilter(
+                        "Image Files",
+                        "*.png",
+                        "*.jpg",
+                        "*.jpeg"
+                )
         );
 
         Stage stage = (Stage) browseButton.getScene().getWindow();
@@ -464,7 +469,7 @@ public class ProductManagementController implements Initializable {
         String nameFilter = searchField.getText();
         String categoryFilterValue = categoryFilterComboBox.getValue();
         String stockFilterValue = stockFilterComboBox.getValue();
-        
+
         loadProducts(nameFilter, categoryFilterValue, stockFilterValue);
     }
 
@@ -475,7 +480,7 @@ public class ProductManagementController implements Initializable {
         stockFilterComboBox.getSelectionModel().clearSelection();
         loadProducts();
     }
-    
+
     @FXML
     private void handleRefresh() {
         loadProducts();
@@ -491,49 +496,49 @@ public class ProductManagementController implements Initializable {
             // Get products from the database
             List<Product> products = productService.showAll();
             System.out.println("Loaded " + products.size() + " products from database/mock data");
-            
+
             // Debug: print out the first product if available
             if (!products.isEmpty()) {
                 Product firstProduct = products.get(0);
-                System.out.println("First product: ID=" + firstProduct.getId() + 
-                                   ", Name=" + firstProduct.getNameproduct() + 
-                                   ", Price=" + firstProduct.getPriceproduct() + 
-                                   ", Category=" + firstProduct.getCategory());
+                System.out.println("First product: ID=" + firstProduct.getId() +
+                        ", Name=" + firstProduct.getNameproduct() +
+                        ", Price=" + firstProduct.getPriceproduct() +
+                        ", Category=" + firstProduct.getCategory());
             }
-            
+
             // Filter the products manually if filters are provided
-            if (nameFilter != null && !nameFilter.isEmpty() || 
-                categoryFilter != null || 
-                stockFilter != null) {
-                
+            if (nameFilter != null && !nameFilter.isEmpty() ||
+                    categoryFilter != null ||
+                    stockFilter != null) {
+
                 products = products.stream().filter(product -> {
-                    boolean matchesName = nameFilter == null || nameFilter.isEmpty() || 
-                                          product.getNameproduct().toLowerCase().contains(nameFilter.toLowerCase());
-                    boolean matchesCategory = categoryFilter == null || 
-                                             product.getCategory().equals(categoryFilter);
-                    boolean matchesStock = stockFilter == null || 
-                                          product.getStock().equals(stockFilter);
+                    boolean matchesName = nameFilter == null || nameFilter.isEmpty() ||
+                            product.getNameproduct().toLowerCase().contains(nameFilter.toLowerCase());
+                    boolean matchesCategory = categoryFilter == null ||
+                            product.getCategory().equals(categoryFilter);
+                    boolean matchesStock = stockFilter == null ||
+                            product.getStock().equals(stockFilter);
                     return matchesName && matchesCategory && matchesStock;
                 }).collect(Collectors.toList());
-                
+
                 System.out.println("After filtering: " + products.size() + " products remain");
             }
-            
+
             // Clear and add items to the table
             productTable.getItems().clear();
             productTable.getItems().addAll(products);
             System.out.println("Added " + productTable.getItems().size() + " items to the table");
-            
+
             // Force the table to refresh
             productTable.refresh();
-            
+
         } catch (Exception e) {
             System.err.println("Error loading products: " + e.getMessage());
             e.printStackTrace();
             showAlert(Alert.AlertType.ERROR, "Error", "Failed to load products: " + e.getMessage());
         }
     }
-    
+
     private boolean validateForm() {
         StringBuilder errorMessage = new StringBuilder();
 
@@ -541,7 +546,7 @@ public class ProductManagementController implements Initializable {
         if (nameField.getText().isEmpty()) {
             errorMessage.append("Product name is required\n");
         }
-        
+
         // Validate price
         if (priceField.getText().isEmpty()) {
             errorMessage.append("Price is required\n");
@@ -555,23 +560,23 @@ public class ProductManagementController implements Initializable {
                 errorMessage.append("Price must be a valid number\n");
             }
         }
-        
+
         // Validate stock status
         if (stockComboBox.getValue() == null) {
             errorMessage.append("Stock status is required\n");
         }
-        
+
         // Validate category
         if (categoryComboBox.getValue() == null) {
             errorMessage.append("Category is required\n");
         }
-        
+
         // Show error message if validation fails
         if (errorMessage.length() > 0) {
             showAlert(Alert.AlertType.ERROR, "Validation Error", errorMessage.toString());
             return false;
         }
-        
+
         return true;
     }
 
@@ -579,16 +584,16 @@ public class ProductManagementController implements Initializable {
         if (imageFile == null) {
             return DEFAULT_IMAGE;
         }
-        
+
         System.out.println("Processing image upload using ImageUtils: " + imageFile.getAbsolutePath());
         // Use our ImageUtils class to save the image in all available directories
         String filename = ImageUtils.saveUploadedImage(imageFile);
-        
+
         // Log success
         System.out.println("Image saved successfully as: " + filename);
         return filename;
     }
-    
+
     private void showAlert(Alert.AlertType alertType, String title, String header, String content) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
@@ -596,7 +601,7 @@ public class ProductManagementController implements Initializable {
         alert.setContentText(content);
         alert.showAndWait();
     }
-    
+
     private void showAlert(Alert.AlertType alertType, String title, String content) {
         showAlert(alertType, title, null, content);
     }

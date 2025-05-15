@@ -128,7 +128,8 @@ public class DemoController implements Initializable {
             URL dashboardUrl = loadURL("fxml/admin_dashboard.fxml");
             URL usersUrl = loadURL("fxml/admin_home.fxml");
             URL tournamentsUrl = loadURL("fxml/Tournois.fxml");
-            URL productsUrl = loadURL("fxml/Buttons.fxml");
+            URL productsUrl = loadURL("fxml/ProductManagement.fxml");
+            URL OrderUrl = loadURL("fxml/OrderAdmin.fxml");
             URL eventsUrl = loadURL("fxml/Events.fxml");
             URL teamsUrl = loadURL("fxml/Team.fxml");
             URL reclamationsUrl = loadURL("fxml/Reclamation.fxml");
@@ -156,6 +157,13 @@ public class DemoController implements Initializable {
 
             if (productsUrl != null) {
                 loader.addView(MFXLoaderBean.of("Products", productsUrl)
+                        .setBeanToNodeMapper(() -> createToggle("fas-box-open", "Products"))
+                        .setDefaultRoot(false)
+                        .get());
+            }
+
+            if (OrderUrl != null) {
+                loader.addView(MFXLoaderBean.of("Order", OrderUrl)
                         .setBeanToNodeMapper(() -> createToggle("fas-box-open", "Products"))
                         .setDefaultRoot(false)
                         .get());

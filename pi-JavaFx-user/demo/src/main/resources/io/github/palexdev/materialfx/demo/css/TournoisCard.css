@@ -1,0 +1,108 @@
+@import '../fonts/Fonts.css';
+@import 'MFXColors.css';
+
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+.scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+
+.scroll-pane > .content {
+    -fx-background-color: transparent;
+}
+.tournament-card {
+    -fx-background-color: rgba(245, 245, 245, 0.76);
+    -fx-background-radius: 8;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 5);
+    -fx-padding: 15;
+    -fx-border-radius: 8;
+    -fx-border-color: #1B1B3B;
+    -fx-border-width: 4;
+
+    -fx-pref-width: 300;
+
+}
+
+.tournament-details {
+    -fx-padding: 10 5 10 5;
+}
+
+.header-label {
+    -fx-font-size: 25;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1B1F3B;
+    -fx-padding: 0 50 15 0;
+    -fx-alignment: center;
+    -fx-text-alignment: center;
+}
+
+.info-label {
+    -fx-font-weight: bold;
+    -fx-text-alignment: center;
+    -fx-cursor: hand;
+}
+
+.status-label {
+    -fx-font-size: 16;
+    -fx-padding: 3 8;
+    -fx-background-radius: 18;
+    -fx-background-color: white;
+    -fx-text-fill: #1B1F3B;
+    -fx-text-alignment: center;
+    -fx-border-color: #1B1F3B;
+    -fx-border-radius: 18;
+    -fx-border-width: 2;
+    -fx-font-weight: bold;
+}
+
+.button-container {
+    -fx-padding: 10 0 0 0;
+}
+.Add-button {
+    -fx-background-color: -mfx-purple;
+    -fx-border-color: #1B1F3B;
+    -fx-border-radius: 10;
+    -fx-text-fill: #1B1F3B;
+    -fx-padding: 15 15 15 15;
+    -fx-font-size: 16;
+    -fx-font-weight: bolder;
+    -fx-background-radius: 10;
+    -fx-border-width: 2;
+    -fx-text-alignment: center;
+    -fx-alignment: top_right;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 5);
+    -fx-cursor: hand;
+}
+.outline-buttonn {
+    -fx-background-color: -mfx-purple;
+    /*	-fx-border-color: -mfx-purple;
+        -fx-border-radius: 3;*/
+    -fx-text-fill: -mfx-blue;
+    -fx-background-radius: 10;
+    -fx-border-width: 2;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 5);
+    -fx-cursor: hand;
+    -fx-border-color: #1B1F3B;
+    -fx-border-radius: 8;
+    -fx-font-weight: bolder
+}
+.outline-buttonn:hover,
+.outline-buttonn:focused {
+    -fx-background-color: -mfx-purple;
+    -fx-text-fill: white;
+}
+
+
+    .Add-button:hover,
+    .Add-button:focused {
+        -fx-background-color: -mfx-purple;
+        -fx-text-fill: white;
+    }
+.button-container {
+    -fx-alignment: center;
+}

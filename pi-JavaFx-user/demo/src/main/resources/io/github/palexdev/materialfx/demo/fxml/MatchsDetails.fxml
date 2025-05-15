@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import io.github.palexdev.materialfx.controls.*?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<VBox styleClass="main-container"
+      stylesheets="@../css/Common.css, @../css/MatchStyle.css"
+      xmlns="http://javafx.com/javafx/17"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="io.github.palexdev.materialfx.demo.controllers.MatchDetailsController">
+
+
+    <!-- Top Navigation Bar -->
+    <HBox styleClass="top-nav-bar" spacing="10">
+        <padding>
+            <Insets top="10" right="15" bottom="10" left="15"/>
+        </padding>
+
+        <Label fx:id="headerLabel"
+               styleClass="header-label"
+               text="Live Matches"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <MFXButton fx:id="refreshButton"
+                   text="⟳ Refresh"
+                   styleClass="match-refresh-button"
+                   stylesheets="@../css/matches.css"/>
+    </HBox>
+
+    <!-- Filters Section -->
+    <HBox styleClass="filters-section" spacing="15">
+        <padding>
+            <Insets top="10" right="15" bottom="10" left="15"/>
+        </padding>
+
+        <MFXComboBox fx:id="tournamentFilter"
+                     floatingText="Tournament"
+                     styleClass="filter-combo"/>
+
+        <MFXComboBox fx:id="statusFilter"
+                     floatingText="Match Status"
+                     styleClass="filter-combo"/>
+
+        <MFXTextField fx:id="searchField"
+                      floatingText="🔎 Search Teams"
+                      styleClass="search-field"
+                      stylesheets="@../css/matches.css"/>
+
+        <Region HBox.hgrow="ALWAYS"/>
+
+        <MFXButton fx:id="addButton"
+                   text="+ Match Amical"
+                   styleClass="match-add-button"/>
+    </HBox>
+
+    <!-- Main Content -->
+    <StackPane VBox.vgrow="ALWAYS">
+        <!-- Matches Table -->
+        <MFXPaginatedTableView fx:id="paginated"
+                               styleClass="matches-table"
+                               maxWidth="1200"
+                               minWidth="1000">
+            <StackPane.margin>
+                <Insets top="10" right="15" bottom="20" left="15"/>
+            </StackPane.margin>
+        </MFXPaginatedTableView>
+    </StackPane>
+
+
+</VBox>

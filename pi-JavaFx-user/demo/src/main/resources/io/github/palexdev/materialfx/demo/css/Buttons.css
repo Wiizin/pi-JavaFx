@@ -1,0 +1,225 @@
+
+
+@import '../fonts/Fonts.css';
+@import 'Common.css';
+@import 'MFXColors.css';
+/* Base style for all buttons */
+.mfx-button {
+	-fx-background-color: #1B1F3B; /* Sidebar color as base */
+	-fx-text-fill: white; /* White text for contrast */
+	-fx-font-family: "Segoe UI", sans-serif; /* Modern font */
+	-fx-font-size: 14px; /* Font size */
+	-fx-font-weight: bold; /* Bold text */
+	-fx-padding: 10px 20px; /* Padding */
+	-fx-border-radius: 5px; /* Slightly rounded corners */
+	-fx-background-radius: 5px; /* Slightly rounded corners for background */
+	-fx-border-width: 0; /* No border */
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 3); /* Subtle shadow */
+	-fx-cursor: hand; /* Pointer cursor on hover */
+	-fx-transition: all 0.3s ease; /* Smooth transition for hover effects */
+}
+
+/* Hover effect */
+.mfx-button:hover {
+	-fx-background-color: #FFA500; /* Orange hover color */
+	-fx-text-fill: #1B1F3B; /* Dark text on hover for contrast */
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 7, 0, 0, 5); /* Slightly larger shadow */
+}
+
+/* Pressed effect */
+.mfx-button:pressed {
+	-fx-background-color: #FF8C00; /* Darker orange on press */
+	-fx-text-fill: white; /* White text on press */
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 3, 0, 0, 2); /* Smaller shadow */
+}
+
+/* Disabled state */
+.mfx-button:disabled {
+	-fx-background-color: #444444; /* Dark gray background */
+	-fx-text-fill: #888888; /* Light gray text */
+	-fx-effect: none; /* No shadow */
+}
+
+/* Danger button style (e.g., Delete button) */
+.mfx-button.mfx-button-danger {
+	-fx-background-color: #FF4444; /* Red background */
+	-fx-text-fill: white; /* White text */
+	-fx-padding: 8px; /* Padding */
+	-fx-background-radius: 5px; /* Slightly rounded corners */
+
+}
+
+.mfx-button.mfx-button-danger:hover {
+	-fx-background-color: #CC0000; /* Darker red on hover */
+}
+
+.mfx-button.mfx-button-danger:pressed {
+	-fx-background-color: #990000; /* Even darker red on press */
+}
+
+/* Primary button style (e.g., Save/Update button) */
+.mfx-button.mfx-button-primary {
+	-fx-background-color: #FFA500; /* Orange background */
+	-fx-text-fill: #1B1F3B; /* Dark text */
+	-fx-padding: 8px; /* Padding */
+	-fx-background-radius: 5px; /* Slightly rounded corners */
+}
+
+.mfx-button.mfx-button-primary:hover {
+	-fx-background-color: #FF8C00; /* Darker orange on hover */
+}
+
+.mfx-button.mfx-button-primary:pressed {
+	-fx-background-color: #FF6F00; /* Even darker orange on press */
+}
+
+/* Secondary button style (e.g., Cancel button) */
+.mfx-button.mfx-button-secondary {
+	-fx-background-color: #444444; /* Dark gray background */
+	-fx-text-fill: white; /* White text */
+	-fx-padding: 8px 16px;
+	-fx-font-size: 12px;
+	-fx-min-width: 80px;
+	-fx-min-height: 30px;
+}
+
+.mfx-button.mfx-button-secondary:hover {
+	-fx-background-color: #666666; /* Lighter gray on hover */
+}
+
+.mfx-button.mfx-button-secondary:pressed {
+	-fx-background-color: #333333; /* Darker gray on press */
+}
+
+/* Action button style (e.g., custom actions) */
+.mfx-button.action-button {
+	-fx-background-color: #1B1F3B; /* Sidebar color */
+	-fx-text-fill: white; /* White text */
+	-fx-padding: 8px 16px;
+	-fx-font-size: 12px;
+	-fx-min-width: 80px;
+	-fx-min-height: 30px;
+}
+
+.mfx-button.action-button:hover {
+	-fx-background-color: #FFA500; /* Orange on hover */
+	-fx-text-fill: #1B1F3B; /* Dark text on hover */
+}
+
+.mfx-button.action-button:pressed {
+	-fx-background-color: #FF8C00; /* Darker orange on press */
+	-fx-text-fill: white; /* White text on press */
+}
+.mfx-button.icon-only {
+	-fx-padding: 8px; /* Reduce padding for icon-only buttons */
+	-fx-min-width: 20px; /* Set a fixed width */
+	-fx-min-height: 20px; /* Set a fixed height */
+	-fx-background-radius: 5px; /* Slightly rounded corners */
+	-fx-content-display: graphic-only; /* Display only the icon, no text */
+}
+
+/* Delete button with icon */
+.mfx-button.mfx-button-danger.icon-only {
+	-fx-background-color: #FF4444; /* Red background */
+	-fx-text-fill: white; /* White text */
+}
+
+.mfx-button.mfx-button-danger.icon-only:hover {
+	-fx-background-color: #CC0000; /* Darker red on hover */
+}
+
+.mfx-button.mfx-button-danger.icon-only:pressed {
+	-fx-background-color: #990000; /* Even darker red on press */
+}
+
+/* Update button with icon */
+.mfx-button.mfx-button-primary.icon-only {
+	-fx-background-color: #FFA500; /* Orange background */
+	-fx-text-fill: #1B1F3B; /* Dark text */
+}
+
+.mfx-button.mfx-button-primary.icon-only:hover {
+	-fx-background-color: #FF8C00; /* Darker orange on hover */
+}
+
+.mfx-button.mfx-button-primary.icon-only:pressed {
+	-fx-background-color: #FF6F00; /* Even darker orange on press */
+}
+
+/* dashboard.css */
+.dashboard-card {
+	-fx-background-color: #ffffff;
+	-fx-padding: 15;
+	-fx-border-radius: 5;
+	-fx-background-radius: 5;
+	-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 0);
+}
+
+.mfx-progress-bar {
+	-fx-pref-height: 10px;
+}
+
+.mfx-progress-bar .bar {
+	-fx-background-radius: 5;
+}
+
+.mfx-progress-spinner {
+	-fx-progress-color: #2196F3;
+}
+
+.mfx-progress-spinner .arc {
+	-fx-stroke-width: 5;
+}
+
+.mfx-button {
+	-fx-text-fill: -mfx-text-he;
+}
+
+.mfx-button .mfx-ripple-generator {
+	-mfx-ripple-radius: 40;
+	-mfx-auto-clip: true;
+}
+
+.mfx-button .text {
+	-fx-font-smoothing-type: gray;
+}
+
+#custom {
+	-fx-background-color: -mfx-purple;
+	-fx-text-fill: white
+}
+
+.outline-button {
+	-fx-background-color: transparent;
+	-fx-border-color: -mfx-purple;
+	-fx-border-radius: 3;
+	-fx-text-fill: -mfx-purple;
+	-fx-alignment: center;
+
+}
+
+.outline-button:hover,
+.outline-button:focused {
+	-fx-background-color: -mfx-purple;
+	-fx-text-fill: white;
+}
+
+
+.link-button {
+	-fx-background-color: transparent;
+	-fx-border-radius: 3;
+	-fx-text-fill: #0096FF;
+	-fx-underline: true;
+	-fx-cursor: hand;
+}
+
+.link-button:armed,
+.link-button:focused {
+	-fx-border-color: #006BFF;
+	-fx-text-fill: #006BFF;
+}
+
+.link-button .mfx-ripple-generator {
+	-mfx-ripple-color: #D9E9FF;
+}
+

@@ -1,0 +1,145 @@
+/* StoreCard.css */
+
+.header-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1B1B3B;
+}
+
+.info-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #1B1B3B;
+}
+
+.button-container {
+    -fx-alignment: center;
+}
+
+.outline-buttonn {
+    -fx-background-color: #ff9800;
+    -fx-text-fill: white;
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+/* Main container */
+.main-container {
+    -fx-background-color: #f4f4f4;
+    -fx-padding: 10;
+}
+
+/* Top navigation bar */
+.top-nav-bar {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0e0e0;
+    -fx-border-width: 0 0 1 0;
+    -fx-padding: 10;
+}
+
+/* Action button (View Orders) */
+.action-button {
+    -fx-background-color: #ff9800; /* Orange color */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-pref-width: 120;
+    -fx-pref-height: 40;
+    -fx-background-radius: 5;
+}
+
+.action-button:hover {
+    -fx-background-color: #e68900; /* Darker orange on hover */
+}
+
+/* Scroll pane */
+.scroll-pane {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+/* Cards container */
+.cards-container {
+    -fx-background-color: transparent;
+}
+
+/* Product card */
+.product-card {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #e0e0e0;
+    -fx-border-radius: 5;
+    -fx-background-radius: 5;
+    -fx-padding: 15;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 5, 5, 0, 0);
+}
+
+/* Header label (product name) */
+.header-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+}
+
+/* Price label */
+.price-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #ff9800; /* Orange color */
+}
+
+/* Quantity box */
+.quantity-box {
+    -fx-alignment: center;
+}
+
+/* Add to basket button */
+.add-to-basket-button {
+    -fx-background-color: #4CAF50; /* Green color */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-pref-width: 120;
+    -fx-pref-height: 40;
+    -fx-background-radius: 5;
+}
+
+.add-to-basket-button:hover {
+    -fx-background-color: #45a049; /* Darker green on hover */
+}
+
+/* Filter and search section */
+.search-field, .filter-combo {
+    -fx-pref-width: 200;
+}
+
+.filter-button {
+    -fx-background-color: #2196F3; /* Blue color */
+    -fx-text-fill: white;
+    -fx-pref-width: 80;
+    -fx-background-radius: 5;
+}
+
+.filter-button:hover {
+    -fx-background-color: #0d8bf2; /* Darker blue on hover */
+}
+
+/* Edit/Delete buttons for admin */
+.edit-button, .delete-button {
+    -fx-pref-width: 80;
+    -fx-background-radius: 5;
+    -fx-font-size: 12px;
+}
+
+.edit-button {
+    -fx-background-color: #2196F3; /* Blue */
+    -fx-text-fill: white;
+}
+
+.delete-button {
+    -fx-background-color: #f44336; /* Red */
+    -fx-text-fill: white;
+}
+
+.add-product-button {
+    -fx-background-color: #4CAF50; /* Green */
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-pref-width: 150;
+    -fx-pref-height: 40;
+    -fx-background-radius: 5;
+}

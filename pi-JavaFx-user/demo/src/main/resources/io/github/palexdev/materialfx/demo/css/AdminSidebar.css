@@ -1,0 +1,39 @@
+.sidebar {
+    -fx-background-color: #FF8C00; /* Orange */
+    -fx-padding: 15;
+    -fx-spacing: 10;
+}
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-padding: 15 20;
+    -fx-alignment: CENTER_LEFT;
+    -fx-pref-width: 200;
+    -fx-cursor: hand;
+    -fx-background-radius: 5;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #FF9F40; /* Lighter orange */
+}
+
+.sidebar-button:pressed, .sidebar-button.active {
+    -fx-background-color: #E67E00; /* Darker orange */
+}
+
+.sidebar-button .mfx-font-icon {
+    -fx-fill: white;
+}
+
+.admin-content {
+    -fx-background-color: #F8F8F8;
+}
+
+.sidebar-title {
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 20 0;
+}

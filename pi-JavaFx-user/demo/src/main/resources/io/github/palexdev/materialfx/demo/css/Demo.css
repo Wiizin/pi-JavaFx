@@ -1,0 +1,219 @@
+/*
+ * Copyright (C) 2022 Parisi Alessandro
+ * This file is part of MaterialFX (https://github.com/palexdev/MaterialFX).
+ *
+ * MaterialFX is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Lesser General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * MaterialFX is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public License
+ * along with MaterialFX.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
+@import '../fonts/Fonts.css';
+@import 'MFXColors.css';
+
+/**************************************************
+ * Root
+**************************************************/
+.rootPane {
+	-fx-background-color: white;
+	-fx-background-radius: 10;
+	-fx-border-color: #ebebeb;
+	-fx-border-radius: 10;
+}
+
+/**************************************************
+ * Window Header
+**************************************************/
+.rootPane .close-icon {
+	-mfx-color: -mfx-red;
+	-fx-opacity: 0.5;
+}
+
+.rootPane .close-icon:hover {
+	-fx-opacity: 1.0;
+}
+
+.rootPane .minimize-icon {
+	-mfx-color: #ffbf37;
+	-fx-opacity: 0.5;
+}
+
+.rootPane .minimize-icon:hover {
+	-fx-opacity: 1.0;
+}
+
+.rootPane .always-on-top-icon {
+	-mfx-color: -mfx-purple;
+	-fx-opacity: 0.5;
+}
+
+.rootPane .always-on-top-icon:hover {
+	-fx-opacity: 1.0;
+}
+
+.rootPane .always-on-top-icon:always-on-top {
+	-fx-opacity: 1.0;
+}
+
+/**************************************************
+ * Sidebar
+**************************************************/
+.rootPane .sidebar {
+	-fx-background-color: #1B1F3B;
+	-fx-background-insets: -1 -5 -1 -1;
+	-fx-background-radius: 0 20 20 0;
+}
+
+.rootPane .sidebar .header {
+	-fx-font-family: 'Open Sans ExtraBold';
+	-fx-font-size: 24;
+	-fx-text-fill: white;
+}
+
+.rootPane .sidebar .header .mfx-font-icon {
+	-mfx-color: white;
+}
+
+.rootPane .sidebar .mfx-scroll-pane {
+	-fx-background-color: transparent;
+
+	-track-color: rgba(255, 255, 255, 0.3);
+	-thumb-color: white;
+	-thumb-hover-color: white;
+}
+
+.rootPane .sidebar .menu-label {
+	-fx-font-family: 'Open Sans Bold';
+	-fx-font-size: 14;
+	-fx-text-fill: white;
+}
+
+.rootPane .sidebar .navbar .mfx-rectangle-toggle-node {
+	-fx-background-color: transparent;
+	-fx-background-radius: 0;
+	-fx-border-color: transparent;
+	-fx-border-radius: 0;
+	-fx-pref-height: 40;
+
+	-fx-font-family: 'Open Sans SemiBold';
+	-fx-font-size: 13;
+	-fx-text-fill: white;
+}
+
+.rootPane .sidebar .navbar .mfx-rectangle-toggle-node .mfx-ripple-generator {
+	-mfx-paused: true;
+}
+
+.rootPane .sidebar .navbar .mfx-rectangle-toggle-node .mfx-icon-wrapper .mfx-font-icon {
+	-mfx-color: white;
+}
+
+.rootPane .sidebar .navbar .mfx-rectangle-toggle-node:selected {
+	-fx-background-color: white;
+	-fx-background-radius: 5;
+	-fx-text-fill: #1B1F3B;
+}
+
+.rootPane .sidebar .navbar .mfx-rectangle-toggle-node:selected .selection-rectangle {
+	-fx-stroke: transparent;
+	-fx-fill:#1B1F3B;
+}
+
+.rootPane .sidebar .navbar .mfx-rectangle-toggle-node:selected .mfx-icon-wrapper .mfx-font-icon {
+	-mfx-color: #1B1F3B;
+}
+.profile-button {
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+	-fx-cursor: hand;
+}
+
+.profile-button:hover {
+	-fx-background-color: #e0e0e0;
+}
+
+.notifications-icon {
+	-fx-fill: #333333;
+}
+
+.dark-mode-toggle {
+	-fx-background-color: transparent;
+	-fx-border-color: transparent;
+	-fx-cursor: hand;
+}
+
+.dark-mode-toggle:hover {
+	-fx-background-color: #e0e0e0;
+}
+
+.user-greeting {
+	-fx-font-size: 14px;
+	-fx-text-fill: #333333;
+}
+
+.sidebar {
+	-fx-background-color: #f4f4f4;
+
+	-fx-border-width: 0 1px 0 0;
+}
+
+.navbar {
+	-fx-spacing: 10px;
+}
+
+.menu-label {
+	-fx-font-size: 16px;
+	-fx-font-weight: bold;
+	-fx-text-fill: #333333;
+}
+
+.header {
+	-fx-font-size: 20px;
+	-fx-font-weight: bold;
+	-fx-text-fill: #333333;
+}
+.profile-image {
+	-fx-border-radius: 50%;
+	-fx-background-radius: 50%;
+	-fx-border-color: #1B1F3B;
+	-fx-border-width: 2;
+}
+.mfx-button.logout-button{
+	-fx-background-color: white; /* Sidebar color as base */
+	-fx-text-fill: #1B1F3B; /* White text for contrast */
+	-fx-font-family: "Segoe UI", sans-serif; /* Modern font */
+	-fx-font-size: 20px; /* Font size */
+	-fx-font-weight: bold; /* Bold text */
+	-fx-padding: 10px 20px; /* Padding */
+	-fx-border-radius: 5px; /* Slightly rounded corners */
+	-fx-background-radius: 5px; /* Slightly rounded corners for background */
+	-fx-border-width: 0; /* No border */
+	-fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 3); /* Subtle shadow */
+	-fx-cursor: hand; /* Pointer cursor on hover */
+	-fx-transition: all 0.3s ease; /* Smooth transition for hover effects */
+
+}
+
+/**************************************************
+ * Hide Store sidebar when loaded in home page
+**************************************************/
+.content-pane .store-sidebar {
+	-fx-visibility: hidden;
+	-fx-pref-width: 0;
+	-fx-max-width: 0;
+	-fx-min-width: 0;
+	-fx-padding: 0;
+}
+
+.content-pane .main-container {
+	-fx-background-insets: 0;
+	-fx-background-radius: 0;
+}

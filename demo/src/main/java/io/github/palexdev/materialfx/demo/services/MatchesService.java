@@ -190,9 +190,9 @@ public class MatchesService implements CRUD<Matches> {
                 if (rs.next()) {
                     match = new Matches();
                     match.setId(rs.getInt("id"));
-                    match.getTeamAId(rs.getInt("id_TeamA"));
+                    match.setTeamAId(rs.getInt("id_TeamA"));
                     match.setTeamAName(rs.getString("teamA_name"));
-                    match.getTeamBId(rs.getInt("id_TeamB"));
+                    match.setTeamBId(rs.getInt("id_TeamB"));
                     match.setTeamBName(rs.getString("teamB_name"));
                     match.setScoreTeamA(rs.getInt("score_TeamA"));
                     match.setScoreTeamB(rs.getInt("score_TeamB"));
@@ -281,9 +281,9 @@ public class MatchesService implements CRUD<Matches> {
                 while (rs.next()) {
                     Matches match = new Matches();
                     match.setId(rs.getInt("id"));
-                    match.setIdTeamA(rs.getInt("id_TeamA"));
+                    match.setTeamAId(rs.getInt("id_TeamA"));
                     match.setTeamAName(rs.getString("teamAName"));
-                    match.setIdTeamB(rs.getInt("id_TeamB"));
+                    match.setTeamBId(rs.getInt("id_TeamB"));
                     match.setTeamBName(rs.getString("teamBName"));
                     match.setScoreTeamA(rs.getInt("score_TeamA"));
                     match.setScoreTeamB(rs.getInt("score_TeamB"));
@@ -325,9 +325,9 @@ public class MatchesService implements CRUD<Matches> {
                     while (rs.next()) {
                         Matches match = new Matches();
                         match.setId(rs.getInt("id"));
-                        match.setIdTeamA(rs.getInt("id_TeamA"));
+                        match.setTeamAId(rs.getInt("id_TeamA"));
                         match.setTeamAName(rs.getString("teamAName"));
-                        match.setIdTeamB(rs.getInt("id_TeamB"));
+                        match.setTeamBId(rs.getInt("id_TeamB"));
                         match.setTeamBName(rs.getString("teamBName"));
                         match.setScoreTeamA(rs.getInt("score_TeamA"));
                         match.setScoreTeamB(rs.getInt("score_TeamB"));
@@ -356,9 +356,6 @@ public class MatchesService implements CRUD<Matches> {
             return upcomingMatches;
 
     }
-}
-
-
 
     public int insert2(Matches match) throws SQLException {
         // SQL query to insert a match

@@ -22,18 +22,6 @@ public class Matches {
     public Matches() {
     }
 
-    // Constructor without fixtureId (for local database usage)
-    public Matches(int id, String teamAName, String teamBName, int scoreTeamA, int scoreTeamB, String status, LocalDateTime matchTime, String locationMatch, int idTournoi) {
-        this.id = id;
-        this.teamAName = teamAName;
-        this.teamBName = teamBName;
-        this.scoreTeamA = scoreTeamA;
-        this.scoreTeamB = scoreTeamB;
-        this.status = status;
-        this.matchTime = matchTime;
-        this.locationMatch = locationMatch;
-        this.idTournoi = idTournoi;
-    }
 
     // Constructor including fixtureId and team IDs (for when you retrieve data from the API)
     public Matches(int id, String fixtureId, String teamAName, int teamAId, String teamBName, int teamBId, int scoreTeamA, int scoreTeamB, String status, LocalDateTime matchTime, String locationMatch, int idTournoi) {
@@ -70,7 +58,7 @@ public class Matches {
     }
 
     public int getTeamAId() {
-        return teamAId;
+        return this.teamAId;
     }
 
     public void setTeamAId(int teamAId) {
@@ -78,7 +66,7 @@ public class Matches {
     }
 
     public int getTeamBId() {
-        return teamBId;
+        return this.teamBId;
     }
 
     public void setTeamBId(int teamBId) {
@@ -170,8 +158,8 @@ public class Matches {
         this.matchTime = matchTime;
         this.locationMatch = locationMatch;
         this.idTournoi = idTournoi;
-        this.idTeamA = idTeamA;
-        this.idTeamB=idTeamB;
+        this.teamAId = idTeamA;
+        this.teamBId=idTeamB;
     }
 
 }

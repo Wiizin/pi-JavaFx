@@ -162,16 +162,16 @@ public class TeamRankingService implements TeamCRUD<TeamRanking> {
         for (Matches match : matchesList) {
             if (match.getMatchTime() != null && match.getMatchTime().isBefore(LocalDateTime.now())) {
                 if (match.getScoreTeamA() > match.getScoreTeamB()) {
-                    updateTeamInRankingTable(match.getIdTeamA(), match.getIdTournoi(), match.getScoreTeamA(), match.getScoreTeamB(), 3);
-                    updateTeamInRankingTable(match.getIdTeamB(), match.getIdTournoi(), match.getScoreTeamB(), match.getScoreTeamA(), 0);
+                    updateTeamInRankingTable(match.getTeamAId(), match.getIdTournoi(), match.getScoreTeamA(), match.getScoreTeamB(), 3);
+                    updateTeamInRankingTable(match.getTeamBId(), match.getIdTournoi(), match.getScoreTeamB(), match.getScoreTeamA(), 0);
                     updateRankingTablePosition(idTournoi);
                 } else if (match.getScoreTeamB() > match.getScoreTeamA()) {
-                    updateTeamInRankingTable(match.getIdTeamA(), match.getIdTournoi(), match.getScoreTeamA(), match.getScoreTeamB(), 0);
-                    updateTeamInRankingTable(match.getIdTeamB(), match.getIdTournoi(), match.getScoreTeamB(), match.getScoreTeamA(), 3);
+                    updateTeamInRankingTable(match.getTeamAId(), match.getIdTournoi(), match.getScoreTeamA(), match.getScoreTeamB(), 0);
+                    updateTeamInRankingTable(match.getTeamBId(), match.getIdTournoi(), match.getScoreTeamB(), match.getScoreTeamA(), 3);
                     updateRankingTablePosition(idTournoi);
                 } else {
-                    updateTeamInRankingTable(match.getIdTeamA(), match.getIdTournoi(), match.getScoreTeamA(), match.getScoreTeamB(), 1);
-                    updateTeamInRankingTable(match.getIdTeamB(), match.getIdTournoi(), match.getScoreTeamB(), match.getScoreTeamA(), 1);
+                    updateTeamInRankingTable(match.getTeamAId(), match.getIdTournoi(), match.getScoreTeamA(), match.getScoreTeamB(), 1);
+                    updateTeamInRankingTable(match.getTeamBId(), match.getIdTournoi(), match.getScoreTeamB(), match.getScoreTeamA(), 1);
                     updateRankingTablePosition(idTournoi);
                 }
             }

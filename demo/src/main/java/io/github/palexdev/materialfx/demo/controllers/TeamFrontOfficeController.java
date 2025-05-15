@@ -195,13 +195,13 @@ public class TeamFrontOfficeController implements Initializable {
                             match.setTeamBName(awayTeamName);
                             match.setMatchTime(date);
                             match.setStatus(status);
-                            match.setIdTeamA(homeTeamDbId);
-                            match.setIdTeamB(awayTeamDbId);
+                            match.setTeamAId(homeTeamDbId);
+                            match.setTeamBId(awayTeamDbId);
                             match.setLocationMatch(location_match);
                             if (homeTeamName == teamName) {
-                                match.setIdTeamA(idTeam);
+                                match.setTeamAId(idTeam);
                             } else {
-                                match.setIdTeamB(idTeam);
+                                match.setTeamBId(idTeam);
                             }
                             match.setIdTournoi(idtournoi);
 
@@ -219,8 +219,8 @@ public class TeamFrontOfficeController implements Initializable {
                             Matches match = new Matches();
                             match.setTeamAName(homeTeamName);
                             match.setTeamBName(awayTeamName);
-                            match.setIdTeamA(homeTeamDbId);
-                            match.setIdTeamB(awayTeamDbId);
+                            match.setTeamAId(homeTeamDbId);
+                            match.setTeamBId(awayTeamDbId);
                             match.setMatchTime(date);
                             match.setIdTournoi(idtournoi);
                             match.setStatus(status);

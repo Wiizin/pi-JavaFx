@@ -11,7 +11,7 @@
 <?import javafx.scene.shape.Circle?>
 
 <?import io.github.palexdev.materialfx.dialogs.MFXGenericDialog?>
-<StackPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+<StackPane xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1"
            fx:controller="io.github.palexdev.materialfx.demo.controllers.EventsController"
            styleClass="events-view">
 

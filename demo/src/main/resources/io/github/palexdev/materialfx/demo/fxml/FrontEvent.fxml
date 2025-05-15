@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.*?>
+<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.text.Text?>
+
+<?import io.github.palexdev.materialfx.dialogs.MFXGenericDialog?>
+<StackPane xmlns="http://javafx.com/javafx"
+         xmlns:fx="http://javafx.com/fxml"
+         fx:controller="io.github.palexdev.materialfx.demo.controllers.FrontEventController">
+
+    <VBox styleClass="front-event-view"
+          stylesheets="@../css/FrontEvent.css,@../css/Common.css"
+          spacing="20">
+
+        <!-- Header Section -->
+        <HBox styleClass="header-section" alignment="CENTER_LEFT" spacing="15">
+            <padding>
+                <Insets top="20" right="25" bottom="20" left="25"/>
+            </padding>
+            
+            <MFXFontIcon description="fas-calendar-alt" size="30" styleClass="header-icon"/>
+            <Text styleClass="header-title" text="Available Events"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            
+            <!-- Filter Section -->
+            <HBox spacing="15" alignment="CENTER">
+                <MFXTextField fx:id="searchField" 
+                            floatingText="Search events..."
+                            styleClass="search-field"
+                            prefWidth="200"/>
+                            
+                <MFXComboBox fx:id="statusFilter" 
+                            floatingText="Filter by Status"
+                            styleClass="filter-combo"
+                            prefWidth="150"/>
+                            
+                <MFXDatePicker fx:id="dateFilter"
+                              floatingText="Filter by Date"
+                              styleClass="date-filter"/>
+                              
+                <MFXButton fx:id="clearFiltersButton"
+                          text="Clear Filters"
+                          styleClass="clear-filters-button"/>
+                          
+                <MFXButton fx:id="refreshButton"
+                          text="Refresh"
+                          onAction="#handleRefresh"
+                          styleClass="refresh-button">
+                    <graphic>
+                        <MFXFontIcon description="fas-sync-alt" size="14"/>
+                    </graphic>
+                </MFXButton>
+            </HBox>
+        </HBox>
+
+        <!-- Events Grid -->
+        <ScrollPane fitToWidth="true" VBox.vgrow="ALWAYS" styleClass="custom-scroll-pane">
+            <FlowPane fx:id="eventsContainer" 
+                      hgap="20" 
+                      vgap="20" 
+                      styleClass="events-container">
+                <padding>
+                    <Insets top="20" right="20" bottom="20" left="20"/>
+                </padding>
+            </FlowPane>
+        </ScrollPane>
+    </VBox>
+
+    <!-- Participation Dialog -->
+    <MFXGenericDialog fx:id="participationDialog"
+                      styleClass="participation-dialog"
+                      headerText="Event Participation"
+                      showClose="true"
+                      showMinimize="false"
+                      showAlwaysOnTop="false"
+                      visible="false"
+                      managed="false">
+        
+        <VBox spacing="20" styleClass="dialog-content" maxWidth="450">
+            <padding>
+                <Insets top="20" right="20" bottom="20" left="20"/>
+            </padding>
+
+            <!-- Event Info Section -->
+            <VBox spacing="15" styleClass="dialog-section">
+                <Label text="Event Information" styleClass="section-header"/>
+                <Label fx:id="eventNameLabel" styleClass="event-name-label"/>
+                <Label fx:id="eventDateLabel" styleClass="event-date-label"/>
+                <Label fx:id="eventLocationLabel" styleClass="event-location-label"/>
+                <Label fx:id="eventParticipantsLabel" styleClass="event-participants-label"/>
+            </VBox>
+
+            <!-- Comment Section -->
+            <VBox spacing="15" styleClass="dialog-section">
+                <Label text="Your Comment" styleClass="section-header"/>
+                <MFXTextField fx:id="commentField"
+                             floatingText="Add a comment (optional)"
+                             styleClass="dialog-field"
+                             prefHeight="60"
+                             minHeight="60"/>
+            </VBox>
+
+            <!-- Actions Section -->
+            <HBox spacing="15" alignment="CENTER_RIGHT" styleClass="dialog-actions">
+                <MFXButton fx:id="cancelButton"
+                          text="Cancel"
+                          onAction="#handleCancelParticipation"
+                          styleClass="cancel-button"/>
+                          
+                <MFXButton fx:id="participateButton"
+                          text="Participate"
+                          onAction="#handleParticipate"
+                          styleClass="participate-button"/>
+            </HBox>
+        </VBox>
+    </MFXGenericDialog>
+</StackPane> 

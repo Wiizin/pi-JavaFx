@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+<?import io.github.palexdev.mfxresources.fonts.MFXFontIcon?>
+
+<StackPane xmlns="http://javafx.com/javafx"
+          xmlns:fx="http://javafx.com/fxml"
+          fx:controller="io.github.palexdev.materialfx.demo.controllers.AdminDashboardController"
+          stylesheets="@../css/Dashboard.css"
+          style="-fx-background-color: #F5F6FA;">
+
+    <VBox spacing="20" maxWidth="1200" style="-fx-padding: 20;">
+        <!-- Header Section -->
+        <HBox alignment="CENTER_LEFT" spacing="15" styleClass="dashboard-header">
+            <VBox>
+                <Label text="Welcome Back, Admin" styleClass="welcome-text"/>
+                <Label text="Here's what's happening with your users today" styleClass="subtitle-text"/>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS"/>
+            <MFXButton fx:id="refreshButton" text="Refresh Data" onAction="#handleRefresh" 
+                      styleClass="refresh-button">
+                <graphic>
+                    <MFXFontIcon description="fas-sync-alt" size="16"/>
+                </graphic>
+            </MFXButton>
+        </HBox>
+
+        <!-- Stats Cards -->
+        <GridPane hgap="20" vgap="20">
+            <!-- Total Users Card -->
+            <VBox styleClass="stat-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <MFXFontIcon description="fas-users" size="24" styleClass="stat-icon"/>
+                    <VBox>
+                        <Label text="Total Users" styleClass="stat-label"/>
+                        <Label fx:id="totalUsersLabel" text="0" styleClass="stat-value"/>
+                    </VBox>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <MFXFontIcon fx:id="totalUsersTrendIcon" description="fas-arrow-up" size="12"/>
+                    <Label fx:id="totalUsersChangeLabel" text="+0%" styleClass="stat-change"/>
+                </HBox>
+                <MFXProgressBar fx:id="totalUsersProgress" progress="0.0" styleClass="stat-progress"/>
+            </VBox>
+
+            <!-- Active Users Card -->
+            <VBox styleClass="stat-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <MFXFontIcon description="fas-user-check" size="24" styleClass="stat-icon"/>
+                    <VBox>
+                        <Label text="Active Users" styleClass="stat-label"/>
+                        <Label fx:id="activeUsersLabel" text="0" styleClass="stat-value"/>
+                    </VBox>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <MFXFontIcon fx:id="activeUsersTrendIcon" description="fas-arrow-up" size="12"/>
+                    <Label fx:id="activeUsersChangeLabel" text="+0%" styleClass="stat-change"/>
+                </HBox>
+                <MFXProgressBar fx:id="activeUsersProgress" progress="0.0" styleClass="stat-progress"/>
+            </VBox>
+
+            <!-- Organizers Card -->
+            <VBox styleClass="stat-card" GridPane.columnIndex="2" GridPane.rowIndex="0">
+                <HBox alignment="CENTER_LEFT" spacing="10">
+                    <MFXFontIcon description="fas-user-tie" size="24" styleClass="stat-icon"/>
+                    <VBox>
+                        <Label text="Organizers" styleClass="stat-label"/>
+                        <Label fx:id="organizersLabel" text="0" styleClass="stat-value"/>
+                    </VBox>
+                </HBox>
+                <HBox alignment="CENTER_LEFT" spacing="5">
+                    <MFXFontIcon fx:id="organizersTrendIcon" description="fas-arrow-up" size="12"/>
+                    <Label fx:id="organizersChangeLabel" text="+0%" styleClass="stat-change"/>
+                </HBox>
+                <MFXProgressBar fx:id="organizersProgress" progress="0.0" styleClass="stat-progress"/>
+            </VBox>
+        </GridPane>
+
+        <!-- Distribution Cards -->
+        <GridPane hgap="20" vgap="20">
+            <!-- User Distribution Card -->
+            <VBox styleClass="distribution-card" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                <Label text="User Distribution" styleClass="card-title"/>
+                <VBox spacing="15" style="-fx-padding: 15;">
+                    <VBox spacing="5">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Players" styleClass="distribution-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="playersCountLabel" text="0 Players" styleClass="distribution-count"/>
+                        </HBox>
+                        <MFXProgressBar fx:id="playersBar" progress="0.0" styleClass="distribution-progress"/>
+                    </VBox>
+                    <VBox spacing="5">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Organizers" styleClass="distribution-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="organizersCountLabel" text="0 Organizers" styleClass="distribution-count"/>
+                        </HBox>
+                        <MFXProgressBar fx:id="organizersBar" progress="0.0" styleClass="distribution-progress"/>
+                    </VBox>
+                </VBox>
+            </VBox>
+
+            <!-- Activity Status Card -->
+            <VBox styleClass="distribution-card" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                <Label text="Activity Status" styleClass="card-title"/>
+                <VBox spacing="15" style="-fx-padding: 15;">
+                    <VBox spacing="5">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Active Users" styleClass="distribution-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="activeCountLabel" text="0 Active" styleClass="distribution-count"/>
+                        </HBox>
+                        <MFXProgressBar fx:id="activeBar" progress="0.0" styleClass="distribution-progress"/>
+                    </VBox>
+                    <VBox spacing="5">
+                        <HBox alignment="CENTER_LEFT" spacing="10">
+                            <Label text="Inactive Users" styleClass="distribution-label"/>
+                            <Region HBox.hgrow="ALWAYS"/>
+                            <Label fx:id="inactiveCountLabel" text="0 Inactive" styleClass="distribution-count"/>
+                        </HBox>
+                        <MFXProgressBar fx:id="inactiveBar" progress="0.0" styleClass="distribution-progress"/>
+                    </VBox>
+                </VBox>
+            </VBox>
+        </GridPane>
+    </VBox>
+</StackPane>

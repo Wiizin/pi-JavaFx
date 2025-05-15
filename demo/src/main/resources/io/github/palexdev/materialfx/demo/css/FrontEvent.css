@@ -1,0 +1,240 @@
+.front-event-view {
+    -fx-background-color: white;
+}
+
+.header-section {
+    -fx-background-color: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 2);
+}
+
+.header-icon {
+    -fx-fill: #2b3990;
+}
+
+.header-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-fill: #2b3990;
+}
+
+.search-field {
+    -fx-pref-width: 250px;
+}
+
+.filter-combo {
+    -fx-pref-width: 150px;
+}
+
+.refresh-button {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+}
+
+.clear-filters-button {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+}
+
+.events-container {
+    -fx-background-color: transparent;
+}
+
+.event-card {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #e0e6ed;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 0);
+    -fx-min-width: 300px;
+    -fx-max-width: 300px;
+    -fx-min-height: 200px;
+}
+
+.event-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(43, 57, 144, 0.2), 15, 0, 0, 0);
+    -fx-border-color: #2b3990;
+}
+
+.event-name {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2b3990;
+}
+
+.event-date {
+    -fx-font-size: 14px;
+    -fx-text-fill: #6c757d;
+}
+
+.status-badge {
+    -fx-padding: 5 10;
+    -fx-background-radius: 15;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.status-pending {
+    -fx-background-color: #ffc107;
+    -fx-text-fill: #000000;
+}
+
+.status-active {
+    -fx-background-color: #28a745;
+    -fx-text-fill: white;
+}
+
+.status-completed {
+    -fx-background-color: #17a2b8;
+    -fx-text-fill: white;
+}
+
+.status-cancelled {
+    -fx-background-color: #dc3545;
+    -fx-text-fill: white;
+}
+
+.description-text {
+    -fx-font-size: 14px;
+    -fx-text-fill: #495057;
+    -fx-wrap-text: true;
+}
+
+.address-text, .time-text, .participants-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6c757d;
+}
+
+.participate-button {
+    -fx-background-color: #2b3990;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+    -fx-min-width: 120;
+    -fx-cursor: hand;
+}
+
+.participate-button:hover {
+    -fx-background-color: derive(#2b3990, 10%);
+    -fx-effect: dropshadow(gaussian, rgba(43, 57, 144, 0.3), 5, 0, 0, 0);
+}
+
+.participate-button:disabled {
+    -fx-background-color: #6c757d;
+    -fx-opacity: 0.65;
+    -fx-cursor: default;
+}
+
+/* Dialog Styles */
+.participation-dialog {
+    -fx-background-color: rgba(0, 0, 0, 0.7);
+}
+
+.participation-dialog .dialog-container {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #2b3990;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.3), 15, 0, 0, 0);
+    -fx-padding: 0;
+}
+
+.participation-dialog .header {
+    -fx-background-color: #2b3990;
+    -fx-background-radius: 8 8 0 0;
+    -fx-padding: 15;
+}
+
+.participation-dialog .header .header-text {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.participation-dialog .close-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+}
+
+.participation-dialog .close-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-cursor: hand;
+}
+
+.dialog-content {
+    -fx-background-color: white;
+    -fx-padding: 20;
+    -fx-spacing: 20;
+}
+
+.dialog-section {
+    -fx-background-color: #f8f9fa;
+    -fx-background-radius: 8;
+    -fx-padding: 20;
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.05), 5, 0, 0, 0);
+}
+
+.section-header {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2b3990;
+}
+
+.event-name-label {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2b3990;
+}
+
+.event-date-label, .event-location-label, .event-participants-label {
+    -fx-font-size: 14px;
+    -fx-text-fill: #495057;
+    -fx-padding: 5 0 0 0;
+}
+
+.dialog-field {
+    -fx-background-color: white;
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 4;
+    -fx-font-size: 14px;
+}
+
+.dialog-field:focused {
+    -fx-border-color: #2b3990;
+    -fx-border-width: 2;
+}
+
+.dialog-actions {
+    -fx-padding: 20 0 0 0;
+    -fx-border-color: #e9ecef transparent transparent transparent;
+    -fx-border-width: 1;
+}
+
+.cancel-button {
+    -fx-background-color: #6c757d;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-padding: 10 20;
+    -fx-background-radius: 5;
+    -fx-min-width: 120;
+    -fx-cursor: hand;
+}
+
+.cancel-button:hover {
+    -fx-background-color: derive(#6c757d, 10%);
+    -fx-effect: dropshadow(gaussian, rgba(108, 117, 125, 0.3), 5, 0, 0, 0);
+}
+
+.custom-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+}
+
+.custom-scroll-pane > .viewport {
+    -fx-background-color: transparent;
+} 

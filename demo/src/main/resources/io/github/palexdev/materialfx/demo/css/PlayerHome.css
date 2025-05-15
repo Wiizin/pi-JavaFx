@@ -1,0 +1,528 @@
+/* Modern Sportify Application Styles */
+
+/* Base Styles */
+.rootPane {
+    -fx-background-color: #f8fafc;
+    -fx-font-family: 'Roboto', sans-serif;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    -fx-background-color: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.15), 15, 0, 0, 0);
+}
+
+.logo-container {
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.15) transparent;
+    -fx-border-width: 0 0 1px 0;
+    -fx-padding: 25px 20px;
+}
+
+.app-title {
+    -fx-text-fill: white;
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-font-family: 'Montserrat', sans-serif;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 2, 0, 0, 1);
+}
+
+.menu-header {
+    -fx-text-fill: rgba(255, 255, 255, 0.6);
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-padding: 0 0 8px 15px;
+    -fx-letter-spacing: 1px;
+}
+
+/* Navigation Menu Styles */
+.nav-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-padding: 10px;
+}
+
+.nav-scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.nav-menu .toggle-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: rgba(255, 255, 255, 0.85);
+    -fx-font-size: 14px;
+    -fx-padding: 14px 18px;
+    -fx-background-radius: 10px;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+.nav-menu .toggle-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.12);
+    -fx-text-fill: white;
+    -fx-translate-x: 5;
+}
+
+.nav-menu .toggle-button:selected {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-text-fill: white;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 0);
+}
+
+.nav-menu .toggle-button .mfx-font-icon {
+    -mfx-color: rgba(255, 255, 255, 0.85);
+    -fx-font-size: 18px;
+}
+
+.nav-menu .toggle-button:selected .mfx-font-icon {
+    -mfx-color: white;
+}
+
+/* User Profile Section Styles */
+.user-profile-section {
+    -fx-background-color: rgba(0, 0, 0, 0.2);
+    -fx-background-radius: 15px;
+    -fx-padding: 20px;
+    -fx-margin: 15px;
+}
+
+.profile-avatar {
+    -fx-background-color: #8EBBFF;
+    -fx-background-radius: 50%;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 0);
+}
+
+.user-name {
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 1, 0, 0, 0);
+}
+
+.user-role {
+    -fx-text-fill: rgba(255, 255, 255, 0.7);
+    -fx-font-size: 13px;
+}
+
+.logout-button {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 50%;
+    -fx-min-width: 36px;
+    -fx-min-height: 36px;
+    -fx-max-width: 36px;
+    -fx-max-height: 36px;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+.logout-button:hover {
+    -fx-background-color: rgba(255, 255, 255, 0.2);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 0);
+}
+
+.logout-button .mfx-font-icon {
+    -mfx-color: rgba(255, 255, 255, 0.9);
+}
+
+/* Content Area Styles */
+.content-area {
+    -fx-background-color: #f8fafc;
+}
+
+.window-header {
+    -fx-background-color: white;
+    -fx-alignment: center-left;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 8, 0, 0, 2);
+    -fx-padding: 0 25px;
+}
+
+.page-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+/* Action Button Styles */
+.icon-button {
+    -fx-background-color: transparent;
+    -fx-background-radius: 50%;
+    -fx-min-width: 44px;
+    -fx-min-height: 44px;
+    -fx-max-width: 44px;
+    -fx-max-height: 44px;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+.icon-button:hover {
+    -fx-background-color: rgba(0, 0, 0, 0.05);
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 0);
+}
+
+.icon-button .mfx-font-icon {
+    -mfx-color: #475569;
+    -fx-font-size: 20px;
+}
+
+.profile-button {
+    -fx-background-color: #eef2ff;
+    -fx-background-radius: 50px;
+    -fx-text-fill: #4776E6;
+    -fx-font-weight: bold;
+    -fx-padding: 12px 24px;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+.profile-button:hover {
+    -fx-background-color: #dce6ff;
+    -fx-effect: dropshadow(gaussian, rgba(71, 118, 230, 0.2), 5, 0, 0, 0);
+}
+
+.profile-button .mfx-font-icon {
+    -mfx-color: #4776E6;
+}
+
+/* Notification Badge */
+.notification-badge {
+    -fx-background-color: #ef4444;
+    -fx-background-radius: 50%;
+    -fx-min-width: 20px;
+    -fx-min-height: 20px;
+    -fx-max-width: 20px;
+    -fx-max-height: 20px;
+    -fx-translate-x: 8;
+    -fx-translate-y: -8;
+    -fx-effect: dropshadow(gaussian, rgba(239, 68, 68, 0.3), 5, 0, 0, 0);
+}
+
+.badge-text {
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+/* Content Container */
+.content-container {
+    -fx-background-color: transparent;
+    -fx-padding: 25px;
+}
+
+/* Card Styles for Content */
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 15, 0, 0, 0);
+    -fx-padding: 25px;
+    -fx-transition: all 0.3s ease;
+}
+
+.card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 20, 0, 0, 0);
+    -fx-translate-y: -2;
+}
+
+.card-title {
+    -fx-font-size: 20px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.card-subtitle {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748b;
+}
+
+/* Tournament Card Styles */
+.tournament-card {
+    -fx-background-color: white;
+    -fx-background-radius: 16px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.06), 15, 0, 0, 0);
+    -fx-padding: 20px;
+    -fx-transition: all 0.3s ease;
+}
+
+.tournament-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 20, 0, 0, 0);
+    -fx-translate-y: -2;
+}
+
+.tournament-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1e293b;
+}
+
+.tournament-date {
+    -fx-font-size: 14px;
+    -fx-text-fill: #64748b;
+}
+
+.tournament-status {
+    -fx-font-size: 13px;
+    -fx-padding: 6px 12px;
+    -fx-background-radius: 50px;
+    -fx-font-weight: bold;
+}
+
+.status-upcoming {
+    -fx-background-color: #eef2ff;
+    -fx-text-fill: #4776E6;
+}
+
+.status-live {
+    -fx-background-color: #ecfdf5;
+    -fx-text-fill: #10b981;
+}
+
+.status-completed {
+    -fx-background-color: #f3f4f6;
+    -fx-text-fill: #6b7280;
+}
+
+/* Action Buttons */
+.action-button {
+    -fx-background-radius: 8px;
+    -fx-padding: 10px 20px;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+    -fx-cursor: hand;
+    -fx-transition: all 0.3s ease;
+}
+
+.action-button:hover {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 5, 0, 0, 0);
+    -fx-translate-y: -1;
+}
+
+.primary-button {
+    -fx-background-color: #4776E6;
+    -fx-text-fill: white;
+}
+
+.primary-button:hover {
+    -fx-background-color: #3b66d0;
+}
+
+.secondary-button {
+    -fx-background-color: #e2e8f0;
+    -fx-text-fill: #475569;
+}
+
+.secondary-button:hover {
+    -fx-background-color: #cbd5e1;
+}
+
+/* Profile Dialog Styles */
+.profile-dialog {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 20px;
+    -fx-padding: 30px;
+}
+
+.profile-header {
+    -fx-padding: 0 0 20px 0;
+    -fx-border-color: transparent transparent rgba(255, 255, 255, 0.1) transparent;
+    -fx-border-width: 0 0 1px 0;
+}
+
+.profile-header-title {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+}
+
+.profile-image-view {
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 0);
+}
+
+.profile-section {
+    -fx-background-color: rgba(255, 255, 255, 0.05);
+    -fx-background-radius: 12px;
+    -fx-padding: 20px;
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: white;
+    -fx-padding: 0 0 15px 0;
+}
+
+/* Form Fields */
+.mfx-text-field, .mfx-password-field {
+    -fx-background-color: rgba(255, 255, 255, 0.1);
+    -fx-background-radius: 8px;
+    -fx-text-fill: white;
+    -fx-prompt-text-fill: rgba(255, 255, 255, 0.5);
+}
+
+.mfx-text-field:focused, .mfx-password-field:focused {
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-effect: dropshadow(gaussian, rgba(71, 118, 230, 0.3), 5, 0, 0, 0);
+}
+
+/* MFXTooltip Styles */
+.mfx-tooltip {
+    -fx-background-color: #1e293b;
+    -fx-background-radius: 8px;
+    -fx-padding: 8px 12px;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 10, 0, 0, 0);
+}
+
+.mfx-tooltip .text {
+    -fx-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-family: 'Roboto', sans-serif;
+}
+
+.mfx-tooltip .mfx-font-icon {
+    -mfx-color: white;
+    -fx-font-size: 14px;
+}
+
+/* Tooltip Container */
+.tooltip-container {
+    -fx-background-color: transparent;
+    -fx-padding: 0;
+}
+
+/* Tooltip Arrow */
+.mfx-tooltip .arrow {
+    -fx-background-color: #1e293b;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.2), 5, 0, 0, 0);
+}
+
+/* Tooltip Animation */
+.mfx-tooltip {
+    -fx-opacity: 0;
+    -fx-transition: opacity 0.2s ease-in-out;
+}
+
+.mfx-tooltip:showing {
+    -fx-opacity: 1;
+}
+
+/* Custom Tooltip Positions */
+.tooltip-top {
+    -fx-translate-y: -5;
+}
+
+.tooltip-bottom {
+    -fx-translate-y: 5;
+}
+
+.tooltip-left {
+    -fx-translate-x: -5;
+}
+
+.tooltip-right {
+    -fx-translate-x: 5;
+}
+
+/* Tooltip with Icon */
+.tooltip-with-icon {
+    -fx-padding: 8px 12px;
+    -fx-spacing: 8px;
+}
+
+.tooltip-with-icon .mfx-font-icon {
+    -mfx-color: #4776E6;
+}
+
+/* Tooltip States */
+.tooltip-info {
+    -fx-background-color: #1e293b;
+}
+
+.tooltip-success {
+    -fx-background-color: #10b981;
+}
+
+.tooltip-warning {
+    -fx-background-color: #f59e0b;
+}
+
+.tooltip-error {
+    -fx-background-color: #ef4444;
+}
+
+/* Tooltip for Buttons */
+.icon-button .mfx-tooltip {
+    -fx-background-color: #1e293b;
+    -fx-padding: 6px 10px;
+}
+
+.icon-button .mfx-tooltip .text {
+    -fx-font-size: 12px;
+}
+
+/* Tooltip for Navigation Items */
+.nav-menu .toggle-button .mfx-tooltip {
+    -fx-background-color: rgba(0, 0, 0, 0.8);
+    -fx-padding: 6px 10px;
+}
+
+.nav-menu .toggle-button .mfx-tooltip .text {
+    -fx-font-size: 12px;
+}
+
+/* Tooltip for Profile Button */
+.profile-button .mfx-tooltip {
+    -fx-background-color: #1e293b;
+    -fx-padding: 8px 12px;
+}
+
+.profile-button .mfx-tooltip .text {
+    -fx-font-size: 13px;
+}
+
+/* Tooltip for Action Buttons */
+.action-button .mfx-tooltip {
+    -fx-background-color: #1e293b;
+    -fx-padding: 8px 12px;
+}
+
+.action-button .mfx-tooltip .text {
+    -fx-font-size: 13px;
+}
+
+/* Tooltip for Tournament Cards */
+.tournament-card .mfx-tooltip {
+    -fx-background-color: #1e293b;
+    -fx-padding: 8px 12px;
+}
+
+.tournament-card .mfx-tooltip .text {
+    -fx-font-size: 13px;
+}
+
+/* Tooltip Animation Keyframes */
+@keyframes tooltip-fade-in {
+    from {
+        -fx-opacity: 0;
+        -fx-translate-y: 5;
+    }
+    to {
+        -fx-opacity: 1;
+        -fx-translate-y: 0;
+    }
+}
+
+@keyframes tooltip-fade-out {
+    from {
+        -fx-opacity: 1;
+        -fx-translate-y: 0;
+    }
+    to {
+        -fx-opacity: 0;
+        -fx-translate-y: 5;
+    }
+}
+
+/* Tooltip Animation Classes */
+.tooltip-animate-in {
+    -fx-animation: tooltip-fade-in 0.2s ease-in-out;
+}
+
+.tooltip-animate-out {
+    -fx-animation: tooltip-fade-out 0.2s ease-in-out;
+}

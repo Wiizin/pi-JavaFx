@@ -1,0 +1,279 @@
+package io.github.palexdev.materialfx.demo.controllers;
+
+import io.github.palexdev.materialfx.controls.*;
+import io.github.palexdev.materialfx.demo.Demo;
+import io.github.palexdev.materialfx.demo.model.Organizer;
+import io.github.palexdev.materialfx.demo.model.User;
+import io.github.palexdev.materialfx.demo.services.UserService;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Hyperlink;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.Objects;
+
+public class SignUpController {
+
+    @FXML
+    private MFXTextField firstNameField;
+    @FXML
+    private MFXTextField lastNameField;
+    @FXML
+    private MFXTextField emailField;
+    @FXML
+    private MFXPasswordField passwordField;
+    @FXML
+    private MFXPasswordField confirmPasswordField;
+    @FXML
+    private MFXTextField phoneNumberField;
+    @FXML
+    private MFXDatePicker dateOfBirthPicker;
+    @FXML
+    private MFXButton signUpButton;
+    @FXML
+    private MFXComboBox<String> roleComboBox;
+    @FXML
+    private Hyperlink loginHyperlink;
+    @FXML
+    private MFXTextField coachingLicenseField;
+
+    private UserService userService;
+
+    @FXML
+    public void initialize() {
+        userService = new UserService();
+        signUpButton.setOnAction(event -> handleSignUp());
+
+        // Initialize role combo box with PLAYER and ORGANIZER only (no ADMIN in signup)
+        roleComboBox.setItems(FXCollections.observableArrayList("PLAYER", "ORGANIZER"));
+        roleComboBox.setValue("PLAYER"); // Set default role
+        roleComboBox.setFloatingText("Select Role"); // Add floating text
+        roleComboBox.setPromptText("Select Role"); // Add prompt text
+
+        // Hide coaching license field initially (since default role is PLAYER)
+        coachingLicenseField.setVisible(false);
+        coachingLicenseField.setManaged(false);
+
+        // Add listener to the roleComboBox
+        roleComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                roleComboBox.setValue("PLAYER"); // Default to PLAYER if null
+                return;
+            }
+            
+            boolean isOrganizer = "ORGANIZER".equals(newValue);
+            coachingLicenseField.setVisible(isOrganizer);
+            coachingLicenseField.setManaged(isOrganizer);
+            if (!isOrganizer) {
+                coachingLicenseField.clear(); // Clear the field when switching to non-organizer role
+            }
+        });
+
+        loginHyperlink.setOnAction(event -> handleHyperlink());
+    }
+
+    private void handleSignUp() {
+        clearErrors();
+
+        if (!validateFields()) {
+            return;
+        }
+
+        try {
+            User user;
+            String selectedRole = roleComboBox.getValue();
+
+            // Create appropriate user type based on role
+            if ("ORGANIZER".equals(selectedRole)) {
+                Organizer organizer = new Organizer();
+                organizer.setCoachingLicense(coachingLicenseField.getText().trim());
+                organizer.setActive(false); // Organizers start as inactive, needing admin approval
+                user = organizer;
+            } else {
+                user = new User();
+                user.setActive(true); // Players start as active
+            }
+
+            // Set common fields
+            user.setFirstname(firstNameField.getText().trim());
+            user.setLastName(lastNameField.getText().trim());
+            user.setEmail(emailField.getText().trim());
+            user.setPassword(passwordField.getText());
+            user.setRole(selectedRole.toLowerCase());
+            user.setPhoneNumber(phoneNumberField.getText().trim());
+            user.setDateOfBirth(dateOfBirthPicker.getValue());
+            
+            // Set default profile picture URL
+            String defaultImageUrl = Objects.requireNonNull(getClass().getResource("/default_profile.jpg")).toExternalForm();
+            user.setProfilePicture(defaultImageUrl);
+            
+            user.setCreatedAt(LocalDateTime.now());
+            user.setUpdatedAt(LocalDateTime.now());
+
+            userService.create(user);
+
+            // Show appropriate success message based on role
+            String successMessage = "ORGANIZER".equals(selectedRole) ?
+                    "Account created successfully! Please wait for admin approval before logging in." :
+                    "Account created successfully! You can now log in.";
+
+            Alert alert = new Alert(Alert.AlertType.INFORMATION);
+            alert.setTitle("Registration Successful");
+            alert.setHeaderText(null);
+            alert.setContentText(successMessage);
+            alert.showAndWait();
+
+            handleLogin();
+        } catch (Exception e) {
+            handleRegistrationError(e);
+        }
+    }
+
+    private boolean validateFields() {
+        boolean isValid = true;
+
+        // Common validations for all users
+        if (firstNameField.getText().trim().isEmpty()) {
+            showError(firstNameField, "First name is required");
+            isValid = false;
+        }
+
+        if (lastNameField.getText().trim().isEmpty()) {
+            showError(lastNameField, "Last name is required");
+            isValid = false;
+        }
+
+        if (!isValidEmail(emailField.getText())) {
+            showError(emailField, "Invalid email format");
+            isValid = false;
+        } else if (!userService.isEmailUnique(emailField.getText().trim())) {
+            showError(emailField, "Email already exists");
+            isValid = false;
+        }
+
+        if (passwordField.getText().length() < 6) {
+            showError(passwordField, "Password must be at least 6 characters");
+            isValid = false;
+        }
+
+        if (!passwordField.getText().equals(confirmPasswordField.getText())) {
+            showError(confirmPasswordField, "Passwords do not match");
+            isValid = false;
+        }
+
+        if (!isValidPhoneNumber(phoneNumberField.getText())) {
+            showError(phoneNumberField, "Invalid phone number");
+            isValid = false;
+        }
+
+        if (dateOfBirthPicker.getValue() == null) {
+            showError(dateOfBirthPicker, "Date of birth is required");
+            isValid = false;
+        }
+
+        // Validate coaching license only for organizers
+        if ("ORGANIZER".equals(roleComboBox.getValue())) {
+            if (coachingLicenseField.getText().trim().isEmpty()) {
+                showError(coachingLicenseField, "Coaching license is required for organizers");
+                isValid = false;
+            }
+        }
+
+        return isValid;
+    }
+
+    private void clearErrors() {
+        // Clear any error styling
+        firstNameField.setStyle("-fx-border-color: #F8891A;");
+        lastNameField.setStyle("-fx-border-color: #F8891A;");
+        emailField.setStyle("-fx-border-color: #F8891A;");
+        passwordField.setStyle("-fx-border-color: #F8891A;");
+        confirmPasswordField.setStyle("-fx-border-color: #F8891A;");
+        phoneNumberField.setStyle("-fx-border-color: #F8891A;");
+        dateOfBirthPicker.setStyle("-fx-border-color: #F8891A;");
+        roleComboBox.setStyle("-fx-border-color: #F8891A;");
+        coachingLicenseField.setStyle("-fx-border-color: #F8891A;");
+    }
+
+    private void showError(Object field, String message) {
+        if (field instanceof MFXTextField) {
+            ((MFXTextField) field).setStyle("-fx-border-color: red;");
+        } else if (field instanceof MFXPasswordField) {
+            ((MFXPasswordField) field).setStyle("-fx-border-color: red;");
+        } else if (field instanceof MFXDatePicker) {
+            ((MFXDatePicker) field).setStyle("-fx-border-color: red;");
+        } else if (field instanceof MFXComboBox) {
+            ((MFXComboBox<?>) field).setStyle("-fx-border-color: red;");
+        }
+
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Validation Error");
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void showSuccessAndNavigateToLogin() {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Registration Successful");
+        alert.setHeaderText(null);
+        alert.setContentText("Your account has been created successfully!");
+        alert.showAndWait();
+
+        handleLogin();
+    }
+
+    private void handleRegistrationError(Exception e) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle("Registration Error");
+        alert.setHeaderText(null);
+        alert.setContentText("An error occurred during registration. Please try again.");
+        e.printStackTrace();
+        alert.showAndWait();
+    }
+
+    private boolean isValidEmail(String email) {
+        String emailRegex = "^[A-Za-z0-9+_.-]+@(.+)$";
+        return email != null && email.matches(emailRegex);
+    }
+
+    private boolean isValidPhoneNumber(String phone) {
+        String phoneRegex = "^[0-9]{8}$";  // Assuming 8-digit phone numbers
+        return phone != null && phone.matches(phoneRegex);
+    }
+
+    @FXML
+    private void handleLogin() {
+        try {
+            FXMLLoader loader = new FXMLLoader(Demo.class.getResource("fxml/login.fxml"));
+            Parent loginView = loader.load();
+
+            Stage stage = (Stage) signUpButton.getScene().getWindow();
+            Scene scene = new Scene(loginView);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void handleHyperlink() {
+        try {
+            FXMLLoader loader = new FXMLLoader(Demo.class.getResource("fxml/login.fxml"));
+            Parent loginView = loader.load();
+
+            Stage stage = (Stage) signUpButton.getScene().getWindow();
+            Scene scene = new Scene(loginView);
+            stage.setScene(scene);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}

@@ -1,0 +1,225 @@
+.main-container {
+    -fx-background-color: #f5f7fa; /* Light background to contrast with dark sidebar */
+}
+
+.header-section {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 15;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 10, 0, 0, 3);
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 15;
+    -fx-border-width: 1;
+}
+
+.header-icon {
+    -fx-fill: #ff7825; /* Vibrant orange */
+    -fx-effect: dropshadow(gaussian, rgba(255, 120, 37, 0.2), 3, 0, 0, 0);
+}
+
+.header-title {
+    -fx-fill: #2b3990; /* Deep blue */
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+}
+
+.filter-combo {
+    -fx-background-color: #ffffff;
+    -fx-text-fill: #2b3990;
+    -fx-prompt-text-fill: #8a94a6;
+    -fx-background-radius: 8;
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.filter-combo:focused {
+    -fx-border-color: #ff7825;
+    -fx-border-width: 2;
+}
+
+.refresh-button {
+    -fx-background-color: #2b3990;
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 8 16;
+    -fx-background-radius: 8;
+}
+
+.refresh-button:hover {
+    -fx-background-color: #374bc0;
+    -fx-effect: dropshadow(gaussian, rgba(43, 57, 144, 0.3), 5, 0, 0, 0);
+    -fx-cursor: hand;
+}
+
+.custom-scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background: transparent;
+    -fx-border-color: transparent;
+}
+
+.custom-scroll-pane .viewport {
+    -fx-background-color: transparent;
+}
+
+.reclamations-container {
+    -fx-background-color: transparent;
+}
+
+/* Reclamation Card Styles */
+.reclamation-card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.08), 6, 0, 0, 2);
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 12;
+    -fx-border-width: 1;
+    -fx-padding: 18;
+}
+
+.reclamation-card:hover {
+    -fx-effect: dropshadow(gaussian, rgba(43, 57, 144, 0.15), 10, 0, 0, 4);
+    -fx-border-color: #2b3990;
+    -fx-cursor: hand;
+}
+
+.card-header {
+    -fx-background-color: #f5f7fa;
+    -fx-background-radius: 8;
+    -fx-padding: 12;
+}
+
+.user-info {
+    -fx-text-fill: #2b3990;
+    -fx-font-weight: bold;
+}
+
+.timestamp {
+    -fx-text-fill: #8a94a6;
+    -fx-font-size: 12px;
+}
+
+.message-text {
+    -fx-text-fill: #3d4a5c;
+    -fx-font-size: 14px;
+    -fx-wrap-text: true;
+}
+
+.status-badge {
+    -fx-padding: 5 15;
+    -fx-background-radius: 20;
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+}
+
+.status-pending {
+    -fx-background-color: rgba(255, 120, 37, 0.1);
+    -fx-text-fill: #ff7825;
+}
+
+.status-resolved {
+    -fx-background-color: rgba(76, 175, 80, 0.1);
+    -fx-text-fill: #4CAF50;
+}
+
+/* Response Dialog Styles */
+.response-dialog {
+    -fx-background-color: white;
+    -fx-background-radius: 15;
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 15;
+    -fx-border-width: 1;
+    -fx-padding: 0;
+}
+
+.response-dialog .header {
+    -fx-background-color: #2b3990;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-background-radius: 15 15 0 0;
+}
+
+.response-dialog .close-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: white;
+}
+
+.dialog-title {
+    -fx-text-fill: #2b3990;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.response-field {
+    -fx-background-color: #f5f7fa;
+    -fx-text-fill: #3d4a5c;
+    -fx-prompt-text-fill: #8a94a6;
+    -fx-background-radius: 8;
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.response-field:focused {
+    -fx-border-color: #ff7825;
+    -fx-border-width: 2;
+}
+
+.cancel-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #2b3990;
+    -fx-border-color: #2b3990;
+    -fx-border-radius: 8;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16;
+}
+
+.cancel-button:hover {
+    -fx-background-color: rgba(43, 57, 144, 0.05);
+    -fx-cursor: hand;
+}
+
+.send-button {
+    -fx-background-color: #ff7825;
+    -fx-text-fill: white;
+    -fx-background-radius: 8;
+    -fx-padding: 8 16;
+}
+
+.send-button:hover {
+    -fx-background-color: #ff8f47;
+    -fx-effect: dropshadow(gaussian, rgba(255, 120, 37, 0.3), 5, 0, 0, 0);
+    -fx-cursor: hand;
+}
+
+/* Answer Section Styles */
+.answers-section {
+    -fx-background-color: #f5f7fa;
+    -fx-background-radius: 10;
+    -fx-padding: 15;
+    -fx-spacing: 10;
+}
+
+.answer-item {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-padding: 10;
+    -fx-border-color: #e0e6ed;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+}
+
+.admin-name {
+    -fx-text-fill: #2b3990;
+    -fx-font-weight: bold;
+}
+
+.answer-text {
+    -fx-text-fill: #3d4a5c;
+    -fx-wrap-text: true;
+}
+
+.answer-timestamp {
+    -fx-text-fill: #8a94a6;
+    -fx-font-size: 11px;
+}

@@ -269,7 +269,172 @@ public class AdminHomeController implements Initializable {
         }
     }
 
-    private void showAlert(Alert.AlertType alertType, String error, String s) {
+    private void showAlert(Alert.AlertType alertType, String title, String content) {
+        Alert alert = new Alert(alertType);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(content);
+        alert.showAndWait();
+    }
+    
+    @FXML
+    private void handleUserManagement() {
+        // This is the current view, so just show the users table
+        usersTable.setVisible(true);
+        addButton.setVisible(true);
+        contentLabel.setText("User Management");
+        
+        // Make sure the content area only has the appropriate elements
+        contentArea.getChildren().clear();
+        contentArea.getChildren().addAll(contentLabel, usersTable, addButton);
+        
+        // Set anchors for the elements
+        AnchorPane.setTopAnchor(contentLabel, 20.0);
+        AnchorPane.setLeftAnchor(contentLabel, 40.0);
+        
+        AnchorPane.setTopAnchor(usersTable, 80.0);
+        AnchorPane.setLeftAnchor(usersTable, 40.0);
+        AnchorPane.setRightAnchor(usersTable, 40.0);
+        AnchorPane.setBottomAnchor(usersTable, 100.0);
+        
+        AnchorPane.setBottomAnchor(addButton, 40.0);
+        AnchorPane.setLeftAnchor(addButton, 40.0);
+        
+        // Reload the users
+        loadUsers();
+    }
+
+    @FXML
+    private void handleProductManagement() {
+        // Hide users table and add button
+        usersTable.setVisible(false);
+        addButton.setVisible(false);
+        
+        // Show product management view
+        contentLabel.setText("Product Management");
+        
+        try {
+            // Load the Product Management view
+            // Use absolute path to ensure the file is found
+            URL fxmlUrl = Demo.class.getResource("/io/github/palexdev/materialfx/demo/fxml/ProductManagement.fxml");
+            if (fxmlUrl == null) {
+                throw new IOException("Cannot find ProductManagement.fxml");
+            }
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent productView = loader.load();
+            
+            // Clear existing content and add product management view
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(contentLabel);
+            contentArea.getChildren().add(productView);
+            
+            // Position the product management view
+            AnchorPane.setTopAnchor(contentLabel, 20.0);
+            AnchorPane.setLeftAnchor(contentLabel, 40.0);
+            
+            AnchorPane.setTopAnchor(productView, 60.0);
+            AnchorPane.setLeftAnchor(productView, 20.0);
+            AnchorPane.setRightAnchor(productView, 20.0);
+            AnchorPane.setBottomAnchor(productView, 20.0);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not load product management view: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleOrderManagement() {
+        // Hide users table and add button
+        usersTable.setVisible(false);
+        addButton.setVisible(false);
+        
+        // Show order management view
+        contentLabel.setText("Order Management");
+        
+        try {
+            // Load the Order Management view
+            URL fxmlUrl = Demo.class.getResource("/io/github/palexdev/materialfx/demo/fxml/OrderAdmin.fxml");
+            if (fxmlUrl == null) {
+                throw new IOException("Cannot find OrderAdmin.fxml");
+            }
+            FXMLLoader loader = new FXMLLoader(fxmlUrl);
+            Parent orderView = loader.load();
+            
+            // Clear existing content and add order management view
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(contentLabel);
+            contentArea.getChildren().add(orderView);
+            
+            // Position the order management view
+            AnchorPane.setTopAnchor(contentLabel, 20.0);
+            AnchorPane.setLeftAnchor(contentLabel, 40.0);
+            
+            AnchorPane.setTopAnchor(orderView, 60.0);
+            AnchorPane.setLeftAnchor(orderView, 20.0);
+            AnchorPane.setRightAnchor(orderView, 20.0);
+            AnchorPane.setBottomAnchor(orderView, 20.0);
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not load order management view: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleDashboard() {
+        try {
+            // Load the admin dashboard
+            FXMLLoader loader = new FXMLLoader(Demo.class.getResource("fxml/admin_dashboard.fxml"));
+            Parent dashboardView = loader.load();
+            
+            // Clear existing content and add dashboard
+            contentArea.getChildren().clear();
+            contentArea.getChildren().add(contentLabel);
+            contentArea.getChildren().add(dashboardView);
+            
+            // Position the elements
+            AnchorPane.setTopAnchor(contentLabel, 20.0);
+            AnchorPane.setLeftAnchor(contentLabel, 40.0);
+            
+            AnchorPane.setTopAnchor(dashboardView, 60.0);
+            AnchorPane.setLeftAnchor(dashboardView, 20.0);
+            AnchorPane.setRightAnchor(dashboardView, 20.0);
+            AnchorPane.setBottomAnchor(dashboardView, 20.0);
+            
+            contentLabel.setText("Admin Dashboard");
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not load dashboard view: " + e.getMessage());
+        }
+    }
+
+    @FXML
+    private void handleLogout() {
+        // Clear the current user session
+        UserSession.getInstance().logout();
+        
+        try {
+            // Load the login view
+            FXMLLoader loader = new FXMLLoader(Demo.class.getResource("fxml/login.fxml"));
+            Parent loginView = loader.load();
+            
+            // Get the current stage
+            Stage currentStage = (Stage) contentArea.getScene().getWindow();
+            
+            // Create new scene with login view
+            Scene loginScene = new Scene(loginView);
+            
+            // Set the new scene
+            currentStage.setScene(loginScene);
+            currentStage.setTitle("Login");
+            currentStage.show();
+            
+        } catch (IOException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not load login view: " + e.getMessage());
+        }
     }
 
     private void loadUsers() {

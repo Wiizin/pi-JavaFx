@@ -13,7 +13,6 @@ import io.github.palexdev.materialfx.demo.services.GoogleAuthService;
 import io.github.palexdev.materialfx.demo.services.UserService;
 import io.github.palexdev.materialfx.dialogs.MFXGenericDialog;
 import io.github.palexdev.materialfx.dialogs.MFXStageDialog;
-import io.github.palexdev.mfxresources.fonts.MFXFontIcon;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -90,8 +89,6 @@ public class LoginController {
         });
     }
 
-
-
     private void handleExistingSession() {
         String role = UserSession.getInstance().getCurrentUser().getRole();
         if ("Admin".equalsIgnoreCase(role)) {
@@ -100,7 +97,6 @@ public class LoginController {
             navigateToClientDashboard();
         }
     }
-
 
     @FXML
     public void OnLoginClicked(ActionEvent actionEvent) {
@@ -116,49 +112,41 @@ public class LoginController {
             UserService userService = new UserService();
             User user = userService.login(email, password);
 
-            if (user != null) {
-                // Check if the user's account is not active
-                if (!user.isActive()) {
-                    showMaterialFXAlert("Error", "Account Pending Approval Your account is not yet approved" +
-                            " Please wait for approval.", "fas-triangle-exclamation", "mfx-error-dialog");
-                    clearPasswordField();
-                    return;
-                }
-
-                // Initialize the session with user data
-                UserSession.getInstance().initSession(user);
-
-                // Log success
-                System.out.println("Login successful! Welcome, " +
-                        UserSession.getInstance().getCurrentUser().getFirstname());
-
-                // Navigate based on role
-                String role = UserSession.getInstance().getCurrentUser().getRole();
-                if ("Admin".equalsIgnoreCase(role)) {
-                    navigateToAdminDashboard();
-                } else if ("Organizer".equalsIgnoreCase(role)) {
-                    navigateToOrganizerDashboard();
-                } else if ("player".equalsIgnoreCase(role)) {
-                    navigateToClientDashboard();
-                } else {
-                    showAlert(Alert.AlertType.WARNING, "Unknown Role",
-                            "Unknown role: " + role);
-                }
-            } else {
-                showAlert(Alert.AlertType.ERROR, "Login Failed",
-                        "Invalid email or password.");
+            if (user == null) {
+                showAlert(Alert.AlertType.ERROR, "Login Failed", "Invalid email or password");
                 clearPasswordField();
+                return;
             }
+
+            if (!user.isActive()) {
+                showAlert(Alert.AlertType.WARNING, "Account Pending Approval",
+                        "Your account is not yet approved. Please wait for approval.");
+                clearPasswordField();
+                return;
+            }
+
+            UserSession.getInstance().initSession(user);
+            System.out.println("Login successful! Welcome, " + user.getFirstname());
+
+            String role = user.getRole();
+            if ("Admin".equalsIgnoreCase(role)) {
+                navigateToAdminDashboard();
+            } else if ("Organizer".equalsIgnoreCase(role)) {
+                navigateToOrganizerDashboard();
+            } else if ("player".equalsIgnoreCase(role)) {
+                navigateToClientDashboard();
+            } else {
+                showAlert(Alert.AlertType.WARNING, "Unknown Role", "Unknown role: " + role);
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Database Error",
-                    "An error occurred during login. Please try again.");
+            showAlert(Alert.AlertType.ERROR, "Database Error", "Could not process login: " + e.getMessage());
         }
     }
 
     private boolean validateInput(String email, String password) {
-        return email != null && !email.trim().isEmpty()
-                && password != null && !password.trim().isEmpty();
+        return email != null && !email.trim().isEmpty() && password != null && !password.trim().isEmpty();
     }
 
     private void clearPasswordField() {
@@ -175,92 +163,87 @@ public class LoginController {
 
     private void navigateToAdminDashboard() {
         try {
-            FXMLLoader loader = new FXMLLoader(MFXDemoResourcesLoader.loadURL("fxml/Demo.fxml"));
+            FXMLLoader loader = new FXMLLoader(MFXDemoResourcesLoader.loadURL("fxml/Dashboard.fxml"));
             Parent root = loader.load();
-            this.rootPane.getScene().setRoot(root);
-        } catch (Exception e) {
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(MFXDemoResourcesLoader.load("css/Stylesheet.css"));
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            stage.setScene(scene);
+        } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error",
-                    "Failed to load admin dashboard.");
         }
     }
 
     private void navigateToClientDashboard() {
         try {
-            FXMLLoader loader = new FXMLLoader(MFXDemoResourcesLoader.loadURL("fxml/PlayerHome.fxml"));
+            FXMLLoader loader = new FXMLLoader(MFXDemoResourcesLoader.loadURL("fxml/Store.fxml"));
             Parent root = loader.load();
-            this.rootPane.getScene().setRoot(root);
-        } catch (Exception e) {
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(MFXDemoResourcesLoader.load("css/Stylesheet.css"));
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            stage.setScene(scene);
+        } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error",
-                    "Failed to load player dashboard.");
         }
     }
+    
     private void navigateToOrganizerDashboard() {
         try {
-            FXMLLoader loader = new FXMLLoader(MFXDemoResourcesLoader.loadURL("fxml/OrganizerHome.fxml"));
+            FXMLLoader loader = new FXMLLoader(MFXDemoResourcesLoader.loadURL("fxml/Store.fxml"));
             Parent root = loader.load();
-            this.rootPane.getScene().setRoot(root);
-        } catch (Exception e) {
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(MFXDemoResourcesLoader.load("css/Stylesheet.css"));
+            Stage stage = (Stage) loginButton.getScene().getWindow();
+            stage.setScene(scene);
+        } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error",
-                    "Failed to load player dashboard.");
         }
     }
 
     @FXML
     public void OnSignUpClicked(ActionEvent actionEvent) {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    Demo.class.getResource("fxml/signup.fxml"));
-            Parent signUpView = loader.load();
-
-            Stage stage = (Stage) rootPane.getScene().getWindow();
-            Scene scene = new Scene(signUpView);
+            FXMLLoader loader = new FXMLLoader(MFXDemoResourcesLoader.loadURL("fxml/Register.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(MFXDemoResourcesLoader.load("css/Stylesheet.css"));
+            Stage stage = (Stage) signupButton.getScene().getWindow();
             stage.setScene(scene);
-            stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error",
-                    "Failed to load signup page.");
         }
     }
 
     public void handleLogout() {
-        System.out.println("Handling logout...");
-        UserSession.getInstance().logout();
         try {
-            // Navigate back to login screen
-            FXMLLoader loader = new FXMLLoader(Demo.class.getResource("fxml/login.fxml"));
-            Parent loginView = loader.load();
+            // Clear the current user session
+            UserSession.getInstance().clearSession();
+
+            // Navigate back to login page
+            FXMLLoader loader = new FXMLLoader(MFXDemoResourcesLoader.loadURL("fxml/Login.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(MFXDemoResourcesLoader.load("css/Stylesheet.css"));
             Stage stage = (Stage) rootPane.getScene().getWindow();
-            Scene scene = new Scene(loginView);
             stage.setScene(scene);
-            stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Logout Error",
-                    "Error returning to login screen.");
         }
     }
 
     @FXML
     public void onForgotPasswordClicked(MouseEvent mouseEvent) {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    Demo.class.getResource("fxml/reset_password.fxml"));
-            Parent signUpView = loader.load();
-
+            FXMLLoader loader = new FXMLLoader(MFXDemoResourcesLoader.loadURL("fxml/ForgotPassword.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(MFXDemoResourcesLoader.load("css/Stylesheet.css"));
             Stage stage = (Stage) rootPane.getScene().getWindow();
-            Scene scene = new Scene(signUpView);
             stage.setScene(scene);
-            stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error",
-                    "Failed to load signup page.");
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not load forgot password page: " + e.getMessage());
         }
-
     }
 
     @FXML
@@ -272,25 +255,21 @@ public class LoginController {
         googleAuthService.startOAuthFlowAsync().thenAccept(userInfo -> {
             Platform.runLater(() -> {
                 try {
-                    // No need to extract fields and create GoogleUserInfo
-                    // Just use the userInfo directly
-
                     // Initialize UserService
                     UserService userService = new UserService();
 
-                    // First check if this Google user already exists
+                    // Check if user exists by email
                     User user = userService.findUserByEmail(userInfo.getEmail());
-
+                    
+                    // If user doesn't exist, register a new user
                     if (user == null) {
-                        // New Google user - navigate to registration page
-                        UserSession.getInstance().setTempUserInfo(userInfo);
+                        // Navigate to Google registration page
                         navigateToGoogleRegistration();
                         System.out.println("Login successful! Welcome, " +
                                 UserSession.getInstance().getCurrentUser().getFirstname());
                         return;
                     }
 
-                    // Rest of the code remains the same
                     // Existing user - check if account is active
                     if (!user.isActive()) {
                         showAlert(Alert.AlertType.WARNING, "Account Pending Approval",
@@ -332,38 +311,22 @@ public class LoginController {
             return null;
         });
     }
-
+    
     private void navigateToGoogleRegistration() {
         try {
-            FXMLLoader loader = new FXMLLoader(
-                    Demo.class.getResource("fxml/google_registration.fxml"));
-            Parent registerView = loader.load();
-
-            Stage stage = (Stage) rootPane.getScene().getWindow();
-            Scene scene = new Scene(registerView);
+            FXMLLoader loader = new FXMLLoader(MFXDemoResourcesLoader.loadURL("fxml/GoogleRegister.fxml"));
+            Parent root = loader.load();
+            Scene scene = new Scene(root);
+            scene.getStylesheets().add(MFXDemoResourcesLoader.load("css/Stylesheet.css"));
+            Stage stage = (Stage) googleLoginButton.getScene().getWindow();
             stage.setScene(scene);
-            stage.show();
         } catch (IOException e) {
             e.printStackTrace();
-            showAlert(Alert.AlertType.ERROR, "Navigation Error",
-                    "Failed to load registration page.");
+            showAlert(Alert.AlertType.ERROR, "Error", "Could not load Google registration page: " + e.getMessage());
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
+    
     private void showMaterialFXAlert(String title, String message, String iconCode, String styleClass) {
-        // Ensure the correct icon codes are used with MaterialFX FontAwesome
         String updatedIconCode;
         switch (iconCode) {
             case "fas-check-circle":
@@ -391,6 +354,7 @@ public class LoginController {
             }
 
             // Clear any existing actions
+            dialogContent.clearActions();
 
             // Reset style classes
             dialogContent.getStyleClass().removeIf(
@@ -418,11 +382,4 @@ public class LoginController {
             dialog.showDialog();
         });
     }
-
-
-
-
-
-
-
 }

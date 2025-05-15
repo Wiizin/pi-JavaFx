@@ -116,21 +116,73 @@ public class OrganizerHomeController implements Initializable{
             }
         }
 
-        private void initializeLoader() {
-            MFXLoader loader = new MFXLoader();
-            // Add organizer-specific views
-//        loader.addView(MFXLoaderBean.of("Dashboard", loadURL("fxml/OrganizerDashboard.fxml"))
-//                .setBeanToNodeMapper(() -> createToggle("fas-home", "Dashboard"))
-//                .setDefaultRoot(true)
-//                .get());
+    private void initializeLoader() {
+        MFXLoader loader = new MFXLoader();
 
-//        loader.addView(MFXLoaderBean.of("Manage Events", loadURL("fxml/ManageEvents.fxml"))
-//                .setBeanToNodeMapper(() -> createToggle("fas-calendar", "Events"))
-//                .get());
+        // Add views to the navigation
+        // Dashboard View
+        URL dashboardUrl = loadURL("fxml/Dashboard.fxml");
+        if (dashboardUrl != null) {
+            loader.addView(MFXLoaderBean.of("Dashboard", dashboardUrl).setBeanToNodeMapper(() -> createToggle("fas-house", "Dashboard")).setDefaultRoot(true).get());
+        }
+
+        // Tournaments View
+        URL tournamentsUrl = loadURL("fxml/Tournament.fxml");
+        if (tournamentsUrl != null) {
+            loader.addView(MFXLoaderBean.of("Tournaments", tournamentsUrl).setBeanToNodeMapper(() -> createToggle("fas-trophy", "Tournaments")).get());
+        }
+
+        // Add Store view
+        URL storeUrl = loadURL("fxml/Store.fxml");
+        if (storeUrl != null) {
+            System.out.println("Found Store.fxml at: " + storeUrl);
+            loader.addView(MFXLoaderBean.of("Store", storeUrl)
+                .setBeanToNodeMapper(() -> createToggle("fas-shopping-cart", "Store"))
+                .get());
+        } else {
+            System.err.println("Could not find Store.fxml");
+        }
+
+        loader.setOnLoadedAction(beans -> {
+            List<ToggleButton> nodes = beans.stream().map(bean -> {
+                ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
+                toggle.setOnAction(event -> {
+                    // Get the loaded view
+                    Parent root = bean.getRoot();
+
+                    // If this is the Store view, hide its sidebar
+                    if (bean.getViewName().equals("Store")) {
+                        // Find the sidebar container by ID and hide it
+                        root.lookup("#sidebarContainer").setVisible(false);
+                        root.lookup("#sidebarContainer").setManaged(false);
+
+                        // Find the main content VBox and adjust its anchor
+                        VBox mainContent = (VBox) root.lookup(".main-container");
+                        if (mainContent != null && mainContent.getParent() instanceof AnchorPane) {
+                            AnchorPane.setLeftAnchor(mainContent, 0.0);
+                        }
+                    }
+
+                    contentPane.getChildren().setAll(root);
+                });
+                // Default selection handled by setDefaultRoot(true) in the view setup
+                return toggle;
+            }).toList();
+            navBar.getChildren().setAll(nodes);
+        });
+            // Add organizer-specific views
+//            loader.addView(MFXLoaderBean.of("Dashboard", loadURL("fxml/OrganizerDashboard.fxml"))
+//                    .setBeanToNodeMapper(() -> createToggle("fas-home", "Dashboard"))
+//                    .setDefaultRoot(true)
+//                    .get());
+
+//            loader.addView(MFXLoaderBean.of("Manage Events", loadURL("fxml/ManageEvents.fxml"))
+//                    .setBeanToNodeMapper(() -> createToggle("fas-calendar", "Events"))
+//                    .get());
 //
-//        loader.addView(MFXLoaderBean.of("Participants", loadURL("fxml/ManageParticipants.fxml"))
-//                .setBeanToNodeMapper(() -> createToggle("fas-users", "Participants"))
-//                .get());
+//            loader.addView(MFXLoaderBean.of("Participants", loadURL("fxml/ManageParticipants.fxml"))
+//                    .setBeanToNodeMapper(() -> createToggle("fas-users", "Participants"))
+//                    .get());
 
             // Check if organizer has a team to manage
             User currentUser = UserSession.getInstance().getCurrentUser();
@@ -147,22 +199,21 @@ public class OrganizerHomeController implements Initializable{
 
             }
 
-
-        loader.setOnLoadedAction(beans -> {
-            List<ToggleButton> nodes = beans.stream()
-                    .map(bean -> {
-                        ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
-                        toggle.setOnAction(event -> contentPane.getChildren().setAll(bean.getRoot()));
-                        if (bean.isDefaultView()) {
-                            contentPane.getChildren().setAll(bean.getRoot());
-                            toggle.setSelected(true);
-                        }
-                        return toggle;
-                    })
-                    .toList();
-            navBar.getChildren().setAll(nodes);
-        });
-        loader.start();
+            loader.setOnLoadedAction(beans -> {
+                List<ToggleButton> nodes = beans.stream()
+                        .map(bean -> {
+                            ToggleButton toggle = (ToggleButton) bean.getBeanToNodeMapper().get();
+                            toggle.setOnAction(event -> contentPane.getChildren().setAll(bean.getRoot()));
+                            if (bean.isDefaultView()) {
+                                contentPane.getChildren().setAll(bean.getRoot());
+                                toggle.setSelected(true);
+                            }
+                            return toggle;
+                        })
+                        .toList();
+                navBar.getChildren().setAll(nodes);
+            });
+            loader.start();
     }
 
     private ToggleButton createToggle(String icon, String text) {

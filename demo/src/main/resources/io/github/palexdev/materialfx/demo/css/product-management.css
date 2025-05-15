@@ -1,0 +1,220 @@
+/* Product Management CSS Styles */
+
+/* General Styles */
+.root {
+    -fx-font-family: "Segoe UI", Arial, sans-serif;
+    font-family: "Segoe UI", Arial, sans-serif;
+    -fx-background-color: #f5f5f5;
+    background-color: #f5f5f5;
+}
+
+/* Title Styles */
+.title-label {
+    -fx-text-fill: #333333;
+    color: #333333;
+    -fx-effect: dropshadow(gaussian, rgba(0, 0, 0, 0.1), 2, 0, 0, 1);
+}
+
+.subtitle-label {
+    -fx-text-fill: #333333;
+    color: #333333;
+    -fx-padding: 0 0 10 0;
+    padding: 0 0 10px 0;
+}
+
+/* Form Panel Styles */
+.form-panel {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+    border-radius: 5px;
+    -fx-border-color: #e0e0e0;
+    border-color: #e0e0e0;
+    -fx-border-width: 1;
+    border-width: 1px;
+}
+
+.field-label {
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: #555555;
+    color: #555555;
+    -fx-padding: 5 0 2 0;
+    padding: 5px 0 2px 0;
+}
+
+.form-field {
+    -fx-background-color: #f9f9f9;
+    background-color: #f9f9f9;
+    -fx-border-color: #e0e0e0;
+    border-color: #e0e0e0;
+    -fx-border-radius: 3;
+    border-radius: 3px;
+    -fx-background-radius: 3;
+}
+
+.form-field:focused {
+    -fx-border-color: #4285f4;
+    border-color: #4285f4;
+    -fx-background-color: white;
+    background-color: white;
+}
+
+/* Button Styles */
+.button {
+    -fx-background-radius: 3;
+    -fx-cursor: hand;
+    cursor: pointer;
+    -fx-padding: 8 15;
+    padding: 8px 15px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+}
+
+.action-button {
+    -fx-background-color: #4285f4;
+    background-color: #4285f4;
+    -fx-text-fill: white;
+    color: white;
+}
+
+.action-button:hover {
+    -fx-background-color: #3275e4;
+    background-color: #3275e4;
+}
+
+.reset-button {
+    -fx-background-color: #f0f0f0;
+    background-color: #f0f0f0;
+    -fx-text-fill: #555555;
+    color: #555555;
+}
+
+.reset-button:hover {
+    -fx-background-color: #e0e0e0;
+    background-color: #e0e0e0;
+}
+
+.refresh-button {
+    -fx-background-color: #4caf50;
+    background-color: #4caf50;
+    -fx-text-fill: white;
+    color: white;
+}
+
+.refresh-button:hover {
+    -fx-background-color: #3d9140;
+    background-color: #3d9140;
+}
+
+.save-button {
+    -fx-background-color: #4285f4;
+    background-color: #4285f4;
+    -fx-text-fill: white;
+    color: white;
+    -fx-min-width: 80;
+    min-width: 80px;
+}
+
+.save-button:hover {
+    -fx-background-color: #3275e4;
+    background-color: #3275e4;
+}
+
+.cancel-button {
+    -fx-background-color: #f0f0f0;
+    background-color: #f0f0f0;
+    -fx-text-fill: #555555;
+    color: #555555;
+    -fx-min-width: 80;
+    min-width: 80px;
+}
+
+.cancel-button:hover {
+    -fx-background-color: #e0e0e0;
+    background-color: #e0e0e0;
+}
+
+.browse-button {
+    -fx-background-color: #f0f0f0;
+    background-color: #f0f0f0;
+    -fx-text-fill: #555555;
+    color: #555555;
+}
+
+.browse-button:hover {
+    -fx-background-color: #e0e0e0;
+    background-color: #e0e0e0;
+}
+
+/* Table Styles */
+.product-table {
+    -fx-background-color: white;
+    background-color: white;
+    -fx-border-color: #e0e0e0;
+    border-color: #e0e0e0;
+    -fx-border-width: 1;
+    border-width: 1px;
+}
+
+.product-table .column-header {
+    -fx-background-color: #f8f9fa;
+    background-color: #f8f9fa;
+    -fx-border-color: #e0e0e0;
+    border-color: #e0e0e0;
+    -fx-border-width: 0 0 1 0;
+    border-width: 0 0 1px 0;
+    -fx-padding: 10 5;
+    padding: 10px 5px;
+    -fx-font-weight: bold;
+    font-weight: bold;
+    -fx-text-fill: #212529;
+    color: #212529;
+}
+
+.product-table .column-header-background {
+    -fx-background-color: #f0f0f0;
+    background-color: #f0f0f0;
+}
+
+.product-table .table-row-cell {
+    -fx-border-color: transparent transparent #e0e0e0 transparent;
+    border-color: transparent transparent #e0e0e0 transparent;
+    -fx-border-width: 0 0 1 0;
+    border-width: 0 0 1px 0;
+}
+
+.product-table .table-row-cell:odd {
+    -fx-background-color: white;
+    background-color: white;
+}
+
+.product-table .table-row-cell:even {
+    -fx-background-color: white;
+    background-color: white;
+}
+
+.product-table .table-row-cell:hover {
+    -fx-background-color: #f8f9fa;
+    background-color: #f8f9fa;
+}
+
+.product-table .table-row-cell:selected {
+    -fx-background-color: #e9ecef;
+    background-color: #e9ecef;
+}
+
+/* Make sure we have proper padding in table cells */
+.product-table .table-cell {
+    -fx-padding: 8 5;
+    padding: 8px 5px;
+    -fx-alignment: CENTER-LEFT;
+    text-align: left;
+    -fx-text-fill: #212529;
+    color: #212529;
+    -fx-font-weight: normal;
+    font-weight: normal;
+    -fx-font-size: 13px;
+    font-size: 13px;
+}

@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import io.github.palexdev.materialfx.controls.MFXTableView?>
+<?import io.github.palexdev.materialfx.controls.MFXTextField?>
+<?import io.github.palexdev.materialfx.controls.MFXComboBox?>
+<?import io.github.palexdev.materialfx.controls.MFXButton?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Priority?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="io.github.palexdev.materialfx.demo.controllers.OrderAdminController"
+      spacing="20" 
+      styleClass="order-admin-container"
+      stylesheets="@../css/order-admin.css">
+
+    <padding>
+        <Insets top="20" right="20" bottom="20" left="20"/>
+    </padding>
+
+    <!-- Header with filters -->
+    <HBox spacing="15" alignment="CENTER_LEFT">
+        <MFXTextField fx:id="searchField" 
+                      floatingText="Search orders..." 
+                      prefWidth="300"
+                      styleClass="search-field"/>
+
+        <MFXComboBox fx:id="statusFilter" 
+                     floatingText="Filter by status" 
+                     prefWidth="200"
+                     styleClass="status-filter"/>
+
+        <HBox HBox.hgrow="ALWAYS" alignment="CENTER_RIGHT">
+            <MFXButton fx:id="refreshButton" 
+                       text="Refresh" 
+                       styleClass="outline-button"/>
+        </HBox>
+    </HBox>
+
+    <!-- Table container -->
+    <VBox VBox.vgrow="ALWAYS" 
+          styleClass="table-container">
+        <MFXTableView fx:id="ordersTable" 
+                      VBox.vgrow="ALWAYS"
+                      styleClass="orders-table"/>
+    </VBox>
+
+</VBox>

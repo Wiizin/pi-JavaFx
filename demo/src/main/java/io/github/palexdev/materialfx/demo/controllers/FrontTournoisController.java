@@ -1,41 +1,41 @@
 
 package io.github.palexdev.materialfx.demo.controllers;
 
-        import io.github.palexdev.materialfx.controls.*;
-        import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
-        import io.github.palexdev.materialfx.demo.model.Matches;
-        import io.github.palexdev.materialfx.demo.model.Tournois;
-        import io.github.palexdev.materialfx.demo.services.MatchesService;
-        import io.github.palexdev.materialfx.demo.services.TournamentRegulationsGenerator;
-        import io.github.palexdev.materialfx.demo.services.TournoisService;
-        import io.github.palexdev.materialfx.demo.services.MatchStatusEnum;
-        import io.github.palexdev.materialfx.demo.controllers.MatchesController;
-        import javafx.beans.binding.Bindings;
-        import javafx.collections.FXCollections;
-        import javafx.fxml.FXML;
-        import javafx.fxml.Initializable;
-        import javafx.geometry.Insets;
-        import javafx.geometry.Pos;
-        import javafx.scene.Node;
-        import javafx.scene.Scene;
-        import javafx.scene.control.Alert.AlertType;
-        import javafx.scene.control.*;
-        import javafx.scene.image.Image;
-        import javafx.scene.image.ImageView;
-        import javafx.scene.layout.FlowPane;
-        import javafx.scene.layout.HBox;
-        import javafx.scene.layout.VBox;
-        import javafx.stage.Modality;
-        import javafx.stage.Stage;
-        import javafx.stage.StageStyle;
-        import java.net.URL;
-        import java.sql.SQLException;
-        import java.time.LocalDate;
-        import java.time.format.DateTimeFormatter;
-        import java.util.Arrays;
-        import java.util.List;
-        import java.util.ResourceBundle;
-        import java.util.stream.Collectors;
+import io.github.palexdev.materialfx.controls.*;
+import io.github.palexdev.materialfx.controls.cell.MFXTableRowCell;
+import io.github.palexdev.materialfx.demo.model.Matches;
+import io.github.palexdev.materialfx.demo.model.Tournois;
+import io.github.palexdev.materialfx.demo.services.MatchesService;
+import io.github.palexdev.materialfx.demo.services.TournamentRegulationsGenerator;
+import io.github.palexdev.materialfx.demo.services.TournoisService;
+import io.github.palexdev.materialfx.demo.services.MatchStatusEnum;
+import io.github.palexdev.materialfx.demo.controllers.MatchesController;
+import javafx.beans.binding.Bindings;
+import javafx.collections.FXCollections;
+import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Node;
+import javafx.scene.Scene;
+import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+import java.net.URL;
+import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
+import java.util.List;
+import java.util.ResourceBundle;
+import java.util.stream.Collectors;
 
 public class FrontTournoisController implements Initializable {
 
@@ -55,102 +55,102 @@ public class FrontTournoisController implements Initializable {
 
 
     private void showMatchesPopup(Tournois tournament) {
-            Stage popupStage = new Stage();
-            popupStage.initModality(Modality.APPLICATION_MODAL);
-            popupStage.initStyle(StageStyle.UNDECORATED);
+        Stage popupStage = new Stage();
+        popupStage.initModality(Modality.APPLICATION_MODAL);
+        popupStage.initStyle(StageStyle.UNDECORATED);
 
-            VBox root = new VBox(20);
-            root.setAlignment(Pos.CENTER);
-            root.setPadding(new Insets(20));
-            root.setStyle("-fx-background-color: white; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-border-color: #ff9800; -fx-border-width: 2;");
+        VBox root = new VBox(20);
+        root.setAlignment(Pos.CENTER);
+        root.setPadding(new Insets(20));
+        root.setStyle("-fx-background-color: white; -fx-border-radius: 10px; -fx-background-radius: 10px; -fx-border-color: #ff9800; -fx-border-width: 2;");
 
-            // Create header
-            Label titleLabel = new Label("Matches for " + tournament.getNom());
-            titleLabel.setStyle("-fx-text-fill: #1B1B3B; -fx-font-size: 18px; -fx-font-weight: bold;");
+        // Create header
+        Label titleLabel = new Label("Matches for " + tournament.getNom());
+        titleLabel.setStyle("-fx-text-fill: #1B1B3B; -fx-font-size: 18px; -fx-font-weight: bold;");
 
-            // Initialize matches table
-            MFXPaginatedTableView<Matches> matchesTable = new MFXPaginatedTableView<>();
-            matchesTable.setPrefSize(800, 600);
+        // Initialize matches table
+        MFXPaginatedTableView<Matches> matchesTable = new MFXPaginatedTableView<>();
+        matchesTable.setPrefSize(800, 600);
 
-            // Set up table columns
-            MFXTableColumn<Matches> teamAColumn = new MFXTableColumn<>("Team A", false);
-            teamAColumn.setPrefWidth(150);
-            teamAColumn.setMinWidth(100);
-            teamAColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getTeamAName));
+        // Set up table columns
+        MFXTableColumn<Matches> teamAColumn = new MFXTableColumn<>("Team A", false);
+        teamAColumn.setPrefWidth(150);
+        teamAColumn.setMinWidth(100);
+        teamAColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getTeamAName));
 
-            MFXTableColumn<Matches> teamBColumn = new MFXTableColumn<>("Team B", false);
-            teamBColumn.setPrefWidth(150);
-            teamBColumn.setMinWidth(100);
-            teamBColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getTeamBName));
+        MFXTableColumn<Matches> teamBColumn = new MFXTableColumn<>("Team B", false);
+        teamBColumn.setPrefWidth(150);
+        teamBColumn.setMinWidth(100);
+        teamBColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getTeamBName));
 
-            MFXTableColumn<Matches> scoreAColumn = new MFXTableColumn<>("Score A", false);
-            scoreAColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getScoreTeamA));
+        MFXTableColumn<Matches> scoreAColumn = new MFXTableColumn<>("Score A", false);
+        scoreAColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getScoreTeamA));
 
-            MFXTableColumn<Matches> scoreBColumn = new MFXTableColumn<>("Score B", false);
-            scoreBColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getScoreTeamB));
+        MFXTableColumn<Matches> scoreBColumn = new MFXTableColumn<>("Score B", false);
+        scoreBColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getScoreTeamB));
 
-            MFXTableColumn<Matches> statusColumn = new MFXTableColumn<>("Status", false);
-            statusColumn.setRowCellFactory(match -> {
-                MFXTableRowCell<Matches, String> cell = new MFXTableRowCell<>(Matches::getStatus);
-                cell.styleProperty().bind(Bindings.createStringBinding(() -> {
-                    String status = cell.getText();
-                    if (status == null) return "";
-                    switch (status.toLowerCase()) {
-                        case "live": return "-fx-text-fill: #00C853;";
-                        case "upcoming": return "-fx-text-fill: #2196F3;";
-                        case "finished": return "-fx-text-fill: #757575;";
-                        default: return "";
-                    }
-                }, cell.textProperty()));
-                return cell;
-            });
+        MFXTableColumn<Matches> statusColumn = new MFXTableColumn<>("Status", false);
+        statusColumn.setRowCellFactory(match -> {
+            MFXTableRowCell<Matches, String> cell = new MFXTableRowCell<>(Matches::getStatus);
+            cell.styleProperty().bind(Bindings.createStringBinding(() -> {
+                String status = cell.getText();
+                if (status == null) return "";
+                switch (status.toLowerCase()) {
+                    case "live": return "-fx-text-fill: #00C853;";
+                    case "upcoming": return "-fx-text-fill: #2196F3;";
+                    case "finished": return "-fx-text-fill: #757575;";
+                    default: return "";
+                }
+            }, cell.textProperty()));
+            return cell;
+        });
 
-            MFXTableColumn<Matches> timeColumn = new MFXTableColumn<>("Match Time", false);
-            timeColumn.setPrefWidth(150);
-            timeColumn.setMinWidth(100);
-            timeColumn.setRowCellFactory(match -> new MFXTableRowCell<>(m ->
-                    m.getMatchTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
+        MFXTableColumn<Matches> timeColumn = new MFXTableColumn<>("Match Time", false);
+        timeColumn.setPrefWidth(150);
+        timeColumn.setMinWidth(100);
+        timeColumn.setRowCellFactory(match -> new MFXTableRowCell<>(m ->
+                m.getMatchTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"))));
 
-            MFXTableColumn<Matches> locationColumn = new MFXTableColumn<>("Location", false);
-            locationColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getLocationMatch));
+        MFXTableColumn<Matches> locationColumn = new MFXTableColumn<>("Location", false);
+        locationColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getLocationMatch));
 
-            // Add columns to table
-            matchesTable.getTableColumns().addAll(
-                    teamAColumn, scoreAColumn, scoreBColumn, teamBColumn,
-                    statusColumn, timeColumn, locationColumn
-            );
+        // Add columns to table
+        matchesTable.getTableColumns().addAll(
+                teamAColumn, scoreAColumn, scoreBColumn, teamBColumn,
+                statusColumn, timeColumn, locationColumn
+        );
 
-            // Load matches for this tournament
-            try {
-                MatchesService matchesService = new MatchesService();
-                List<Matches> tournamentMatches = matchesService.showAll().stream()
-                        .filter(match -> match.getIdTournoi() == tournament.getId())
-                        .collect(Collectors.toList());
-                matchesTable.setItems(FXCollections.observableArrayList(tournamentMatches));
-            } catch (SQLException e) {
-                e.printStackTrace();
-                showAlert(AlertType.ERROR, "Error", "Failed to load matches");
-            }
-
-            // Configure table properties
-            matchesTable.setTableRowFactory(match -> {
-                MFXTableRow<Matches> row = new MFXTableRow<>(matchesTable, match);
-                row.setStyle("-fx-background-color: transparent;");
-                return row;
-            });
-
-            // Create close button
-            MFXButton closeButton = new MFXButton("Close");
-            closeButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white;");
-            closeButton.setOnAction(e -> popupStage.close());
-
-            // Add components to root
-            root.getChildren().addAll(titleLabel, matchesTable, closeButton);
-
-            Scene scene = new Scene(root, 850, 700);
-            popupStage.setScene(scene);
-            popupStage.show();
+        // Load matches for this tournament
+        try {
+            MatchesService matchesService = new MatchesService();
+            List<Matches> tournamentMatches = matchesService.showAll().stream()
+                    .filter(match -> match.getIdTournoi() == tournament.getId())
+                    .collect(Collectors.toList());
+            matchesTable.setItems(FXCollections.observableArrayList(tournamentMatches));
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(AlertType.ERROR, "Error", "Failed to load matches");
         }
+
+        // Configure table properties
+        matchesTable.setTableRowFactory(match -> {
+            MFXTableRow<Matches> row = new MFXTableRow<>(matchesTable, match);
+            row.setStyle("-fx-background-color: transparent;");
+            return row;
+        });
+
+        // Create close button
+        MFXButton closeButton = new MFXButton("Close");
+        closeButton.setStyle("-fx-background-color: #ff9800; -fx-text-fill: white;");
+        closeButton.setOnAction(e -> popupStage.close());
+
+        // Add components to root
+        root.getChildren().addAll(titleLabel, matchesTable, closeButton);
+
+        Scene scene = new Scene(root, 850, 700);
+        popupStage.setScene(scene);
+        popupStage.show();
+    }
 
 
 

@@ -81,8 +81,18 @@ public class TournoisService implements CRUD<Tournois> {
 
     @Override
     public int update(Tournois tournament) throws SQLException {
-       String req = "UPDATE tournoi SET nom=?, format=?, status=?, start_date=?, end_date=?, nbEquipe=?, tournoiLocation=?, reglements=? WHERE id_organizer = ? AND id=?";
-
+        String req = """
+        UPDATE tournoi
+           SET nom            = ?,
+               format         = ?,
+               status         = ?,
+               start_date     = ?,
+               end_date       = ?,
+               nbEquipe       = ?,
+               tournoiLocation= ?,
+               reglements     = ?
+         WHERE id = ?
+        """;
 
         System.out.println("Updating tournament - ID: " + tournament.getId());
 
@@ -96,8 +106,8 @@ public class TournoisService implements CRUD<Tournois> {
             ps.setInt(6, tournament.getNbEquipe());
             ps.setString(7, tournament.getTournoisLocation());
             ps.setString(8, tournament.getReglements());
-            ps.setInt(9, tournament.getIdorganiser());
-            ps.setInt(10, tournament.getId());
+            ps.setInt(9, tournament.getId());
+
             int result = ps.executeUpdate();
             System.out.println("Update result: " + result + " rows affected");
             return result;

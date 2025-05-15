@@ -47,8 +47,8 @@ public class MatchesService implements CRUD<Matches> {
         // Verify teams exist first
         String verifyTeam = "SELECT id, nom FROM team WHERE id IN (?, ?)";
         try (PreparedStatement verifyPs = cnx.prepareStatement(verifyTeam)) {
-            verifyPs.setInt(1, match.getIdTeamA());
-            verifyPs.setInt(2, match.getIdTeamB());
+            verifyPs.setInt(1, match.getTeamAId());
+            verifyPs.setInt(2, match.getTeamBId());
             ResultSet rs = verifyPs.executeQuery();
 
             System.out.println("Verifying teams existence:");
@@ -87,41 +87,6 @@ public class MatchesService implements CRUD<Matches> {
         }
     }
 
-    public int insert2(Matches match) throws SQLException {
-        // SQL query to insert a match
-        String req = "INSERT INTO matches (id_TeamA, id_TeamB, score_TeamA, score_TeamB, status, match_Time, location_Match, id_tournoi,teamAName,teamBName) " +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)";
-
-        try (PreparedStatement ps = cnx.prepareStatement(req, Statement.RETURN_GENERATED_KEYS)) {
-            // Set parameters for the PreparedStatement
-            ps.setInt(1, match.getIdTeamA()); // id_TeamA
-            ps.setInt(2, match.getIdTeamB()); // id_TeamB
-            ps.setInt(3, match.getScoreTeamA()); // score_TeamA
-            ps.setInt(4, match.getScoreTeamB()); // score_TeamB
-            ps.setString(5, match.getStatus()); // status
-            ps.setTimestamp(6, Timestamp.valueOf(match.getMatchTime())); // match_Time
-            ps.setString(7, match.getLocationMatch()); // location_Match
-            ps.setLong(8, match.getIdTournoi()); // id_tournoi
-            ps.setString(9,match.getTeamAName());
-            ps.setString(10, match.getTeamBName());
-
-            // Execute the query
-            int rowsAffected = ps.executeUpdate();
-
-            // Retrieve the generated keys (if any)
-            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    int generatedId = generatedKeys.getInt(1); // Get the generated ID
-                    match.setId(generatedId); // Set the ID in the Matches object
-                    System.out.println("Match inserted with ID: " + generatedId);
-                } else {
-                    throw new SQLException("Inserting match failed, no ID obtained.");
-                }
-            }
-
-            return rowsAffected; // Return the number of rows affected
-        }
-    }
     @Override
     public int update(Matches match) throws SQLException {
         String req = "UPDATE matches SET id_TeamA=?, id_TeamB=?, score_TeamA=?, score_TeamB=?, status=?, match_Time=?, location_Match=?, id_tournoi=? WHERE id=?";
@@ -129,8 +94,8 @@ public class MatchesService implements CRUD<Matches> {
         System.out.println("Updating match - ID: " + match.getId());
 
         try (PreparedStatement ps = cnx.prepareStatement(req)) {
-            ps.setInt(1, match.getIdTeamA());
-            ps.setInt(2, match.getIdTeamB());
+            ps.setInt(1, match.getTeamAId());
+            ps.setInt(2, match.getTeamBId());
             ps.setInt(3, match.getScoreTeamA());
             ps.setInt(4, match.getScoreTeamB());
             ps.setString(5, match.getStatus());
@@ -179,9 +144,9 @@ public class MatchesService implements CRUD<Matches> {
             while (rs.next()) {
                 Matches match = new Matches();
                 match.setId(rs.getInt("id"));
-                match.setIdTeamA(rs.getInt("id_TeamA"));
+                match.setTeamAId(rs.getInt("id_TeamA"));
                 match.setTeamAName(rs.getString("teamA_name"));
-                match.setIdTeamB(rs.getInt("id_TeamB"));
+                match.setTeamBId(rs.getInt("id_TeamB"));
                 match.setTeamBName(rs.getString("teamB_name"));
                 match.setScoreTeamA(rs.getInt("score_TeamA"));
                 match.setScoreTeamB(rs.getInt("score_TeamB"));
@@ -225,9 +190,9 @@ public class MatchesService implements CRUD<Matches> {
                 if (rs.next()) {
                     match = new Matches();
                     match.setId(rs.getInt("id"));
-                    match.setIdTeamA(rs.getInt("id_TeamA"));
+                    match.getTeamAId(rs.getInt("id_TeamA"));
                     match.setTeamAName(rs.getString("teamA_name"));
-                    match.setIdTeamB(rs.getInt("id_TeamB"));
+                    match.getTeamBId(rs.getInt("id_TeamB"));
                     match.setTeamBName(rs.getString("teamB_name"));
                     match.setScoreTeamA(rs.getInt("score_TeamA"));
                     match.setScoreTeamB(rs.getInt("score_TeamB"));
@@ -263,9 +228,9 @@ public class MatchesService implements CRUD<Matches> {
                 while (rs.next()) {
                     Matches match = new Matches();
                     match.setId(rs.getInt("id"));
-                    match.setIdTeamA(rs.getInt("id_TeamA"));
+                    match.setTeamAId(rs.getInt("id_TeamA"));
                     match.setTeamAName(rs.getString("teamA_name"));
-                    match.setIdTeamB(rs.getInt("id_TeamB"));
+                    match.setTeamBId(rs.getInt("id_TeamB"));
                     match.setTeamBName(rs.getString("teamB_name"));
                     match.setScoreTeamA(rs.getInt("score_TeamA"));
                     match.setScoreTeamB(rs.getInt("score_TeamB"));
@@ -392,3 +357,44 @@ public class MatchesService implements CRUD<Matches> {
 
     }
 }
+
+
+
+    public int insert2(Matches match) throws SQLException {
+        // SQL query to insert a match
+        String req = "INSERT INTO matches (id_TeamA, id_TeamB, score_TeamA, score_TeamB, status, match_Time, location_Match, id_tournoi,teamAName,teamBName) " +
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?,?,?)";
+
+        try (PreparedStatement ps = cnx.prepareStatement(req, Statement.RETURN_GENERATED_KEYS)) {
+            // Set parameters for the PreparedStatement
+            ps.setInt(1, match.getTeamAId()); // id_TeamA
+            ps.setInt(2, match.getTeamBId()); // id_TeamB
+            ps.setInt(3, match.getScoreTeamA()); // score_TeamA
+            ps.setInt(4, match.getScoreTeamB()); // score_TeamB
+            ps.setString(5, match.getStatus()); // status
+            ps.setTimestamp(6, Timestamp.valueOf(match.getMatchTime())); // match_Time
+            ps.setString(7, match.getLocationMatch()); // location_Match
+            ps.setLong(8, match.getIdTournoi()); // id_tournoi
+            ps.setString(9,match.getTeamAName());
+            ps.setString(10, match.getTeamBName());
+
+            // Execute the query
+            int rowsAffected = ps.executeUpdate();
+
+            // Retrieve the generated keys (if any)
+            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    int generatedId = generatedKeys.getInt(1); // Get the generated ID
+                    match.setId(generatedId); // Set the ID in the Matches object
+                    System.out.println("Match inserted with ID: " + generatedId);
+                } else {
+                    throw new SQLException("Inserting match failed, no ID obtained.");
+                }
+            }
+
+            return rowsAffected; // Return the number of rows affected
+        }
+    }
+
+}
+

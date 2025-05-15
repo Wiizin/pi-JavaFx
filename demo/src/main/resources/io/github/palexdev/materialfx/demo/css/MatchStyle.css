@@ -5,6 +5,10 @@
 .top-nav-bar {
     -fx-background-color: #1B1B3B;
     -fx-alignment: center-left;
+.top-nav-barf {
+    -fx-background-color: #1B1B3B;
+    -fx-alignment: center-left;
+    -fx-border-radius: 15px;
 }
 
 .header-label {
@@ -24,18 +28,19 @@
 }
 
 .filters-section {
-    -fx-background-color: #1B1B3B;
+    -fx-background-color: white;
     -fx-alignment: center-left;
+    -fx-border-radius: 15px;
 }
 
 .filter-combo {
     -fx-background-color: #F4F4F4;
-    -fx-text-fill: #1B1B3B;
+    -fx-text-fill: black;
     -fx-min-width: 180px;
 }
 
 .filter-combo .floating-text {
-    -fx-text-fill: #FF9800;
+    -fx-text-fill: #1B1B3B;
 }
 
 .search-field {
@@ -45,16 +50,17 @@
 }
 
 .search-field .floating-text {
-    -fx-text-fill: #FF9800;
+    -fx-text-fill: #000000;
 }
 
-.match-add-button {
+.Ajouter-au-favoris {
     -fx-background-color: #FF9800;
     -fx-text-fill: white;
+    --body-font-size: 14px;
     -fx-cursor: hand;
 }
 
-.match-add-button:hover {
+.Ajouter-au-favoris:hover {
     -fx-background-color: #FFA726;
 }
 
@@ -92,3 +98,12 @@
 .matches2-table .mfx-pagination .mfx-pagination-cell:selected {
     -fx-background-color: #FFA726;
 }
+
+.matches2-table .mfx-pagination .mfx-pagination-cell:hover {
+    -fx-background-color: #FFA726;
+}
+
+/* PlayerFront.css */
+.mfx-table-row-cell.status-live      { -fx-text-fill: #28a745; }
+.mfx-table-row-cell.status-upcoming  { -fx-text-fill: #007bff; }
+.mfx-table-row-cell.status-finished  { -fx-text-fill: #dc3545; }

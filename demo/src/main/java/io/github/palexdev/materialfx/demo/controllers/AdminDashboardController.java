@@ -44,12 +44,10 @@ public class AdminDashboardController implements Initializable {
     private void loadDashboardStatistics() {
         List<User> users = userService.getAll();
         int totalUsers = users.size();
-
         // Count active users and organizers
         long activeUsers = users.stream()
                 .filter(User::isActive)
                 .count();
-
         long totalOrganizers = users.stream()
                 .filter(user -> user instanceof Organizer)
                 .count();
@@ -60,7 +58,6 @@ public class AdminDashboardController implements Initializable {
         // Calculate month-over-month changes (example calculation)
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime oneMonthAgo = now.minus(1, ChronoUnit.MONTHS);
-
         double monthlyGrowth = calculateMonthlyGrowth(users, now, oneMonthAgo);
         double activeGrowth = calculateActiveGrowth(users, now, oneMonthAgo);
         double organizerGrowth = calculateOrganizerGrowth(users, now, oneMonthAgo);

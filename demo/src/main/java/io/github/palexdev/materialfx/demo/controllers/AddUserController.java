@@ -476,7 +476,6 @@ public class AddUserController {
     }
 
     @FXML
-
     private void handleSaveUser() {
         ValidationResult validationResult = validateInputs();
         if (!validationResult.isValid()) {

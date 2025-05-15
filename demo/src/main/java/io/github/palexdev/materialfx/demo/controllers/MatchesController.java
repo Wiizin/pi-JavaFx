@@ -190,6 +190,7 @@ public class MatchesController implements Initializable {
         MFXTableColumn<Matches> teamAColumn = new MFXTableColumn<>("Team A", false);
         teamAColumn.setPrefWidth(150);
         teamAColumn.setMinWidth(100);
+        teamAColumn.setStyle("-fx-text-fill: #1B1B3B;");
         teamAColumn.setRowCellFactory(match -> new MFXTableRowCell<>(Matches::getTeamAName));
 
         MFXTableColumn<Matches> teamBColumn = new MFXTableColumn<>("Team B", false);
@@ -319,8 +320,6 @@ public class MatchesController implements Initializable {
         });
     }
 
-
-
     private void setupButtons() {
         System.out.println("MatchesController: Setting up buttons");
         addButton.setOnAction(event -> handleAddMatch());
@@ -350,7 +349,6 @@ public class MatchesController implements Initializable {
             showErrorDialog("Error Loading Matches", "Failed to load matches from database.");
         }
     }
-
     private void refreshTournaments() {
         try {
             String currentSelection = tournamentFilter.getValue();
@@ -378,34 +376,34 @@ public class MatchesController implements Initializable {
     }
 
 
-private void updateLiveCount() {
-    long liveCount = matches.stream()
-            .filter(m -> "live".equalsIgnoreCase(m.getStatus()))
-            .count();
-    System.out.println("Updated live count: " + liveCount);
+    private void updateLiveCount() {
+        long liveCount = matches.stream()
+                .filter(m -> "live".equalsIgnoreCase(m.getStatus()))
+                .count();
+        System.out.println("Updated live count: " + liveCount);
 
-    headerLabel.setText(String.format("    \u26BD   Live Matches (%d)      ", liveCount));
+        headerLabel.setText(String.format("    \u26BD   Live Matches (%d)      ", liveCount));
 
-    // Remove previous animations if any
-    headerLabel.getStyleClass().remove("live-label");
-    headerLabel.getStyleClass().add("live-label");
-    headerLabel.setStyle("-fx-text-fill: -mfx-purple;-fx-background-radius: 55px; -fx-background-color: whitesmoke; -fx-border-color: whitesmoke; -fx-border-width: 1px; -fx-border-radius: 55px; ");
+        // Remove previous animations if any
+        headerLabel.getStyleClass().remove("live-label");
+        headerLabel.getStyleClass().add("live-label");
+        headerLabel.setStyle("-fx-text-fill: -mfx-purple;-fx-background-radius: 55px; -fx-background-color: whitesmoke; -fx-border-color: whitesmoke; -fx-border-width: 1px; -fx-border-radius: 55px; ");
 
 //animated
-    Timeline timeline = new Timeline(
-            new KeyFrame(Duration.seconds(0), e -> headerLabel.setScaleX(1.0)),
-            new KeyFrame(Duration.seconds(0), e -> headerLabel.setScaleY(1.0)),
-            new KeyFrame(Duration.seconds(0.6), e -> headerLabel.setScaleX(0.9)),
-            new KeyFrame(Duration.seconds(0.6), e -> headerLabel.setScaleY(0.9)),
-            new KeyFrame(Duration.seconds(1), e -> headerLabel.setScaleX(1.0)),
-            new KeyFrame(Duration.seconds(1), e -> headerLabel.setScaleY(1.0))
-    );
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(0), e -> headerLabel.setScaleX(1.0)),
+                new KeyFrame(Duration.seconds(0), e -> headerLabel.setScaleY(1.0)),
+                new KeyFrame(Duration.seconds(0.6), e -> headerLabel.setScaleX(0.9)),
+                new KeyFrame(Duration.seconds(0.6), e -> headerLabel.setScaleY(0.9)),
+                new KeyFrame(Duration.seconds(1), e -> headerLabel.setScaleX(1.0)),
+                new KeyFrame(Duration.seconds(1), e -> headerLabel.setScaleY(1.0))
+        );
 
-    timeline.setCycleCount(Timeline.INDEFINITE);
-    timeline.play();
-}
+        timeline.setCycleCount(Timeline.INDEFINITE);
+        timeline.play();
+    }
 
-    private void handleAddMatch() {
+    void handleAddMatch() {
         System.out.println("MatchesController: Add Match button clicked");
 
         Stage popupStage = new Stage();

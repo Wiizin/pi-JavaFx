@@ -24,9 +24,12 @@
 	-mfx-green: #4caf50;
 	-mfx-onyx: #353935;
 	-mfx-orange: #ff9800;
-	-mfx-purple: #7a0ed9;
+	-mfx-purple: #ff9800;
 	-mfx-red: #EF6E6B;
 	-mfx-yellow: #FFEA00;
+	-mfx-blue: #1B1F3B;
+
+	/*7a0ed9 purple*/
 
 
 	-mfx-text-he: rgba(0, 0, 0, 0.87); /* High Emphasis */

@@ -113,7 +113,6 @@ public class AdminHomeController implements Initializable {
                 }
                 return "Yes";  // Non-organizers are always active
             });
-
             // Add style based on status
             cell.textProperty().addListener((obs, old, newValue) -> {
                 if ("Yes".equals(newValue)) {
@@ -122,7 +121,6 @@ public class AdminHomeController implements Initializable {
                     cell.setStyle("-fx-text-fill: #F44336;"); // Red for inactive
                 }
             });
-
             return cell;
         });
 
@@ -207,14 +205,12 @@ public class AdminHomeController implements Initializable {
             if (response == ButtonType.OK) {
                 try {
                     userService.delete(user.getId());
-
                     // Show success message
                     Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
                     successAlert.setTitle("Success");
                     successAlert.setHeaderText(null);
                     successAlert.setContentText("User successfully deleted");
                     successAlert.showAndWait();
-
                     // Refresh the table
                     loadUsers();
                 } catch (SQLException e) {

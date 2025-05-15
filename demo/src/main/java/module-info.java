@@ -23,6 +23,7 @@ module MaterialFX.Demo {
     requires google.api.client;
     requires com.google.api.client;
     requires com.google.api.client.json.gson;
+    requires mysql.connector.j;
 
 
     opens io.github.palexdev.materialfx.demo;

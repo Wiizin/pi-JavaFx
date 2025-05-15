@@ -53,7 +53,8 @@
 
         <MFXButton fx:id="addButton"
                    text="+ Match Amical"
-                   styleClass="match-add-button"/>
+                   styleClass="match-add-button"
+        onAction="#handleAddMatch"/>
     </HBox>
 
     <!-- Main Content -->

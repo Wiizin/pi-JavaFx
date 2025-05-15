@@ -131,6 +131,10 @@ public class OrganizerHomeController implements Initializable{
         if (tournamentsUrl != null) {
             loader.addView(MFXLoaderBean.of("Tournaments", tournamentsUrl).setBeanToNodeMapper(() -> createToggle("fas-trophy", "Tournaments")).get());
         }
+        URL MatchesUrl = loadURL("fxml/MatchsDetails.fxml");
+        if (MatchesUrl != null) {
+            loader.addView(MFXLoaderBean.of("Matches", MatchesUrl).setBeanToNodeMapper(() -> createToggle("fas-trophy", "Tournaments")).get());
+        }
 
         // Add Store view
         URL storeUrl = loadURL("fxml/Store.fxml");
